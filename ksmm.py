@@ -43,6 +43,7 @@ class KSHandler(IPythonHandler):
 
     def __init__(self, *args, **kwargs):
         self.km = kwargs.pop("manager")
+        self._dummy_user = kwargs.pop("dummy_user")
         # km.get_all_specs()
         # km.find_kernel_specs()
         # km.remove_kernel_spec(name)
@@ -94,6 +95,20 @@ class KSHandler(IPythonHandler):
             pass
         self.finish(f"PUT {name!r}\n")
 
+    @property
+    def current_user(self):
+        """uncomment for testing, will disable authentication"""
+
+        if self._dummy_user:
+            print(
+                """
+            DUMMY AUTHENTICATION ENABLE: PLEASE COMMENT current_user property
+            """
+            )
+            return "dummy"
+        else:
+            return super().current_user
+
     def write_error(self, status_code, **kwargs):
         """render custom error as json"""
         exc_info = kwargs.get("exc_info")
@@ -134,6 +149,8 @@ def load_jupyter_server_extension(nb_server_app):
         nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
     """
     print("LOADING EXTENSION")
+
+    dummy_user = nb_server_app.tornado_settings.get("xsrf_cookies", None) is False
     web_app = nb_server_app.web_app
     host_pattern = ".*$"
     web_app.add_handlers(
@@ -145,7 +162,10 @@ def load_jupyter_server_extension(nb_server_app):
                     "/ks/?",
                 ),
                 KSHandler,
-                {"manager": nb_server_app.kernel_spec_manager},
+                {
+                    "manager": nb_server_app.kernel_spec_manager,
+                    "dummy_user": dummy_user,
+                },
             ),
             (
                 url_path_join(
@@ -153,7 +173,10 @@ def load_jupyter_server_extension(nb_server_app):
                     "/ks/(\w+)",
                 ),
                 KSHandler,
-                {"manager": nb_server_app.kernel_spec_manager},
+                {
+                    "manager": nb_server_app.kernel_spec_manager,
+                    "dummy_user": dummy_user,
+                },
             ),
         ],
     )
