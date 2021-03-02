@@ -141,7 +141,7 @@ class KSHandler(IPythonHandler):
         self.write({"status_code": status_code, "message": message})
 
 
-def load_jupyter_server_extension(nb_server_app):
+def setup_handlers(nb_server_app):
     """
     Called when the extension is loaded.
 

@@ -7,14 +7,12 @@ VERSION = '0.0.1'
 setup_args = dict(
     name='ksmm',
     version=VERSION,
-    description='Jupyter Server Extension for glootalk',
+    description='Jupyter Server Extension for IPython KernelSpec Manager',
     python_requires='>=3.8',
+    packages=setuptools.find_packages(),
     install_requires=[
+        "jupyterlab~=3.0",
     ],
-    entry_points={
-        'console_scripts': [
-            'ksmm=ksmm.app:main'
-        ]
     },
     include_package_data=True,
 )
