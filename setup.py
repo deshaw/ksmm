@@ -1,5 +1,5 @@
 import os
-from setuptools import setup
+import setuptools
 import jupyter_packaging
 
 VERSION = '0.0.1'
@@ -13,9 +13,8 @@ setup_args = dict(
     install_requires=[
         "jupyterlab~=3.0",
     ],
-    },
     include_package_data=True,
 )
 
 if __name__ == "__main__":
-    setup(**setup_args)
+    setuptools.setup(**setup_args)
