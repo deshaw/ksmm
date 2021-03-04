@@ -1,6 +1,6 @@
 
 {
-  "name": "@jupyterlab-examples/server-extension",
+  "name": "@jupyterlab-ipython/KernelSpec-Manager",
   "version": "0.1.0",
   "description": "An extension to manage iPython Kernels from Jupyter",
   "keywords": [
