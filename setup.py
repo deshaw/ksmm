@@ -10,7 +10,7 @@ name = "ksmm"
 lab_path = HERE / name / "labextension"
 
 jstargets = [
-        str(lab_path / "package.json"),
+        str(HERE / "package.json"),
         ]
 
 package_data_spec = {name: ["*"]}
