@@ -1,11 +1,3 @@
 [build-system]
-requires = ["flit_core >=2,<4"]
-build-backend = "flit_core.buildapi"
-
-[tool.flit.metadata]
-module = "ksmm"
-author = "Matthias Bussonnier"
-author-email = "bussonniermatthias@gmail.com"
-home-page = "https://pypi.org/project/ksmm/"
-classifiers = ["License :: OSI Approved :: MIT License"]
-
+requires = ["jupyter_packaging~=0.7.9", "jupyterlab>=3.0.0", "setuptools>=40.8.0", "wheel"]
+build-backend = "setuptools.build_meta"
