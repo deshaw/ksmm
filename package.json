@@ -50,7 +50,9 @@
     "@jupyterlab/application": "^3.0.0",
     "@jupyterlab/coreutils": "^5.0.0",
     "@jupyterlab/launcher": "^3.0.0",
-    "@jupyterlab/services": "^6.0.0"
+    "@jupyterlab/services": "^6.0.0",
+    "react-ace": "^9.3.0",
+    "react-bootstrap": "^1.4.3"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.0.0",
