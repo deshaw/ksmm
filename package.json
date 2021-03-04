@@ -1,4 +1,3 @@
-
 {
   "name": "@jupyterlab-ipython/KernelSpec-Manager",
   "version": "0.1.0",
@@ -73,6 +72,9 @@
     "style/*.css"
   ],
   "jupyterlab": {
+    "extension": true,
+    "outputDir": "ksmm/labextension",
+ 
     "discovery": {
       "server": {
         "managers": [
@@ -82,8 +84,6 @@
           "name": "ksmm"
         }
       }
-    },
-    "extension": true,
-    "outputDir": "jlab_ext_example/labextension"
-  }
+    }
+ }
 }
