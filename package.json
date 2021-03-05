@@ -50,8 +50,11 @@
     "@jupyterlab/coreutils": "^5.0.0",
     "@jupyterlab/launcher": "^3.0.0",
     "@jupyterlab/services": "^6.0.0",
+    "@rjsf/bootstrap-4": "^2.4.2",
+    "@rjsf/core": "^2.4.2",
+    "bootstrap": "^4.6.0",
     "react-ace": "^9.3.0",
-    "react-bootstrap": "^1.4.3"
+    "react-bootstrap": "^1.5.1"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.0.0",
@@ -74,7 +77,6 @@
   "jupyterlab": {
     "extension": true,
     "outputDir": "ksmm/labextension",
- 
     "discovery": {
       "server": {
         "managers": [
@@ -85,5 +87,5 @@
         }
       }
     }
- }
+  }
 }
