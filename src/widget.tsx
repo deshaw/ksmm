@@ -2,7 +2,8 @@ import { ReactWidget } from '@jupyterlab/apputils';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useState, useEffect } from 'react';
 import { JSONSchema7 } from "json-schema";
-import Form from "@rjsf/core";
+import Form from "@rjsf/bootstrap-4";
+import ClipLoader from "react-spinners/ClipLoader";
 
 /**
  * React component for listing the possible
@@ -29,7 +30,7 @@ const CounterComponent = (): JSX.Element => {
 
   const timer = setTimeout(() => {
 	  kernelSpec();
-  }, 3000);
+  }, 5000);
 
  
   return () => clearTimeout(timer);
@@ -41,7 +42,7 @@ const CounterComponent = (): JSX.Element => {
     <div>
 	    {showForm ?
 		    <Form schema={ipyschema} /> :
-		    <p> Loading... </p>
+		     <ClipLoader color={"#9ee8e2"} loading={true} size={150} />
 	    }
     </div>
   );
