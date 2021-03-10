@@ -23,6 +23,7 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
 ]
 
+
 cmdclass = jupyter_packaging.create_cmdclass(
     "jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec
 )

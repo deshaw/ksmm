@@ -54,7 +54,8 @@
     "@rjsf/core": "^2.4.2",
     "bootstrap": "^4.6.0",
     "react-ace": "^9.3.0",
-    "react-bootstrap": "^1.5.1"
+    "react-bootstrap": "^1.5.1",
+    "react-spinners": "^0.10.6"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.0.0",
