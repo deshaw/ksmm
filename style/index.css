@@ -6,4 +6,12 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+  overflow: auto;
+}
+
+.jp-ReactForm {
+  width: 100vw;
+  height: 80vh;
+  align-items: center;
+  justify-content: center;
 }
