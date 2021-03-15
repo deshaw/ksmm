@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Container from 'react-bootstrap/Container';
 import { JSONSchema7 } from "json-schema";
 import Form from "@rjsf/bootstrap-4";
+import * as _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import SelectorComponent from "./selector";
 
@@ -51,6 +52,7 @@ const KernelManagerComponent = (): JSX.Element => {
     e: any
   ) => {
     const a = JSON.parse(JSON.stringify(data));
+    console.log(a[formData.ipykernels]);
     setKernelFormData(a[formData.ipykernels]);
     setShowFormSelector(false);
     setShowForm(true);
@@ -74,20 +76,19 @@ const KernelManagerComponent = (): JSX.Element => {
     const kernelSpec = async () => {
       const response = await fetch(url);
       const jsondata = await response.json();
-      if (Object.keys(jsondata).length == Object.keys(data).length) {
-        console.log("data is the same at fetch.");
-      } else {
+      if (!_.isEqual(data,jsondata)) {
+	console.log("setting data", jsondata);
         setData(jsondata);
       }
     };
 
-    const timer = setTimeout(() => {
+    const timer = setInterval(() => {
       kernelSpec();
       renderWidgets();
     }, 5000);
 
     return () => {
-      clearTimeout(timer);
+      clearInterval(timer);
     };
   }, [data]);
 
