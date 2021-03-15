@@ -4,46 +4,67 @@ import React, { useState, useEffect } from 'react';
 import { JSONSchema7 } from "json-schema";
 import Form from "@rjsf/bootstrap-4";
 import ClipLoader from "react-spinners/ClipLoader";
+import SelectorComponent from "./selector";
 
 /**
  * React component for listing the possible
  * ipykernel options.
  *
+ *
  * @returns The React component
  */
 const CounterComponent = (): JSX.Element => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState({});
   const [showForm, setShowForm] = useState(false);
+  const [showFormSelector, setShowFormSelector] = useState(false);
+  const [selectedKernel, setSelectedKernel] = useState(false);
   
   const ipyschema: JSONSchema7 = {"title": "ipykernel mm", "type": "object", "properties": {"argv": {"type": "array", "items": {"type": "string"}}, "env": {"type": "object"}, "display_name": {"type": "string"}, "language": {"type": "string"}, "interrupt_mode": {"type": "string"}, "metadata": {"type": "object"}}, "required": ["argv", "display_name", "env", "interrupt_mode", "language", "metadata"]};
 
-  useEffect(() => {
+  const handleSelectedKernel = ({formData}: {formData:any}, e: any) => {
+	/* Sets the selected kernel from the
+	 * environment
+	 */
+	console.log(e.formData);
+	setSelectedKernel(e.formData);
+	setShowFormSelector(false);
+	setShowForm(true);
+	console.log(selectedKernel);
+  };
 
+  useEffect(() => {
   const url  = 'http://localhost:8888/ks';
   const kernelSpec = async () => {
-	  const response = await fetch(url);
-	  const jsondata = response.json();
-	  console.log(jsondata);
-	  setData(jsondata);
-	  setShowForm(true);
+	const response = await fetch(url);
+	const jsondata = await response.json();
+	setData(jsondata);
+	console.log(jsondata);
+	setShowFormSelector(true);
   };
 
   const timer = setTimeout(() => {
-	  kernelSpec();
+	kernelSpec();
   }, 5000);
 
  
-  return () => clearTimeout(timer);
+  return () => { 
+       clearTimeout(timer);
+  };
   }, [
-	 data
-  ]);
+	 data,
+  ])
 
   return (
     <div>
-	    {showForm ?
-		    <Form schema={ipyschema} /> :
-		     <ClipLoader color={"#9ee8e2"} loading={true} size={150} />
+	    {
+	     showFormSelector ?
+		     <SelectorComponent handleSubmit={handleSelectedKernel} values={Object.keys(data)}/>:<ClipLoader color={"9ef832"} loading={true} size={150}/>
 	    }
+	    {
+	     showForm ?
+		     <Form schema={ipyschema} />: null
+	    }
+	    
     </div>
   );
 };
