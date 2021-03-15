@@ -74,10 +74,9 @@ const KernelManagerComponent = (): JSX.Element => {
     const kernelSpec = async () => {
       const response = await fetch(url);
       const jsondata = await response.json();
-      if (Object.keys(jsondata) === Object.keys(data)) {
+      if (Object.keys(jsondata).length == Object.keys(data).length) {
         console.log("data is the same at fetch.");
       } else {
-	console.log("setting data");
         setData(jsondata);
       }
     };
@@ -94,7 +93,7 @@ const KernelManagerComponent = (): JSX.Element => {
 
   return (
       <div>
-	      <Container fluid className="jp-ReactForm">
+      <Container fluid className="jp-ReactForm">
       {isLoading ? (
         <ClipLoader color={"9ef832"} loading={true} size={150} />
       ) : null}
