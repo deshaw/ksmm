@@ -4,21 +4,16 @@ import React, { useState, useEffect } from "react";
 import { JSONSchema7 } from "json-schema";
 import Form from "@rjsf/bootstrap-4";
 import ClipLoader from "react-spinners/ClipLoader";
-import SelectorComponent from "./selector";
 
 /**
  * React component for listing the possible
  * ipykernel options.
  *
- *
  * @returns The React component
  */
-const KernelManagerComponent = (): JSX.Element => {
-  const [data, setData] = useState({});
+const CounterComponent = (): JSX.Element => {
+  const [data, setData] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const [showFormSelector, setShowFormSelector] = useState(false);
-  const [kernelFormData, setKernelFormData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
 
   const ipyschema: JSONSchema7 = {
     title: "ipykernel mm",
@@ -41,61 +36,30 @@ const KernelManagerComponent = (): JSX.Element => {
     ],
   };
 
-  
-  /**
-   * Handles the Kernel Selection
-   * at the select screen.
-   */
-  const handleSelectedKernel = ({ formData }: { formData: { ipykernels: string } }, e: any) => {
-    const a = JSON.parse(JSON.stringify(data))
-    setKernelFormData(a[formData.ipykernels]);
-    setShowFormSelector(false);
-    setShowForm(true);
-  };
-
-  /**
-   * At each component render,
-   * render the proper component given the
-   * constraints.
-   *
-   */
-  const renderWidgets = () => {
-    if (isLoading == true && showForm == false && data) {
-      setIsLoading(false);
-      setShowFormSelector(true);
-    }
-  };
-
   useEffect(() => {
     const url = "http://localhost:8888/ks";
     const kernelSpec = async () => {
       const response = await fetch(url);
-      const jsondata = await response.json();
+      const jsondata = response.json();
+      console.log(jsondata);
       setData(jsondata);
+      setShowForm(true);
     };
 
     const timer = setTimeout(() => {
       kernelSpec();
-      renderWidgets();
     }, 5000);
 
-    return () => {
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, [data]);
 
   return (
     <div>
-      {isLoading ? (
-        <ClipLoader color={"9ef832"} loading={true} size={150} />
-      ) : null}
-      {showFormSelector ? (
-        <SelectorComponent
-          handleSubmit={handleSelectedKernel}
-          values={Object.keys(data)}
-        />
-      ) : null}
-      {showForm ? <Form schema={ipyschema} formData={kernelFormData}  /> : null}
+      {showForm ? (
+        <Form schema={ipyschema} />
+      ) : (
+        <ClipLoader color={"#9ee8e2"} loading={true} size={150} />
+      )}
     </div>
   );
 };
@@ -113,6 +77,6 @@ export class CounterWidget extends ReactWidget {
   }
 
   render(): JSX.Element {
-    return <KernelManagerComponent />;
+    return <CounterComponent />;
   }
 }

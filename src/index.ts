@@ -1,26 +1,25 @@
-
 import {
   JupyterFrontEnd,
-  JupyterFrontEndPlugin
-} from '@jupyterlab/application';
+  JupyterFrontEndPlugin,
+} from "@jupyterlab/application";
 
-import { MainAreaWidget } from '@jupyterlab/apputils';
+import { MainAreaWidget } from "@jupyterlab/apputils";
 
-import { ILauncher } from '@jupyterlab/launcher';
+import { ILauncher } from "@jupyterlab/launcher";
 
-import { CounterWidget } from './widget';
+import { CounterWidget } from "./widget";
 /*
  * The command IDs used by the react-widget plugin.
  */
 namespace CommandIDs {
-  export const create = 'create-conda-store-widget';
+  export const create = "create-conda-store-widget";
 }
 
 /**
  * Initialization data for the react-widget extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'conda-store-widget',
+  id: "conda-store-widget",
   autoStart: true,
   optional: [ILauncher],
   activate: (app: JupyterFrontEnd, launcher: ILauncher) => {
@@ -28,23 +27,23 @@ const extension: JupyterFrontEndPlugin<void> = {
 
     const command = CommandIDs.create;
     commands.addCommand(command, {
-      caption: 'A way to manage IPython Kernels',
-      label: 'ksmm',
-      icon: args => (args['isPalette'] ? null : null),
+      caption: "A way to manage IPython Kernels",
+      label: "ksmm",
+      icon: (args) => (args["isPalette"] ? null : null),
       execute: () => {
-	const content = new CounterWidget();
+        const content = new CounterWidget();
         const widget = new MainAreaWidget<CounterWidget>({ content });
-        widget.title.label = 'ksmm';
-        app.shell.add(widget, 'main');
-      }
+        widget.title.label = "ksmm";
+        app.shell.add(widget, "main");
+      },
     });
 
     if (launcher) {
       launcher.add({
-        command
+        command,
       });
     }
-  }
+  },
 };
 
 export default extension;
