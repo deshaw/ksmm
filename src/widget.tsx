@@ -1,6 +1,7 @@
 import { ReactWidget } from "@jupyterlab/apputils";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState, useEffect } from "react";
+import Container from 'react-bootstrap/Container';
 import { JSONSchema7 } from "json-schema";
 import Form from "@rjsf/bootstrap-4";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -41,13 +42,15 @@ const KernelManagerComponent = (): JSX.Element => {
     ],
   };
 
-  
   /**
    * Handles the Kernel Selection
    * at the select screen.
    */
-  const handleSelectedKernel = ({ formData }: { formData: { ipykernels: string } }, e: any) => {
-    const a = JSON.parse(JSON.stringify(data))
+  const handleSelectedKernel = (
+    { formData }: { formData: { ipykernels: string } },
+    e: any
+  ) => {
+    const a = JSON.parse(JSON.stringify(data));
     setKernelFormData(a[formData.ipykernels]);
     setShowFormSelector(false);
     setShowForm(true);
@@ -71,7 +74,12 @@ const KernelManagerComponent = (): JSX.Element => {
     const kernelSpec = async () => {
       const response = await fetch(url);
       const jsondata = await response.json();
-      setData(jsondata);
+      if (Object.keys(jsondata) === Object.keys(data)) {
+        console.log("data is the same at fetch.");
+      } else {
+	console.log("setting data");
+        setData(jsondata);
+      }
     };
 
     const timer = setTimeout(() => {
@@ -85,7 +93,8 @@ const KernelManagerComponent = (): JSX.Element => {
   }, [data]);
 
   return (
-    <div>
+      <div>
+	      <Container fluid className="jp-ReactForm">
       {isLoading ? (
         <ClipLoader color={"9ef832"} loading={true} size={150} />
       ) : null}
@@ -95,8 +104,12 @@ const KernelManagerComponent = (): JSX.Element => {
           values={Object.keys(data)}
         />
       ) : null}
-      {showForm ? <Form schema={ipyschema} formData={kernelFormData}  /> : null}
-    </div>
+	      {showForm ? 
+	      <Form schema={ipyschema} formData={kernelFormData}
+		/> 
+		: null}
+		</Container>
+	</div>
   );
 };
 
@@ -110,6 +123,7 @@ export class CounterWidget extends ReactWidget {
   constructor() {
     super();
     this.addClass("jp-ReactWidget");
+    this.addClass("jp-ReactForm");
   }
 
   render(): JSX.Element {

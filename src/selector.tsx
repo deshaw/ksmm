@@ -22,6 +22,7 @@ const SelectorComponent = (props: any): JSX.Element => {
 
   return (
     <div>
+      <h3> Please Select a Kernel to Edit </h3>
       <Form schema={schema} uiSchema={uiSchema} onSubmit={props.handleSubmit} />
     </div>
   );
