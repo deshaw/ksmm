@@ -6,3 +6,4 @@ dependencies:
   - jupyter-packaging
   - setuptools
   - tornado
+  - genson

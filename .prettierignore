@@ -5,3 +5,5 @@ lib
 labextension
 tsconfig.tsbuildinfo
 yarn.lock
+*.py
+

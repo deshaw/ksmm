@@ -1,26 +1,114 @@
-import { ReactWidget } from '@jupyterlab/apputils';
-
-import React, { useState } from 'react';
+import { ReactWidget } from "@jupyterlab/apputils";
+import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react";
+import Container from 'react-bootstrap/Container';
+import { JSONSchema7 } from "json-schema";
+import Form from "@rjsf/bootstrap-4";
+import ClipLoader from "react-spinners/ClipLoader";
+import SelectorComponent from "./selector";
 
 /**
- * React component for a counter.
+ * React component for listing the possible
+ * ipykernel options.
+ *
  *
  * @returns The React component
  */
-const CounterComponent = (): JSX.Element => {
-  const [counter, setCounter] = useState(0);
+const KernelManagerComponent = (): JSX.Element => {
+  const [data, setData] = useState({});
+  const [showForm, setShowForm] = useState(false);
+  const [showFormSelector, setShowFormSelector] = useState(false);
+  const [kernelFormData, setKernelFormData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  const ipyschema: JSONSchema7 = {
+    title: "ipykernel mm",
+    type: "object",
+    properties: {
+      argv: { type: "array", items: { type: "string" } },
+      env: { type: "object" },
+      display_name: { type: "string" },
+      language: { type: "string" },
+      interrupt_mode: { type: "string" },
+      metadata: { type: "object" },
+    },
+    required: [
+      "argv",
+      "display_name",
+      "env",
+      "interrupt_mode",
+      "language",
+      "metadata",
+    ],
+  };
+
+  /**
+   * Handles the Kernel Selection
+   * at the select screen.
+   */
+  const handleSelectedKernel = (
+    { formData }: { formData: { ipykernels: string } },
+    e: any
+  ) => {
+    const a = JSON.parse(JSON.stringify(data));
+    setKernelFormData(a[formData.ipykernels]);
+    setShowFormSelector(false);
+    setShowForm(true);
+  };
+
+  /**
+   * At each component render,
+   * render the proper component given the
+   * constraints.
+   *
+   */
+  const renderWidgets = () => {
+    if (isLoading == true && showForm == false && data) {
+      setIsLoading(false);
+      setShowFormSelector(true);
+    }
+  };
+
+  useEffect(() => {
+    const url = "http://localhost:8888/ks";
+    const kernelSpec = async () => {
+      const response = await fetch(url);
+      const jsondata = await response.json();
+      if (Object.keys(jsondata).length == Object.keys(data).length) {
+        console.log("data is the same at fetch.");
+      } else {
+        setData(jsondata);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      kernelSpec();
+      renderWidgets();
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [data]);
 
   return (
-    <div>
-      <p>You clicked {counter} times!</p>
-      <button
-        onClick={(): void => {
-          setCounter(counter + 1);
-        }}
-      >
-        Increment
-      </button>
-    </div>
+      <div>
+      <Container fluid className="jp-ReactForm">
+      {isLoading ? (
+        <ClipLoader color={"9ef832"} loading={true} size={150} />
+      ) : null}
+      {showFormSelector ? (
+        <SelectorComponent
+          handleSubmit={handleSelectedKernel}
+          values={Object.keys(data)}
+        />
+      ) : null}
+	      {showForm ? 
+	      <Form schema={ipyschema} formData={kernelFormData}
+		/> 
+		: null}
+		</Container>
+	</div>
   );
 };
 
@@ -33,10 +121,11 @@ export class CounterWidget extends ReactWidget {
    */
   constructor() {
     super();
-    this.addClass('jp-ReactWidget');
+    this.addClass("jp-ReactWidget");
+    this.addClass("jp-ReactForm");
   }
 
   render(): JSX.Element {
-    return <CounterComponent />;
+    return <KernelManagerComponent />;
   }
 }
