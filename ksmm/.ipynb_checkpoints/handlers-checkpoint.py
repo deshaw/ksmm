@@ -7,21 +7,14 @@ __version__ = '0.0.1'
 from notebook.utils import url_path_join
 from notebook.base.handlers import IPythonHandler
 
-from jupyter_client import KernelManager
-from jupyter_server.base.handlers import APIHandler
-from jupyter_server.utils import url_path_join as ujoin, url2path
 
 from tornado import web, gen
 from http.client import responses
 import tornado
 
-from pathlib import Path
-
-import json
-
 
 # class KSHandler(web.RequestHandler):
-class KSHandler(APIHandler):
+class KSHandler(IPythonHandler):
     """
     KernelSpec Handler to mange kernelspec via a REST API.
 
@@ -78,10 +71,9 @@ class KSHandler(APIHandler):
 
     @web.authenticated
     def post(self, name=None):
-        ksm = KernelSpec()        
+        raise NotImplementedError
         data = tornado.escape.json_decode(self.request.body)
-        kernelPath = Path(ksm._data_dir_default(), 'kernels') 
-        print("POST", name, ":", data, "kerneljsonpath", kernelPath)
+        print("POST", name, ":", data)
         if name is None:
             pass
         self.finish(f"POST {name!r}\n")
@@ -148,16 +140,8 @@ class KSHandler(APIHandler):
 
         self.write({"status_code": status_code, "message": message})
 
-def setup_handlers(server_app):
-    handlers = [
-            ("/ks/(\w+)", KSHandler)
-            ]
-    base_url = server_app.web_app.settings["base_url"]
-    k_handlers = [(ujoin(base_url, x[0]), x[1]) for x in handlers]
-    print(k_handlers)
-    server_app.web_app.add_handlers(".*", k_handlers)
 
-def setup_handlers_old(nb_server_app):
+def setup_handlers(nb_server_app):
     """
     Called when the extension is loaded.
 
@@ -168,7 +152,7 @@ def setup_handlers_old(nb_server_app):
 
     dummy_user = nb_server_app.tornado_settings.get("xsrf_cookies", None) is False
     web_app = nb_server_app.web_app
-    host_pattern = ".*"
+    host_pattern = ".*$"
     web_app.add_handlers(
         host_pattern,
         [
