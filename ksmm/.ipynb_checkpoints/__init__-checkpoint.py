@@ -1,12 +1,6 @@
 import pathlib
 import json
-
-
-from jupyterlab.labapp import LabApp
-
-
 from .handlers import setup_handlers
-
 
 HERE = pathlib.Path(__file__).parent.resolve()
 
@@ -28,6 +22,9 @@ def _jupyter_server_extension_paths():
 def _jupyter_server_extension_points():
     return [{"module": "ksmm"}]
 
-def _load_jupyter_server_extension(server_app: LabApp):
+def _load_jupyter_server_extension(server_app):
     setup_handlers(server_app)
-    
+    server_app.log(
+            "Started KernelSpec Manager :)"
+            )
+
