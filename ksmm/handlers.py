@@ -8,7 +8,7 @@ from notebook.utils import url_path_join
 from notebook.base.handlers import IPythonHandler
 
 from jupyter_client import KernelManager
-from jupyter_server.base.handlers import APIHandler
+from jupyter_server.base.handlers import JupyterHandler 
 from jupyter_server.utils import url_path_join as ujoin, url2path
 
 from tornado import web, gen
@@ -21,7 +21,7 @@ import json
 
 
 # class KSHandler(web.RequestHandler):
-class KSHandler(APIHandler):
+class KSHandler(JupyterHandler):
     """
     KernelSpec Handler to mange kernelspec via a REST API.
 
@@ -46,11 +46,7 @@ class KSHandler(APIHandler):
 
     """
 
-    SUPPORTED_METHODS = ["GET", "POST", "DELETE", "LIST", "PUT", "COPY"]
-
     def __init__(self, *args, **kwargs):
-        self.km = kwargs.pop("manager")
-        self._dummy_user = kwargs.pop("dummy_user")
         # km.get_all_specs()
         # km.find_kernel_specs()
         # km.remove_kernel_spec(name)
@@ -58,7 +54,7 @@ class KSHandler(APIHandler):
         super().__init__(*args, **kwargs)
 
         
-    @web.authenticated
+    @tornado.web.authenticated
     def get(self, name=None):
         print("GET", name)
         if name is None:
@@ -66,17 +62,17 @@ class KSHandler(APIHandler):
         else:
             self.finish(self.km.get_kernel_spec(name).to_dict())
 
-    @web.authenticated
+    @tornado.web.authenticated
     def delete(self, name):
         self.km.remove_kernel_spec(name)
         self.finish()
 
-    @web.authenticated
+    @tornado.web.authenticated
     def list(self):
         l = self.km.find_kernel_specs().keys()
         self.finish({"names": list(self.km.find_kernel_specs().keys())})
 
-    @web.authenticated
+    @tornado.web.authenticated
     def post(self, name=None):
         ksm = KernelSpec()        
         data = tornado.escape.json_decode(self.request.body)
@@ -86,7 +82,7 @@ class KSHandler(APIHandler):
             pass
         self.finish(f"POST {name!r}\n")
 
-    @web.authenticated
+    @tornado.web.authenticated
     def copy(self, name):
         data = tornado.escape.json_decode(self.request.body)
         new_name = data["new_name"]
@@ -95,7 +91,7 @@ class KSHandler(APIHandler):
 
         self.finish(f"POST {name!r}\n")
 
-    @web.authenticated
+    @tornado.web.authenticated
     def put(self, name=None):
         raise NotImplementedError
         print("PUT", name)
@@ -150,11 +146,11 @@ class KSHandler(APIHandler):
 
 def setup_handlers(server_app):
     handlers = [
-            ("/ks/(\w+)", KSHandler)
+            ("/(\w+)", KSHandler)
             ]
-    base_url = server_app.web_app.settings["base_url"]
-    k_handlers = [(ujoin(base_url, x[0]), x[1]) for x in handlers]
+    k_handlers = [(ujoin(server_app.base_url, x[0]), x[1]) for x in handlers]
     print(k_handlers)
+
     server_app.web_app.add_handlers(".*", k_handlers)
 
 def setup_handlers_old(nb_server_app):
