@@ -140,8 +140,11 @@ class KSHandler(APIHandler):
 
 def setup_handlers(web_app, km, url_path):
     base_url = web_app.settings["base_url"]
+    full_url = url_path_join(base_url,  url_path, "/(\w+)")
+    print(full_url)
     handlers = [
-            ("/(\w+)", KSHandler, {'km': km})
+             (url_path_join(base_url, url_path), KSHandler, {'km': km}),
+             (url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
                 ]
 
     web_app.add_handlers(".*", handlers)
