@@ -7,21 +7,14 @@ __version__ = '0.0.1'
 from notebook.utils import url_path_join
 from notebook.base.handlers import IPythonHandler
 
-from jupyter_client import KernelManager
-from jupyter_server.base.handlers import APIHandler 
-from jupyter_server.utils import url_path_join
 
 from tornado import web, gen
 from http.client import responses
 import tornado
 
-from pathlib import Path
-
-import json
-
 
 # class KSHandler(web.RequestHandler):
-class KSHandler(APIHandler):
+class KSHandler(IPythonHandler):
     """
     KernelSpec Handler to mange kernelspec via a REST API.
 
@@ -46,47 +39,46 @@ class KSHandler(APIHandler):
 
     """
 
-    def initialize(self, km):
-        self.km = km
+    SUPPORTED_METHODS = ["GET", "POST", "DELETE", "LIST", "PUT", "COPY"]
+
+    def __init__(self, *args, **kwargs):
+        self.km = kwargs.pop("manager")
+        self._dummy_user = kwargs.pop("dummy_user")
         # km.get_all_specs()
         # km.find_kernel_specs()
         # km.remove_kernel_spec(name)
         # km.install_kernel_spec(self, source_dir)  -- wierd as it take a source dir
+        super().__init__(*args, **kwargs)
 
         
-    @tornado.web.authenticated
+    @web.authenticated
     def get(self, name=None):
         print("GET", name)
         if name is None:
-            #  TODO: Write filepath to hash
             self.finish({k: v["spec"] for k, v in self.km.get_all_specs().items()})
         else:
             self.finish(self.km.get_kernel_spec(name).to_dict())
 
-    @tornado.web.authenticated
+    @web.authenticated
     def delete(self, name):
         self.km.remove_kernel_spec(name)
         self.finish()
 
-    @tornado.web.authenticated
+    @web.authenticated
     def list(self):
         l = self.km.find_kernel_specs().keys()
         self.finish({"names": list(self.km.find_kernel_specs().keys())})
 
-    @tornado.web.authenticated
+    @web.authenticated
     def post(self, name=None):
-        data = json.loads(self.request.body.decode('utf-8'))
-        kernelPaths = self.km.find_kernel_specs()
-        # Write to python object
-        print(data['editedKernelPayload'], data['originalKernelName'])
-        path = kernelPaths[str(data['originalKernelName'])]
+        raise NotImplementedError
+        data = tornado.escape.json_decode(self.request.body)
+        print("POST", name, ":", data)
         if name is None:
             pass
-        with open(str(Path(path, 'kernel.json')), 'w') as outfile:
-            json.dump(json.loads(data['editedKernelPayload']), outfile)
         self.finish(f"POST {name!r}\n")
 
-    @tornado.web.authenticated
+    @web.authenticated
     def copy(self, name):
         data = tornado.escape.json_decode(self.request.body)
         new_name = data["new_name"]
@@ -95,7 +87,7 @@ class KSHandler(APIHandler):
 
         self.finish(f"POST {name!r}\n")
 
-    @tornado.web.authenticated
+    @web.authenticated
     def put(self, name=None):
         raise NotImplementedError
         print("PUT", name)
@@ -103,9 +95,19 @@ class KSHandler(APIHandler):
             pass
         self.finish(f"PUT {name!r}\n")
 
-    #@property
-    #def current_user(self):
+    @property
+    def current_user(self):
         """uncomment for testing, will disable authentication"""
+
+        if self._dummy_user:
+            print(
+                """
+            DUMMY AUTHENTICATION ENABLE: PLEASE COMMENT current_user property
+            """
+            )
+            return "dummy"
+        else:
+            return super().current_user
 
     def write_error(self, status_code, **kwargs):
         """render custom error as json"""
@@ -138,15 +140,43 @@ class KSHandler(APIHandler):
 
         self.write({"status_code": status_code, "message": message})
 
-def setup_handlers(web_app, km, url_path):
-    base_url = web_app.settings["base_url"]
-    full_url = url_path_join(base_url,  url_path, "/(\w+)")
-    print(full_url)
-    handlers = [
-             (url_path_join(base_url, url_path), KSHandler, {'km': km}),
-             (url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
-                ]
 
-    web_app.add_handlers(".*", handlers)
+def setup_handlers(nb_server_app):
+    """
+    Called when the extension is loaded.
 
+    Args:
+        nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
+    """
+    print("LOADING EXTENSION")
 
+    dummy_user = nb_server_app.tornado_settings.get("xsrf_cookies", None) is False
+    web_app = nb_server_app.web_app
+    host_pattern = ".*$"
+    web_app.add_handlers(
+        host_pattern,
+        [
+            (
+                url_path_join(
+                    web_app.settings["base_url"],
+                    "/ks/?",
+                ),
+                KSHandler,
+                {
+                    "manager": nb_server_app.kernel_spec_manager,
+                    "dummy_user": dummy_user,
+                },
+            ),
+            (
+                url_path_join(
+                    web_app.settings["base_url"],
+                    "/ks/(\w+)",
+                ),
+                KSHandler,
+                {
+                    "manager": nb_server_app.kernel_spec_manager,
+                    "dummy_user": dummy_user,
+                },
+            ),
+        ],
+    )
