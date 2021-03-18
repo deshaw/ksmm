@@ -82,7 +82,8 @@ class KSHandler(APIHandler):
         path = kernelPaths[str(data['originalKernelName'])]
         if name is None:
             pass
-
+        with open(str(Path(path, 'kernel.json')), 'w') as outfile:
+            json.dump(json.loads(data['editedKernelPayload']), outfile)
         self.finish(f"POST {name!r}\n")
 
     @tornado.web.authenticated
