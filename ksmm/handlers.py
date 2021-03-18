@@ -47,9 +47,6 @@ class KSHandler(APIHandler):
     """
 
     def initialize(self, km):
-        print("innit")
-        print(self)
-        print(km)
         self.km = km
         # km.get_all_specs()
         # km.find_kernel_specs()
@@ -61,6 +58,7 @@ class KSHandler(APIHandler):
     def get(self, name=None):
         print("GET", name)
         if name is None:
+            #  TODO: Write filepath to hash
             self.finish({k: v["spec"] for k, v in self.km.get_all_specs().items()})
         else:
             self.finish(self.km.get_kernel_spec(name).to_dict())
@@ -77,12 +75,14 @@ class KSHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self, name=None):
-        ksm = KernelSpec()        
-        data = tornado.escape.json_decode(self.request.body)
-        kernelPath = Path(ksm._data_dir_default(), 'kernels') 
-        print("POST", name, ":", data, "kerneljsonpath", kernelPath)
+        data = json.loads(self.request.body.decode('utf-8'))
+        kernelPaths = self.km.find_kernel_specs()
+        # Write to python object
+        print(data['editedKernelPayload'], data['originalKernelName'])
+        path = kernelPaths[str(data['originalKernelName'])]
         if name is None:
             pass
+
         self.finish(f"POST {name!r}\n")
 
     @tornado.web.authenticated
@@ -105,7 +105,6 @@ class KSHandler(APIHandler):
     #@property
     #def current_user(self):
         """uncomment for testing, will disable authentication"""
-
 
     def write_error(self, status_code, **kwargs):
         """render custom error as json"""
