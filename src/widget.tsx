@@ -102,15 +102,19 @@ const KernelManagerComponent = (): JSX.Element => {
       const jsondata = await response.json();
       if (!_.isEqual(data, jsondata)) {
         console.log("setting data", jsondata);
-        setData(jsondata);
+	setData(jsondata);
       }
     };
+    
+    kernelSpec();
+    setIsLoading(false);
+    setShowFormSelector(true);
 
     const timer = setInterval(() => {
       kernelSpec();
       renderWidgets();
     }, 5000);
-
+    
     return () => {
       clearInterval(timer);
     };
