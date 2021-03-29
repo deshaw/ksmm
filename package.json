@@ -54,6 +54,7 @@
     "@rjsf/core": "^2.4.2",
     "@types/lodash": "^4.14.168",
     "bootstrap": "^4.6.0",
+    "framer-motion": "^4.0.3",
     "lodash": "^4.17.21",
     "react-ace": "^9.3.0",
     "react-bootstrap": "^1.5.2",

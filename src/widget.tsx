@@ -71,13 +71,13 @@ const KernelManagerComponent = (): JSX.Element => {
    * at the select screen.
    */
   const handleSelectedKernel = (
-    { formData }: { formData: { ipykernels: string } },
+	  kernelName: string,
     e: any
   ) => {
     const a = JSON.parse(JSON.stringify(data));
-    setSelectedKernelName(formData.ipykernels);
-    console.log(a[formData.ipykernels]);
-    setKernelFormData(a[formData.ipykernels]);
+    setSelectedKernelName(kernelName);
+    console.log(a[kernelName]);
+    setKernelFormData(a[kernelName]);
     setShowFormSelector(false);
     setShowForm(true);
   };
@@ -102,10 +102,10 @@ const KernelManagerComponent = (): JSX.Element => {
       const jsondata = await response.json();
       if (!_.isEqual(data, jsondata)) {
         console.log("setting data", jsondata);
-	setData(jsondata);
+        setData(jsondata);
       }
     };
-    
+
     kernelSpec();
     setIsLoading(false);
     setShowFormSelector(true);
@@ -114,7 +114,7 @@ const KernelManagerComponent = (): JSX.Element => {
       kernelSpec();
       renderWidgets();
     }, 5000);
-    
+
     return () => {
       clearInterval(timer);
     };
