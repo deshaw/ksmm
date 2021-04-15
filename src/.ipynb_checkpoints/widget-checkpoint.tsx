@@ -20,9 +20,7 @@ const KernelManagerComponent = (): JSX.Element => {
   const [showForm, setShowForm] = useState(false);
   const [showFormSelector, setShowFormSelector] = useState(false);
   const [kernelFormData, setKernelFormData] = useState({});
-  const [selectedKernelName, setSelectedKernelName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [cardData, setCardData] = useState([]);
 
   const ipyschema: JSONSchema7 = {
     title: "ipykernel mm",
@@ -46,36 +44,16 @@ const KernelManagerComponent = (): JSX.Element => {
   };
 
   /**
-   * Handles a form submission when
-   * kernels are modified in any form.
-   *
-   * Passed as a prop to Form
-   */
-  const handleKernelSubmission = (e: any) => {
-    console.log("Submission invoked");
-    console.log("frm d", e);
-    const url = "http://localhost:8888/ks";
-    fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        editedKernelPayload: JSON.stringify(e.formData),
-        originalKernelName: selectedKernelName,
-      }),
-    });
-  };
-  /**
    * Handles the Kernel Selection
    * at the select screen.
    */
-  const handleSelectedKernel = (kernelName: string, e: any) => {
+  const handleSelectedKernel = (
+    { formData }: { formData: { ipykernels: string } },
+    e: any
+  ) => {
     const a = JSON.parse(JSON.stringify(data));
-    setSelectedKernelName(kernelName);
-    console.log(a[kernelName]);
-    setKernelFormData(a[kernelName]);
+    console.log(a[formData.ipykernels]);
+    setKernelFormData(a[formData.ipykernels]);
     setShowFormSelector(false);
     setShowForm(true);
   };
@@ -93,29 +71,6 @@ const KernelManagerComponent = (): JSX.Element => {
     }
   };
 
-  /**
-   * Generate the package of data needed
-   * to display at the card selection screen.
-   *
-   * This method is called on when then data is generated to
-   * send into the method generating the card data.
-   */
-  const packageCardData = (ipydata: any) => {
-    let f = Object.keys(ipydata);
-    var arr = [];
-    console.log(f);
-    for (const property in ipydata) {
-      console.log(`${property}: ${ipydata[property].display_name}`);
-      var g = {
-        kernel: `${property}`,
-        jupyter_name: `${ipydata[property].display_name}`,
-      };
-      arr.push(g);
-    }
-    console.log("g", arr);
-    return arr;
-  };
-
   useEffect(() => {
     const url = "http://localhost:8888/ks";
     const kernelSpec = async () => {
@@ -124,17 +79,8 @@ const KernelManagerComponent = (): JSX.Element => {
       if (!_.isEqual(data, jsondata)) {
         console.log("setting data", jsondata);
         setData(jsondata);
-        setCardData(packageCardData(jsondata));
       }
     };
-
-    kernelSpec();
-
-    if (cardData.length > 0) {
-      console.log("Card Data Length", cardData.length);
-      setIsLoading(false);
-      setShowFormSelector(true);
-    }
 
     const timer = setInterval(() => {
       kernelSpec();
@@ -144,7 +90,7 @@ const KernelManagerComponent = (): JSX.Element => {
     return () => {
       clearInterval(timer);
     };
-  }, [data, cardData]);
+  }, [data]);
 
   return (
     <div>
@@ -155,16 +101,11 @@ const KernelManagerComponent = (): JSX.Element => {
         {showFormSelector ? (
           <SelectorComponent
             handleSubmit={handleSelectedKernel}
-            kernelValues={Object.keys(data)}
-            vals={cardData}
+            values={Object.keys(data)}
           />
         ) : null}
         {showForm ? (
-          <Form
-            schema={ipyschema}
-            formData={kernelFormData}
-            onSubmit={handleKernelSubmission}
-          />
+          <Form schema={ipyschema} formData={kernelFormData} />
         ) : null}
       </Container>
     </div>

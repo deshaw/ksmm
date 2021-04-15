@@ -5,44 +5,47 @@ import Card from "react-bootstrap/Card";
 import { motion } from "framer-motion";
 
 const SelectorComponent = (props: any): JSX.Element => {
+  const { vals, handleSubmit } = props;
+
   const schema: JSONSchema7 = {
-    type: "object",
-    properties: {
-      ipykernels: {
-        type: "string",
-        enum: props.values,
+    title: "iPyKernel Manager",
+    type: "array",
+    items: {
+      type: "object",
+      properties: {
+        kernel: { type: "string" },
+        jupyter_name: { type: "string" },
       },
-      uniqueItems: true,
     },
   };
 
-  const handleCardClick = (kernelname: any) => {
-	  console.log(props);
-	  props.handleSubmit(kernelname);
+  const cardWidget = (props: any) => {
+    console.log("props: ", props.vals);
+    return vals.map((ipyinfo: any) => (
+      <motion.div className="container" whileHover={{ scale: 1.2 }}>
+        <a
+          style={{ cursor: "pointer" }}
+          onClick={() => handleSubmit(ipyinfo.kernel)}
+        >
+          <Card style={{ width: "18rem" }} className="mb-2">
+            <Card.Body>
+              <Card.Title>{ipyinfo.jupyter_name}</Card.Title>
+              <Card.Title>{ipyinfo.kernel}</Card.Title>
+            </Card.Body>
+          </Card>
+        </a>
+      </motion.div>
+    ));
   };
 
   const uiSchema = {
-    ipykernels: {
-      "ui:widget": (props: any) => {
-        return props.options.enumOptions.map((ipyinfo: any) => (
-          <motion.div className="container" whileHover={{ scale: 1.2 }}>
-	  <a style={{ cursor: "pointer" }} onClick={() => handleCardClick(ipyinfo.value)}>
-              <Card style={{ width: "18rem" }} className="mb-2">
-                <Card.Body>
-                  <Card.Title>Kernel Name: {ipyinfo.value}</Card.Title>
-                </Card.Body>
-              </Card>
-            </a>
-          </motion.div>
-        ));
-      },
-    },
+    "ui:ArrayFieldTemplate": cardWidget,
   };
 
   return (
     <div>
       <h3> Please Select a Kernel to Edit </h3>
-      <Form schema={schema} uiSchema={uiSchema} children={' '}/>
+      <Form schema={schema} uiSchema={uiSchema} children={" "} />
     </div>
   );
 };
