@@ -87,7 +87,7 @@ const KernelManagerComponent = (): JSX.Element => {
    *
    */
   const renderWidgets = () => {
-    if (isLoading == true && showForm == false && data) {
+    if (isLoading == true && showForm == false && data && cardData) {
       setIsLoading(false);
       setShowFormSelector(true);
     }
@@ -122,7 +122,6 @@ const KernelManagerComponent = (): JSX.Element => {
       const response = await fetch(url);
       const jsondata = await response.json();
       if (!_.isEqual(data, jsondata)) {
-        console.log("setting data", jsondata);
         setData(jsondata);
         setCardData(packageCardData(jsondata));
       }
@@ -132,13 +131,14 @@ const KernelManagerComponent = (): JSX.Element => {
 
     if (cardData.length > 0) {
       console.log("Card Data Length", cardData.length);
-      setIsLoading(false);
-      setShowFormSelector(true);
+      renderWidgets();
     }
 
     const timer = setInterval(() => {
       kernelSpec();
-      renderWidgets();
+      if (showFormSelector) {
+        renderWidgets();
+      }
     }, 5000);
 
     return () => {
