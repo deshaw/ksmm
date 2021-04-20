@@ -6,7 +6,7 @@ import Form from "@rjsf/bootstrap-4";
 import * as _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import SelectorComponent from "./selector";
-import { ipyschema } from "./ipyschema";
+import { iPySchema } from "./ipyschema";
 /**
  * React component for listing the possible
  * ipykernel options.
@@ -78,11 +78,11 @@ const KernelManagerComponent = (): JSX.Element => {
   const generateCardData = (ipydata: any) => {
     var arr = [];
     for (const property in ipydata) {
-      var d = {
-        kernel: `${property}`,
+      var cardPayload = {
+        kernel_name: `${property}`,
         jupyter_name: `${ipydata[property].display_name}`,
       };
-      arr.push(d);
+      arr.push(cardPayload);
     }
     return arr;
   };
@@ -130,7 +130,7 @@ const KernelManagerComponent = (): JSX.Element => {
         ) : null}
         {showForm ? (
           <Form
-            schema={ipyschema}
+            schema={iPySchema}
             formData={kernelFormData}
             onSubmit={handleKernelSubmission}
           />

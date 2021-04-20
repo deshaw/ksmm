@@ -7,25 +7,46 @@
  */
 import { JSONSchema7 } from "json-schema";
 
-export const ipyschema: JSONSchema7 = {
-    title: "ipykernel mm",
+/*
+ * The following schema complies to iPython Kernel
+ * Standards. When making changes, note that the UI
+ * is also subject to change based on the types.
+ */
+export const iPySchema: JSONSchema7 = {
+  title: "ipykernel mm",
+  type: "object",
+  properties: {
+    argv: { type: "array", items: { type: "string" } },
+    env: { type: "object" },
+    display_name: { type: "string" },
+    language: { type: "string" },
+    interrupt_mode: { type: "string" },
+    metadata: { type: "object" },
+  },
+  required: [
+    "argv",
+    "display_name",
+    "env",
+    "interrupt_mode",
+    "language",
+    "metadata",
+  ],
+};
+
+/*
+ * This is the schema for the display cards rendered for
+ * each kernel. It can be obtained by using the generation
+ * function. When called on the ipyschema object, the function
+ * returns a ipyCardSchema.
+ */
+export const iPyCardSchema: JSONSchema7 = {
+  title: "iPyKernel Manager",
+  type: "array",
+  items: {
     type: "object",
     properties: {
-      argv: { type: "array", items: { type: "string" } },
-      env: { type: "object" },
-      display_name: { type: "string" },
-      language: { type: "string" },
-      interrupt_mode: { type: "string" },
-      metadata: { type: "object" },
+      kernel_name: { type: "string" },
+      jupyter_name: { type: "string" },
     },
-    required: [
-      "argv",
-      "display_name",
-      "env",
-      "interrupt_mode",
-      "language",
-      "metadata",
-    ],
-  };
-
-
+  },
+};

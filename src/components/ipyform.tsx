@@ -5,25 +5,25 @@ import Card from "react-bootstrap/Card";
 import { motion } from "framer-motion";
 
 const iPyArgumentControl = (props: any): JSX.Element => {
-	return(
-		<div>
-			<h1> Hello </h1>
-		</div>
-	);
-}
+  return (
+    <div>
+      <h1> Hello </h1>
+    </div>
+  );
+};
 
 const iPyEnvironmentControl = (props: any): JSX.Element => {
-	return(
-		<div>
-			<p>{JSON.stringify(props)}</p>
-		</div>
-	)
-}
+  return (
+    <div>
+      <p>{JSON.stringify(props)}</p>
+    </div>
+  );
+};
 
 const iPyForm = (props: any): JSX.Element => {
-	return(
-		<div>
-			<p> {JSON.stringify(props)} </p>
-		</div>
-	);
-}
+  return (
+    <div>
+      <p> {JSON.stringify(props)} </p>
+    </div>
+  );
+};
