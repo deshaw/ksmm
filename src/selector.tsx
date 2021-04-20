@@ -5,7 +5,7 @@ import Card from "react-bootstrap/Card";
 import { motion } from "framer-motion";
 
 const SelectorComponent = (props: any): JSX.Element => {
-  const { vals, handleSubmit } = props;
+  const { cardPayload, handleSubmit } = props;
 
   const schema: JSONSchema7 = {
     title: "iPyKernel Manager",
@@ -13,15 +13,14 @@ const SelectorComponent = (props: any): JSX.Element => {
     items: {
       type: "object",
       properties: {
-        kernel: { type: "string" },
+        kernel_name: { type: "string" },
         jupyter_name: { type: "string" },
       },
     },
   };
 
   const cardWidget = (props: any) => {
-    console.log("props: ", props.vals);
-    return vals.map((ipyinfo: any) => (
+    return cardPayload.map((ipyinfo: any) => (
       <motion.div className="container" whileHover={{ scale: 1.2 }}>
         <a
           style={{ cursor: "pointer" }}
@@ -29,8 +28,8 @@ const SelectorComponent = (props: any): JSX.Element => {
         >
           <Card style={{ width: "18rem" }} className="mb-2">
             <Card.Body>
-              <Card.Title>{ipyinfo.jupyter_name}</Card.Title>
-              <Card.Title>{ipyinfo.kernel}</Card.Title>
+	    <Card.Title>Jupyter: {ipyinfo.jupyter_name}</Card.Title>
+	    <Card.Title>Kernel: {ipyinfo.kernel}</Card.Title>
             </Card.Body>
           </Card>
         </a>
