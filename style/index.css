@@ -3,15 +3,15 @@
   background: var(--jp-layout-color1);
   font-size: 24px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
   overflow: auto;
 }
 
 .jp-ReactForm {
-  width: 100vw;
-  height: 80vh;
-  align-items: center;
-  justify-content: center;
 }
+
+.full-w-div {
+    position: absolute;
+    width: 100%;
+    left: 0;
+}
+
