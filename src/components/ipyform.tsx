@@ -20,7 +20,7 @@ const iPyEnvironmentControl = (props: any): JSX.Element => {
   );
 };
 
-const iPyForm = (props: any): JSX.Element => {
+export const iPyForm = (props: any): JSX.Element => {
   return (
     <div>
       <p> {JSON.stringify(props)} </p>

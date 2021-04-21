@@ -6,6 +6,10 @@ import Form from "@rjsf/bootstrap-4";
 import * as _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import SelectorComponent from "./selector";
+//import Row from "react-bootstrap/Row";
+//import CardDeck from "react-bootstrap/CardDeck";
+//import iPyForm from "./components/ipyform"
+//import useWindowDimensions from "./windowfuncs";
 import { iPySchema } from "./ipyschema";
 /**
  * React component for listing the possible
@@ -76,7 +80,7 @@ const KernelManagerComponent = (): JSX.Element => {
    * send into the method generating the card data.
    */
   const generateCardData = (ipydata: any) => {
-    var arr = [];
+    var arr: any = [];
     for (const property in ipydata) {
       var cardPayload = {
         kernel_name: `${property}`,
@@ -84,8 +88,15 @@ const KernelManagerComponent = (): JSX.Element => {
       };
       arr.push(cardPayload);
     }
-    return arr;
+    const rows = [...Array(Math.ceil(arr.length / 4))];
+    const multiarr = rows.map((row, idx) => arr.slice(idx * 4, idx * 4 + 4));
+    return multiarr;
   };
+
+  /*
+   * Set the maximum container size such that
+   * the width and height are at their maximum.
+   */
 
   useEffect(() => {
     const url = "http://localhost:8888/ks";
@@ -117,17 +128,20 @@ const KernelManagerComponent = (): JSX.Element => {
   }, [data, cardData]);
 
   return (
-    <div>
+    <div className="full-w-div">
       <Container fluid className="jp-ReactForm">
         {isLoading ? (
           <ClipLoader color={"9ef832"} loading={true} size={150} />
         ) : null}
-        {showFormSelector ? (
-          <SelectorComponent
-            handleSubmit={handleSelectedKernel}
-            cardPayload={cardData}
-          />
-        ) : null}
+        {showFormSelector
+          ? cardData.map((cardPayload: any, idx) => (
+              <SelectorComponent
+                handleSubmit={handleSelectedKernel}
+                cardPayload={cardPayload}
+                key={idx}
+              />
+            ))
+          : null}
         {showForm ? (
           <Form
             schema={iPySchema}
@@ -151,6 +165,7 @@ export class iPyKernelWidget extends ReactWidget {
     super();
     this.addClass("jp-ReactWidget");
     this.addClass("jp-ReactForm");
+    this.addClass("full-w-div");
   }
 
   render(): JSX.Element {
