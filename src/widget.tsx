@@ -5,7 +5,8 @@ import Container from "react-bootstrap/Container";
 import Form from "@rjsf/bootstrap-4";
 import * as _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
-import SelectorComponent from "./selector";
+import CardGrid from "./selector";
+import Navbar from 'react-bootstrap/Navbar';
 //import Row from "react-bootstrap/Row";
 //import CardDeck from "react-bootstrap/CardDeck";
 //import iPyForm from "./components/ipyform"
@@ -73,6 +74,15 @@ const KernelManagerComponent = (): JSX.Element => {
   };
 
   /**
+   * Return Home on click.
+   * TODO: Add Guards to check if editing.
+   */
+  const handleGoingHome = () => {
+     setShowForm(false);
+     setShowFormSelector(true);
+  }
+
+  /**
    * Generate the package of data needed
    * to display at the card selection screen.
    *
@@ -130,12 +140,17 @@ const KernelManagerComponent = (): JSX.Element => {
   return (
     <div className="full-w-div">
       <Container fluid className="jp-ReactForm">
+	      <Navbar>
+		      <a onClick={()=> handleGoingHome()}> <Navbar.Brand> iPyKernel Manager </Navbar.Brand> </a>
+		</Navbar>
+	      <br />
         {isLoading ? (
           <ClipLoader color={"9ef832"} loading={true} size={150} />
         ) : null}
         {showFormSelector
-          ? cardData.map((cardPayload: any, idx) => (
-              <SelectorComponent
+          ? 
+	  cardData.map((cardPayload: any, idx) => (
+              <CardGrid
                 handleSubmit={handleSelectedKernel}
                 cardPayload={cardPayload}
                 key={idx}
