@@ -5,3 +5,4 @@ lib
 labextension
 tsconfig.tsbuildinfo
 yarn.lock
+.DS_Store
