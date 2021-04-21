@@ -3,7 +3,7 @@ import Form from "@rjsf/bootstrap-4";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { iPyCardSchema } from "./ipyschema";
+import { iPyCardSchema } from "../ipyschema";
 import { motion } from "framer-motion";
 
 const CardGrid = (props: any): JSX.Element => {
