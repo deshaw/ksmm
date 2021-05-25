@@ -13,7 +13,7 @@ import { JSONSchema7 } from "json-schema";
  * is also subject to change based on the types.
  */
 export const iPySchema: JSONSchema7 = {
-  title: "ipykernel mm",
+  title: "iPyKernel Management Menu",
   type: "object",
   properties: {
     argv: { type: "array", items: { type: "string" } },
@@ -21,6 +21,23 @@ export const iPySchema: JSONSchema7 = {
     display_name: { type: "string" },
     language: { type: "string" },
     interrupt_mode: { type: "string" },
+    parameters: {
+      type: "object",
+      properties: {
+        cores: { type: "string", enum: ["4", "6", "8"] },
+        memory: { type: "string", enum: ["8GB", "16GB", "32GB"] },
+      },
+    },
+    env_vars: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          variable_name: { type: "string" },
+          variable_value: { type: "string" },
+        },
+      },
+    },
     metadata: { type: "object" },
   },
   required: [
@@ -40,7 +57,7 @@ export const iPySchema: JSONSchema7 = {
  * returns a ipyCardSchema.
  */
 export const iPyCardSchema: JSONSchema7 = {
-  title: "iPyKernel Manager",
+  title: "iPyKernel Card",
   type: "array",
   items: {
     type: "object",
