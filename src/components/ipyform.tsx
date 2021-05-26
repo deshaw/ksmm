@@ -1,62 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 //import { JSONSchema7 } from "json-schema";
 import Form from "@rjsf/bootstrap-4";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
-
-//const iPyArgumentControl = (props: any): JSX.Element => {
-//  return (
-//    <div>
-//      <h1> Hello </h1>
-//    </div>
-//  );
-//};
-//
-//const iPyEnvironmentControl = (props: any): JSX.Element => {
-//  return (
-//    <div>
-//      <p>{JSON.stringify(props)}</p>
-//    </div>
-//  );
-//};
+import { IPythonFormGroup } from "./ipythonformgroup";
 
 export const IPyForm = (props: any): JSX.Element => {
   /*
    * This function will generate tabs for the
    * keys in the main iPySchema Widget to be edited by the user
    */
+
   const TabMenu = (props: any): JSX.Element => {
+    const [tab, setTab] = useState("General Settings");
     /*
      * Generate the menu titles for the schema
      */
-    var menuTitles = [
+    var menuHeaders = [
       "General Settings",
       "Launch Arguments",
-      "Environmennt Variables",
+      "Environment Variables",
       "Compute Parameters",
       "Metadata",
     ];
+
     return (
-      <Tabs defaultActiveKey="profile" id="uncontrolled-tab-example">
-        <Tab eventKey="home" title="Home">
-          <p> {JSON.stringify(props)} </p>
-        </Tab>
-        <Tab eventKey="profile" title="Profile">
-          <p> hello </p>
-        </Tab>
-        {menuTitles.map((menuName: string) => (
-          <Tab eventKey={menuName.toLowerCase()} title={menuName}></Tab>
-        ))}
-      </Tabs>
+      <div>
+        <Tabs
+          defaultActiveKey={menuHeaders[0]}
+          onSelect={(k: string) => setTab(k)}
+        >
+          {menuHeaders.map((menuHeader: string) => (
+            <Tab eventKey={menuHeader} key={menuHeader} title={menuHeader}>
+              <IPythonFormGroup selecteditem={tab} data={props.properties} />
+            </Tab>
+          ))}
+        </Tabs>
+      </div>
     );
   };
 
-  const fields = {
-    myCustomWidget: TabMenu,
-  };
-
   const uiSchema = {
-    "ui:field": "myCustomWidget",
+    "ui:ObjectFieldTemplate": TabMenu,
   };
 
   return (
@@ -64,7 +49,6 @@ export const IPyForm = (props: any): JSX.Element => {
       <Form
         schema={props.schema}
         uiSchema={uiSchema}
-        fields={fields}
         formData={props.formData}
         onSubmit={props.onSubmit}
       />
