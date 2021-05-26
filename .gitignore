@@ -6,3 +6,4 @@ labextension
 tsconfig.tsbuildinfo
 yarn.lock
 .DS_Store
+*.ipynb
