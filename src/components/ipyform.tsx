@@ -3,15 +3,19 @@ import React, { useState } from "react";
 import Form from "@rjsf/bootstrap-4";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
-import { IPythonFormGroup } from "./ipythonformgroup";
+import { EnvVarForm, IPythonFormGroup } from "./ipythonformgroup";
 
 export const IPyForm = (props: any): JSX.Element => {
-  /*
-   * This function will generate tabs for the
-   * keys in the main iPySchema Widget to be edited by the user
-   */
-
-  const TabMenu = (props: any): JSX.Element => {
+    console.log(props.schema);
+//	const EnvironmentWidget =  (props: any): JSX.Element => {
+//		return(
+//			<div>
+//			<p> Variable Name: </p><input type="string"/>
+//			<p> Value: </p><input type="string"/>
+//			</div>
+//		)
+//	}
+    const TabMenu = (props: any): JSX.Element => {
     const [tab, setTab] = useState("General Settings");
     /*
      * Generate the menu titles for the schema
@@ -32,7 +36,7 @@ export const IPyForm = (props: any): JSX.Element => {
         >
           {menuHeaders.map((menuHeader: string) => (
             <Tab eventKey={menuHeader} key={menuHeader} title={menuHeader}>
-              <IPythonFormGroup selecteditem={tab} data={props.properties} />
+              <IPythonFormGroup selecteditem={tab} properties={props.properties} handleAdditionalProperties={props.onAddClick} mainprops={props}/>
             </Tab>
           ))}
         </Tabs>
@@ -42,6 +46,13 @@ export const IPyForm = (props: any): JSX.Element => {
 
   const uiSchema = {
     "ui:ObjectFieldTemplate": TabMenu,
+    env: {
+      "ui:autofocus": true,
+      "ui:field": EnvVarForm,
+      "ui:options":  {
+        expandable: true,
+      },
+    },
   };
 
   return (

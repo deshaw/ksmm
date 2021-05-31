@@ -6,7 +6,7 @@ import { SuccessAlertBox } from "./components/alerts";
 import * as _ from "lodash";
 import ClipLoader from "react-spinners/ClipLoader";
 import CardGrid from "./components/cardgrid";
-import Navbar from "react-bootstrap/Navbar";
+//import Navbar from "react-bootstrap/Navbar";
 import { IPyForm } from "./components/ipyform";
 import { iPySchema } from "./ipyschema";
 
@@ -145,12 +145,10 @@ const KernelManagerComponent = (): JSX.Element => {
   return (
     <div className="full-w-div">
       <Container fluid className="jp-ReactForm">
-        <Navbar>
           <a onClick={() => handleGoingHome()}>
             {" "}
-            <Navbar.Brand> iPyKernel Manager </Navbar.Brand>{" "}
+           iPyKernel Manager {" "}
           </a>
-        </Navbar>
         <br />
         {isLoading ? (
           <ClipLoader color={"9ef832"} loading={true} size={150} />
