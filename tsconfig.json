@@ -20,5 +20,5 @@
     "target": "es2017",
     "types": []
   },
-  "include": ["src/*", "src/components/*"]
+  "include": ["src/*", "src/components/*", "src/components/widgets/*", "src/components/fields/*"]
 }

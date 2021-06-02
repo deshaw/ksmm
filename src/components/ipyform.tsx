@@ -1,16 +1,14 @@
 import React, { useState } from "react";
-//import { JSONSchema7 } from "json-schema";
 import Form from "@rjsf/bootstrap-4";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
-import {
-  EnvVarForm,
+import { KeyValueWidget } from "./widgets/keyval";
+import { EnvVarForm } from "./fields/envvar";
+import { 
   IPythonFormGroup,
-  KeyValueWidget,
-} from "./ipythonformgroup";
+} from "./fields/ipymenu";
 
 export const IPyForm = (props: any): JSX.Element => {
-  //console.log(props.schema);
   const TabMenu = (props: any): JSX.Element => {
     const [tab, setTab] = useState("General Settings");
     /*
