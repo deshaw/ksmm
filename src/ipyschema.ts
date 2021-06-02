@@ -13,15 +13,39 @@ import { JSONSchema7 } from "json-schema";
  * is also subject to change based on the types.
  */
 export const iPySchema: JSONSchema7 = {
-  title: "ipykernel mm",
+  title: "iPyKernel Management Menu",
   type: "object",
   properties: {
-    argv: { type: "array", items: { type: "string" } },
-    env: { type: "object" },
-    display_name: { type: "string" },
-    language: { type: "string" },
-    interrupt_mode: { type: "string" },
-    metadata: { type: "object" },
+    argv: { type: "array", items: { type: "string" }, title: "" },
+    env: {
+      type: "object",
+      title: "object",
+      properties: {
+        EnvVar: { type: "string" },
+      },
+      additionalProperties: {
+        type: "string",
+      },
+    },
+    display_name: { type: "string", title: "Display Name" },
+    language: { type: "string", title: "Programming Language" },
+    interrupt_mode: {
+      type: "string",
+      title: "Interrupt Mode",
+      enum: ["signal", "message"],
+    },
+    parameters: {
+      type: "object",
+      properties: {
+        cores: { type: "string", enum: ["4", "6", "8"], title: "CPU Cores" },
+        memory: {
+          type: "string",
+          enum: ["8GB", "16GB", "32GB"],
+          title: "Memory",
+        },
+      },
+    },
+    metadata: { type: "object", title: "" },
   },
   required: [
     "argv",
@@ -40,7 +64,7 @@ export const iPySchema: JSONSchema7 = {
  * returns a ipyCardSchema.
  */
 export const iPyCardSchema: JSONSchema7 = {
-  title: "iPyKernel Manager",
+  title: "iPyKernel Card",
   type: "array",
   items: {
     type: "object",

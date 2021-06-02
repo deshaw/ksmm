@@ -2,12 +2,10 @@ import { ReactWidget } from "@jupyterlab/apputils";
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import Form from "@rjsf/bootstrap-4";
+import { SuccessAlertBox } from "./components/alerts";
 import * as _ from "lodash";
-import ClipLoader from "react-spinners/ClipLoader";
 import CardGrid from "./components/cardgrid";
-import Navbar from "react-bootstrap/Navbar";
-//import iPyForm from "./components/ipyform"
+import { IPyForm } from "./components/ipyform";
 import { iPySchema } from "./ipyschema";
 
 /**
@@ -25,6 +23,7 @@ const KernelManagerComponent = (): JSX.Element => {
   const [selectedKernelName, setSelectedKernelName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [cardData, setCardData] = useState([]);
+  const [alertBox, setAlertBox] = useState(false);
 
   /**
    * Handles a form submission when
@@ -34,6 +33,7 @@ const KernelManagerComponent = (): JSX.Element => {
    */
   const handleKernelSubmission = (e: any) => {
     const url = "http://localhost:8888/ks";
+    console.log("submitted data", JSON.stringify(e.formData));
     fetch(url, {
       method: "POST",
       headers: {
@@ -44,8 +44,13 @@ const KernelManagerComponent = (): JSX.Element => {
         editedKernelPayload: JSON.stringify(e.formData),
         originalKernelName: selectedKernelName,
       }),
+    }).then((data) => {
+      if (data.status == 200) {
+        setAlertBox(true);
+      }
     });
   };
+
   /**
    * Handles the Kernel Selection
    * at the select screen.
@@ -77,6 +82,7 @@ const KernelManagerComponent = (): JSX.Element => {
    */
   const handleGoingHome = () => {
     setShowForm(false);
+    setAlertBox(false);
     setShowFormSelector(true);
   };
 
@@ -138,16 +144,7 @@ const KernelManagerComponent = (): JSX.Element => {
   return (
     <div className="full-w-div">
       <Container fluid className="jp-ReactForm">
-        <Navbar>
-          <a onClick={() => handleGoingHome()}>
-            {" "}
-            <Navbar.Brand> iPyKernel Manager </Navbar.Brand>{" "}
-          </a>
-        </Navbar>
-        <br />
-        {isLoading ? (
-          <ClipLoader color={"9ef832"} loading={true} size={150} />
-        ) : null}
+        <a onClick={() => handleGoingHome()}> iPyKernel Manager </a>
         {showFormSelector
           ? cardData.map((cardPayload: any, idx) => (
               <CardGrid
@@ -157,8 +154,9 @@ const KernelManagerComponent = (): JSX.Element => {
               />
             ))
           : null}
+        {alertBox ? <SuccessAlertBox handleClose={handleGoingHome} /> : null}
         {showForm ? (
-          <Form
+          <IPyForm
             schema={iPySchema}
             formData={kernelFormData}
             onSubmit={handleKernelSubmission}
@@ -170,12 +168,9 @@ const KernelManagerComponent = (): JSX.Element => {
 };
 
 /**
- * A Counter Lumino Widget that wraps a CounterComponent.
+ * IPyKernelWidget Main Class
  */
 export class iPyKernelWidget extends ReactWidget {
-  /**
-   * Constructs a new CounterWidget.
-   */
   constructor() {
     super();
     this.addClass("jp-ReactWidget");
