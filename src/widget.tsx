@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import { SuccessAlertBox } from "./components/alerts";
 import * as _ from "lodash";
-import CardGrid from "./components/cardgrid";
+import CardGrid from "./components/ipycardgrid";
 import { IPyForm } from "./components/ipyform";
 import { iPySchema } from "./ipyschema";
 
