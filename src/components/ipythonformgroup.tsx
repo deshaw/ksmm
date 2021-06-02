@@ -1,5 +1,4 @@
-import React from "react";
-//import Form from "@rjfs/bootstrap4";
+import React, { useState } from "react";
 
 /*
  * This is a nested comoponenet in the FieldTemplate, and
@@ -14,7 +13,7 @@ export const IPythonFormGroup = (props: {
   properties: any;
   selecteditem: string;
   mainprops: any;
-  handleAdditionalProperties: any; 
+  handleAdditionalProperties: any;
 }) => {
   const fg: any = generateFormGroupMap(props.properties);
   return (
@@ -28,34 +27,79 @@ export const IPythonFormGroup = (props: {
   );
 };
 
+export const KeyValueWidget = (props: any) => {
+  const [key, setKey] = useState(props.value.name);
+  const [val, setVal] = useState(props.formData[props.value.name]);
+  return (
+    <div>
+      <input
+        type="string"
+        value={key}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          props.handleKey(key, e.target.value);
+          setKey(e.target.value);
+        }}
+      />
+      <input
+        type="string"
+        value={val}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          props.handleVal(key, e.target.value);
+          setVal(e.target.value);
+        }}
+      />
+    </div>
+  );
+};
+
 /*
- * This function is an ObjectFieldTemplate
+ * This function is a field
  * that is rendered for the environment variable.
  */
 export const EnvVarForm = (props: any) => {
-  console.log(props);
-  return(
+  /*
+   * Function to handle a change of key values in a key value store
+   */
+  const handleKeyChange = (key: string, newkey: string) => {
+    props.formData[newkey] = props.formData[key];
+    delete props.formData[key];
+    console.log(props.formData);
+  };
+
+  /*
+   * Function to handle any changing values
+   */
+  const handleValueChange = (key: string, newvalue: string) => {
+    props.formData[key] = newvalue;
+    console.log(props.formData);
+  };
+
+  const widget: (props: any) => JSX.Element = props.uiSchema["ui:widget"];
+  const formData = props.formData;
+  return (
     <div>
-        <input type="string" onChange={(e: any) => {console.log(e)}} />
-        <input type="string" onChange={(e: any) => {console.log(e)}} />
-        <button>Add New</button>
-      </div>
-  )
-}
-/*
- * Return the Environment Schema to be able to 
- * control the behavior of the onAddClick function,
- * which will allow me to add more environment variables.
- */
-// function getEnvironmentSchema(data: any) {
-//   const envSchema: Array<number> = [];  
-//   data.forEach((element: any) => {
-//     if (element.name == "env") {
-//       envSchema.push(data.indexOf(element))
-//      }
-// })
-//   return data[envSchema.pop()].content.props.schema;
-// }
+      {props.properties.map((item: any) =>
+        widget(
+          (props = {
+            value: item,
+            formData: formData,
+            handleKey: handleKeyChange,
+            handleVal: handleValueChange,
+          })
+        )
+      )}
+      <button
+        type="button"
+        onClick={(e: any) => {
+          alert(props.onAddClick);
+        }}
+      >
+        Add New
+      </button>
+    </div>
+  );
+};
+
 /*
  * Grab the location of the element in the array,
  * returning a value of the postions in the array.
