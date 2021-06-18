@@ -3,7 +3,7 @@ import json
 import setuptools
 import jupyter_packaging
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 HERE =  pathlib.Path(__file__).parent.resolve()
 # Name of the project
 name = "ksmm"
@@ -21,6 +21,8 @@ labext_name = "@jupyterlab-ipython/KernelSpec-Manager"
 data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
     ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
+    ("etc/jupyter/jupyter_notebook_config.d", "jupyter-config/jupyter_notebook_config.d", "enable_notebook.json"),
+    ("etc/jupyter/jupyter_server_config.d", "jupyter-config/jupyter_server_config.d", "enable_server.json"),
 ]
 
 
@@ -37,7 +39,7 @@ is_repo = (HERE / ".git").exists()
 if is_repo:
     cmdclass["jsdeps"] = js_command
 else:
-    cmdclass["jsdeps"] = skip_if_exists(jstargets, js_command)
+    cmdclass["jsdeps"] = jupyter_packaging.skip_if_exists(jstargets, js_command)
 
 setup_args = dict(
     name='ksmm',
