@@ -19,15 +19,56 @@ from pathlib import Path
 
 import json
 
+class KSIPyCreateHandler(APIHandler):
+    """
+    Handler for creation of a new IPython Kernel Specification.
+    """
+    def initialize(self, km):
+        self.km = km
 
-# class KSHandler(web.RequestHandler):
+    @tornado.web.authenticated
+    def post(self, name=None):
+        data = tornado.escape.json_decode(self.request.body)
+        print(data)
+        #new_name = data["new_name"]
+        #target = self.km.find_kernel_specs()[name]
+        #self.km.install_kernel_spec(target, new_name)
+        self.finish(f"POST {name!r}\n")
+
+
+class KSCopyHandler(APIHandler):
+    """
+    KernelSpec Copy Handler.
+
+    Only utilizes POST functionality in order
+    to duplicate an environment.
+    """
+    def initialize(self, km):
+        self.km = km
+        breakpoint()
+
+    @tornado.web.authenticated
+    def get(self, name=None):
+        print("GET", name)
+
+
+    @tornado.web.authenticated
+    def post(self, name=None):
+        data = tornado.escape.json_decode(self.request.body)
+        print(data)
+        #new_name = data["new_name"]
+        #target = self.km.find_kernel_specs()[name]
+        #self.km.install_kernel_spec(target, new_name)
+        self.finish(f"POST {name!r}\n")
+
+
+
 class KSHandler(APIHandler):
     """
     KernelSpec Handler to mange kernelspec via a REST API.
 
     currently start with the ks prefix.
 
-    GET ks
     GET ks/  Will get all the kernelspec "kernel.json" data
 
     GET ks/<name>  Will the kernelspec "kernel.json" data for given kernel if exists
@@ -36,9 +77,6 @@ class KSHandler(APIHandler):
 
     LIST /ks
     LIST /ks/ will return {"names": <list of all the know kernel names>}
-
-    COPY /ks/<name> with POST content "{"new_name":<new_name>}" will copy give kernelspec (including logo, kernel.js...)
-    under the new name.
 
     POST: NotImplemented; currently jupyter_client only support installing kernelspec from a folder. Will Fix.
           Suggestion "POST ks/<name> replace the existing kernel.json with the content of the post.
@@ -87,15 +125,6 @@ class KSHandler(APIHandler):
         self.finish(f"POST {name!r}\n")
 
     @tornado.web.authenticated
-    def copy(self, name):
-        data = tornado.escape.json_decode(self.request.body)
-        new_name = data["new_name"]
-        target = self.km.find_kernel_specs()[name]
-        self.km.install_kernel_spec(target, new_name)
-
-        self.finish(f"POST {name!r}\n")
-
-    @tornado.web.authenticated
     def put(self, name=None):
         raise NotImplementedError
         print("PUT", name)
@@ -140,11 +169,11 @@ class KSHandler(APIHandler):
 
 def setup_handlers(web_app, km, url_path):
     base_url = web_app.settings["base_url"]
-    full_url = url_path_join(base_url,  url_path, "/(\w+)")
-    print(full_url)
     handlers = [
              (url_path_join(base_url, url_path), KSHandler, {'km': km}),
-             (url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
+             (url_path_join(base_url, url_path, "/copy"), KSCopyHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/createipy"), KSIPyCreateHandler, {"km": km}),
+             #(url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
                 ]
 
     web_app.add_handlers(".*", handlers)

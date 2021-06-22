@@ -1,4 +1,12 @@
 import React, { useState } from "react";
+
+/*
+ * This function has a callback to mutate the formData to 
+ * add a new 'string':'string' type to the dictionary.
+ */
+//export const AddKeyValue = (props: any)=> {
+  
+//}
 /*
  * Renders a widget for a python dict of
  * { 'string':'string', 'string':'string' }
@@ -6,6 +14,7 @@ import React, { useState } from "react";
 export const KeyValueWidget = (props: any) => {
   const [key, setKey] = useState(props.value.name);
   const [val, setVal] = useState(props.formData[props.value.name]);
+  const [data, setData] = useState(props.formData)
   return (
     <div>
       <input
