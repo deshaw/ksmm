@@ -14,7 +14,7 @@ import React, { useState } from "react";
 export const KeyValueWidget = (props: any) => {
   const [key, setKey] = useState(props.value.name);
   const [val, setVal] = useState(props.formData[props.value.name]);
-  const [data, setData] = useState(props.formData)
+//  const [data, setData] = useState(props.formData)
   return (
     <div>
       <input

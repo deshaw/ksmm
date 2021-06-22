@@ -30,8 +30,10 @@ class KSIPyCreateHandler(APIHandler):
     def post(self, name=None):
         data = tornado.escape.json_decode(self.request.body)
         print(data)
+        print(name)
         #new_name = data["new_name"]
-        #target = self.km.find_kernel_specs()[name]
+        source_dir = self.km.find_kernel_specs()[name]
+        print(source_dir, name)
         #self.km.install_kernel_spec(target, new_name)
         self.finish(f"POST {name!r}\n")
 
@@ -45,20 +47,15 @@ class KSCopyHandler(APIHandler):
     """
     def initialize(self, km):
         self.km = km
-        breakpoint()
 
-    @tornado.web.authenticated
-    def get(self, name=None):
-        print("GET", name)
-
-
+   
     @tornado.web.authenticated
     def post(self, name=None):
         data = tornado.escape.json_decode(self.request.body)
-        print(data)
-        #new_name = data["new_name"]
-        #target = self.km.find_kernel_specs()[name]
-        #self.km.install_kernel_spec(target, new_name)
+        source_dir = self.km.find_kernel_specs()[data["name"]]
+        new_name = '-'.join([data["name"], "copy"])
+        print()
+        self.km.install_kernel_spec(source_dir, kernel_name=new_name)
         self.finish(f"POST {name!r}\n")
 
 
@@ -113,6 +110,10 @@ class KSHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self, name=None):
+        #data = tornado.escape.json_decode(self.request.body)
+        #target = self.km.find_kernel_specs()[data["name"]]
+        #self.km.install_kernel_spec(target, new_name)
+
         data = json.loads(self.request.body.decode('utf-8'))
         kernelPaths = self.km.find_kernel_specs()
         # Write to python object

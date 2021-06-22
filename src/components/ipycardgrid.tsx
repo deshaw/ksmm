@@ -9,7 +9,7 @@ import { iPyCardSchema } from "../ipyschema";
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
 
-  const handleCopyClick = () => {
+  const handleCopyClick = (kernel_name: string) => {
     const url = "http://localhost:8888/ks/copy";
     fetch(url, {
       method: "POST",
@@ -17,7 +17,7 @@ const CardGrid = (props: any): JSX.Element => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ newname: "i'mthere" }),
+      body: JSON.stringify({ name: kernel_name  }),
     });
   };
 
@@ -45,7 +45,7 @@ const CardGrid = (props: any): JSX.Element => {
                 </a>
                 <a
                   style={{ cursor: "pointer" }}
-                  onClick={() => handleCopyClick()}
+                  onClick={() => handleCopyClick(ipyinfo.kernel_name)}
                 >
                   <FaCopy />
                 </a>
