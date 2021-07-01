@@ -41,10 +41,9 @@ const CardGrid = (props: any): JSX.Element => {
       },
       body: JSON.stringify({ name: kernel_name }),
     }).then(() => {
-      alert("Deleting " + kernel_name) });
-    }
-  
-
+      alert("Deleting " + kernel_name);
+    });
+  };
 
   const cardWidget = (props: any) => {
     return (
