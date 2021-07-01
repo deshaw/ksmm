@@ -31,6 +31,21 @@ const CardGrid = (props: any): JSX.Element => {
     });
   };
 
+  const handleDeleteClick = (kernel_name: string) => {
+    const url = "http://localhost:8888/ks/delete";
+    fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: kernel_name }),
+    }).then(() => {
+      alert("Deleting " + kernel_name) });
+    }
+  
+
+
   const cardWidget = (props: any) => {
     return (
       <Row className="pl-2 pr-2">
@@ -61,7 +76,7 @@ const CardGrid = (props: any): JSX.Element => {
                 </a>
                 <a
                   style={{ cursor: "pointer" }}
-                  onClick={() => alert("clicked " + ipyinfo.kernel_name)}
+                  onClick={() => handleDeleteClick(ipyinfo.kernel_name)}
                 >
                   <FaTrash />
                 </a>

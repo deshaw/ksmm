@@ -37,6 +37,47 @@ class KSIPyCreateHandler(APIHandler):
         #self.km.install_kernel_spec(target, new_name)
         self.finish(f"POST {name!r}\n")
 
+class KSMachineParameterHandler(APIHandler):
+    """
+    KernelSpec GET Machine Details
+
+    TODO: implement a backend other than local
+    """
+    def initialize(self, km):
+        self.km = km
+
+    def get_local_params() -> dict:
+        import psutil
+        params = {
+                'cores': list(range(1, psutil.cpu_count()+1)),
+                'memory': list(range(1,int(psutil.virtual_memory().available * (10**-9))+1))
+                }
+        return params
+
+    @tornado.web.authenticated
+    def get(self, name=None):
+        params = get_local_params()
+        self.finish(params)
+
+   
+
+class KSDeleteHandler(APIHandler):
+    """
+    KernelSpec DELETE Handler.
+
+    Utilizes POST functionality in order
+    to duplicate an environment.
+    """
+    def initialize(self, km):
+        self.km = km
+   
+    @tornado.web.authenticated
+    def post(self, name=None):
+        data = tornado.escape.json_decode(self.request.body)
+        self.km.remove_kernel_spec(data["name"])
+        self.finish(f"DELETED {name!r}\n")
+
+
 
 class KSCopyHandler(APIHandler):
     """
@@ -172,6 +213,8 @@ def setup_handlers(web_app, km, url_path):
     handlers = [
              (url_path_join(base_url, url_path), KSHandler, {'km': km}),
              (url_path_join(base_url, url_path, "/copy"), KSCopyHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/delete"), KSDeleteHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/parameters"), KSMachineParameterHandler, {"km": km}),
              (url_path_join(base_url, url_path, "/createipy"), KSIPyCreateHandler, {"km": km}),
              #(url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
                 ]
