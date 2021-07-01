@@ -3,8 +3,16 @@ import Form from "@rjsf/bootstrap-4";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { FaRegEdit, FaCopy } from "react-icons/fa";
+import { FaRegEdit, FaCopy, FaTrash } from "react-icons/fa";
 import { iPyCardSchema } from "../ipyschema";
+
+const DuplicateAlert = (props: any) => {
+  alert(
+    "A duplicate copy of " +
+      props.original_kernel +
+      " has been created, one moment."
+  );
+};
 
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
@@ -17,7 +25,9 @@ const CardGrid = (props: any): JSX.Element => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: kernel_name  }),
+      body: JSON.stringify({ name: kernel_name }),
+    }).then(() => {
+      DuplicateAlert({ original_kernel: kernel_name });
     });
   };
 
@@ -48,6 +58,12 @@ const CardGrid = (props: any): JSX.Element => {
                   onClick={() => handleCopyClick(ipyinfo.kernel_name)}
                 >
                   <FaCopy />
+                </a>
+                <a
+                  style={{ cursor: "pointer" }}
+                  onClick={() => alert("clicked " + ipyinfo.kernel_name)}
+                >
+                  <FaTrash />
                 </a>
               </Card.Footer>
             </Card>

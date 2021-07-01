@@ -54,7 +54,6 @@ class KSCopyHandler(APIHandler):
         data = tornado.escape.json_decode(self.request.body)
         source_dir = self.km.find_kernel_specs()[data["name"]]
         new_name = '-'.join([data["name"], "copy"])
-        print()
         self.km.install_kernel_spec(source_dir, kernel_name=new_name)
         self.finish(f"POST {name!r}\n")
 
