@@ -3,6 +3,7 @@ include README.md
 include pyproject.toml
 
 recursive-include jupyter-config *.json
+include ksmm/schema/kernelSchema.json
 
 include package.json
 include ts*.json
