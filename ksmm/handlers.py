@@ -2,7 +2,7 @@
 A notebook server extension that expose kernel spec
 """
 
-__version__ = '0.0.1'
+__version__ = '0.0.3'
 
 from notebook.utils import url_path_join
 from notebook.base.handlers import IPythonHandler
@@ -11,12 +11,15 @@ from jupyter_client import KernelManager
 from jupyter_server.base.handlers import APIHandler 
 from jupyter_server.utils import url_path_join
 
-from tornado import web, gen
+
 from http.client import responses
-import tornado
 
 from pathlib import Path
+from types import SimpleNamespace 
 
+import tornado
+import psutil
+import pathlib
 import json
 
 class KSIPyCreateHandler(APIHandler):
@@ -29,37 +32,8 @@ class KSIPyCreateHandler(APIHandler):
     @tornado.web.authenticated
     def post(self, name=None):
         data = tornado.escape.json_decode(self.request.body)
-        print(data)
-        print(name)
-        #new_name = data["new_name"]
         source_dir = self.km.find_kernel_specs()[name]
-        print(source_dir, name)
-        #self.km.install_kernel_spec(target, new_name)
         self.finish(f"POST {name!r}\n")
-
-class KSMachineParameterHandler(APIHandler):
-    """
-    KernelSpec GET Machine Details
-
-    TODO: implement a backend other than local
-    """
-    def initialize(self, km):
-        self.km = km
-
-    def get_local_params() -> dict:
-        import psutil
-        params = {
-                'cores': list(range(1, psutil.cpu_count()+1)),
-                'memory': list(range(1,int(psutil.virtual_memory().available * (10**-9))+1))
-                }
-        return params
-
-    @tornado.web.authenticated
-    def get(self, name=None):
-        params = get_local_params()
-        self.finish(params)
-
-   
 
 class KSDeleteHandler(APIHandler):
     """
@@ -78,7 +52,6 @@ class KSDeleteHandler(APIHandler):
         self.finish(f"DELETED {name!r}\n")
 
 
-
 class KSCopyHandler(APIHandler):
     """
     KernelSpec Copy Handler.
@@ -88,7 +61,6 @@ class KSCopyHandler(APIHandler):
     """
     def initialize(self, km):
         self.km = km
-
    
     @tornado.web.authenticated
     def post(self, name=None):
@@ -97,6 +69,45 @@ class KSCopyHandler(APIHandler):
         new_name = '-'.join([data["name"], "copy"])
         self.km.install_kernel_spec(source_dir, kernel_name=new_name)
         self.finish(f"POST {name!r}\n")
+
+
+class KSSchemaHandler(APIHandler):
+    """
+    KernelSpec Schema Handler
+
+    Loads the schema required to render the frontend from the JSON file, calculating any
+    information that is needed dynamically. 
+    """
+    def initialize(self, km):
+        self.km = km
+
+    def get_local_params(self) -> dict:
+        
+        to_str = lambda int_list: [str(item) for item in int_list]
+        params = {
+                'cores': to_str(list(range(1, psutil.cpu_count()+1))),
+                'memory': to_str(list(range(1,int(psutil.virtual_memory().available * (10**-9))+1)))
+                }
+        return params
+
+    def set_parameters(self, schema: dict, params: SimpleNamespace) -> dict:
+        schema['properties']['parameters']['properties']['cores']['enum'] = params.cores
+        schema['properties']['parameters']['properties']['memory']['enum'] = params.memory
+        return schema
+
+    def get_schema(self, path: str) -> str:
+        with open(path, 'r') as f:
+            schema_file = f.read()
+        return json.loads(schema_file)
+
+    @tornado.web.authenticated
+    def get(self, name=None):
+        params = SimpleNamespace(**self.get_local_params())
+        schemafp = pathlib.Path('schema', 'kernelSchema.json')
+        schema = dict(self.get_schema(path=schemafp.__str__()))
+        schema  = self.set_parameters(schema, params)
+        json_schema = json.dumps(schema)
+        self.finish(json_schema)
 
 
 
@@ -214,9 +225,8 @@ def setup_handlers(web_app, km, url_path):
              (url_path_join(base_url, url_path), KSHandler, {'km': km}),
              (url_path_join(base_url, url_path, "/copy"), KSCopyHandler, {"km": km}),
              (url_path_join(base_url, url_path, "/delete"), KSDeleteHandler, {"km": km}),
-             (url_path_join(base_url, url_path, "/parameters"), KSMachineParameterHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/schema"), KSSchemaHandler, {"km": km}),
              (url_path_join(base_url, url_path, "/createipy"), KSIPyCreateHandler, {"km": km}),
-             #(url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
                 ]
 
     web_app.add_handlers(".*", handlers)
