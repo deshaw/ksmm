@@ -9,4 +9,4 @@ dependencies:
   - genson
   - yarn
   - psutil
-
+  - pip
