@@ -29,6 +29,7 @@ To install the server side extension, install in pip editable mode:
 pip install -e .
 ```
 
+If asked for the react-bootstrap version, choose 2.0.0 (this should be pinned).
 Then, compile the typescript (frontend) of the environment by compiling the frontend: 
 
 ```python
@@ -38,7 +39,7 @@ jlpm build
 Finally, start the jupyterlab extension without xsrf:
 
 ```python
-jupyter lab 
+jupyter lab --ServerApp.disable_check_xsrf=True
 ```
 
 ### Screenshots
