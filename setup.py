@@ -46,7 +46,7 @@ setup_args = dict(
     version=VERSION,
     description='Jupyter Server Extension for IPython KernelSpec Manager',
     cmdclass=cmdclass,
-    python_requires='>=3.8',
+    python_requires='>=3.7',
     packages=setuptools.find_packages(),
     install_requires=[
         "jupyterlab~=3.0",
