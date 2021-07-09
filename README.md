@@ -23,6 +23,19 @@ latest release from the main branch.
 
 ## Building from Source
 
+Use the provided environment.yaml to install the conda environment:
+
+```python
+conda env update -f environment.yaml
+```
+
+If that doesn't work, feel free to roll your own: 
+
+```python
+conda create <env_name> jupyterlab nodejs jupyter-packaging -c conda-forge -y
+conda activate <env_name>
+```
+
 To install the server side extension, install in pip editable mode: 
 
 ```python
@@ -39,8 +52,10 @@ jlpm build
 Finally, start the jupyterlab extension without xsrf:
 
 ```python
-jupyter lab --ServerApp.disable_check_xsrf=True
+jupyter lab --ServerApp.disable_check_xsrf=True --port=8888
 ```
+
+**NOTE** Currently, the extension only works on port 8888
 
 ### Screenshots
 
