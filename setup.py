@@ -1,17 +1,14 @@
 import pathlib
-import json
 import setuptools
 import jupyter_packaging
 
 VERSION = '0.0.2'
-HERE =  pathlib.Path(__file__).parent.resolve()
+HERE = pathlib.Path(__file__).parent.resolve()
 # Name of the project
 name = "ksmm"
 lab_path = HERE / name / "labextension"
 
-jstargets = [
-        str(lab_path / "package.json"),
-        ]
+jstargets = [str(lab_path / "package.json")]
 
 package_data_spec = {name: ["*"]}
 
@@ -31,9 +28,9 @@ cmdclass = jupyter_packaging.create_cmdclass(
 )
 
 js_command = jupyter_packaging.combine_commands(
-        jupyter_packaging.install_npm(HERE, build_cmd="build:prod", npm=["jlpm"]),
-        jupyter_packaging.ensure_targets(jstargets),
-        )
+    jupyter_packaging.install_npm(HERE, build_cmd="build:prod", npm=["jlpm"]),
+    jupyter_packaging.ensure_targets(jstargets),
+)
 
 is_repo = (HERE / ".git").exists()
 if is_repo:
