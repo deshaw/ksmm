@@ -8,7 +8,7 @@
 import { JSONSchema7 } from "json-schema";
 
 export const fetchMachineParameters = () => {
-  const url = "http://localhost:8888/parameters";
+  const url =  document.location.origin+"/parameters";
   const machineParameters = async () => {
     const response = await fetch(url);
     const jsondata = await response.json();

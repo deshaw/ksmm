@@ -32,7 +32,7 @@ const CardGrid = (props: any): JSX.Element => {
 
 
   const handleCopyClick = (kernel_name: string) => {
-    const url = "http://localhost:8888/ks/copy";
+    const url =  document.location.origin+"/ks/copy";
     const xsrfToken = getCookie('_xsrf');
     fetch(url, {
       method: "POST",
@@ -42,18 +42,21 @@ const CardGrid = (props: any): JSX.Element => {
         "X-XSRFToken": xsrfToken
       },
       body: JSON.stringify({ name: kernel_name }),
-    }).then(() => {
+    }).then((resp) => {
+      console.log('copy response', resp);
       DuplicateAlert({ original_kernel: kernel_name });
     });
   };
 
   const handleDeleteClick = (kernel_name: string) => {
-    const url = "http://localhost:8888/ks/delete";
+    const url = document.location.origin+"/ks/delete";
+    const xsrfToken = getCookie('_xsrf');
     fetch(url, {
       method: "POST",
       headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": "application/json",
+        "X-XSRFToken": xsrfToken
       },
       body: JSON.stringify({ name: kernel_name }),
     }).then(() => {

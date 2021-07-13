@@ -34,7 +34,7 @@ const KernelManagerComponent = (): JSX.Element => {
    * Passed as a prop to Form
    */
   const handleKernelSubmission = (e: any) => {
-    const url = "http://localhost:8888/ks";
+    const url =  document.location.origin+"/ks";
     console.log("submitted data", JSON.stringify(e.formData));
     fetch(url, {
       method: "POST",
