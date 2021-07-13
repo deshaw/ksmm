@@ -4,9 +4,7 @@ import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import { KeyValueWidget } from "./widgets/keyval";
 import { EnvVarForm } from "./fields/envvar";
-import { 
-  IPythonFormGroup,
-} from "./fields/ipymenu";
+import { IPythonFormGroup } from "./fields/ipymenu";
 
 export const IPyForm = (props: any): JSX.Element => {
   const TabMenu = (props: any): JSX.Element => {

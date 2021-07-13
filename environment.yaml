@@ -7,3 +7,6 @@ dependencies:
   - setuptools
   - tornado
   - genson
+  - yarn
+  - psutil
+  - pip

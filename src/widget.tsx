@@ -6,7 +6,8 @@ import { SuccessAlertBox } from "./components/alerts";
 import * as _ from "lodash";
 import CardGrid from "./components/ipycardgrid";
 import { IPyForm } from "./components/ipyform";
-import { iPySchema } from "./ipyschema";
+//import { iPySchema } from "./ipyschema";
+import { JSONSchema7 } from "json-schema";
 
 /**
  * React component for listing the possible
@@ -24,6 +25,7 @@ const KernelManagerComponent = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true);
   const [cardData, setCardData] = useState([]);
   const [alertBox, setAlertBox] = useState(false);
+  const [schema, setSchema] = useState({});
 
   /**
    * Handles a form submission when
@@ -114,6 +116,15 @@ const KernelManagerComponent = (): JSX.Element => {
 
   useEffect(() => {
     const url = "http://localhost:8888/ks";
+
+    const fetchSchema = async () => {
+      const res = await fetch('http://localhost:8888/ks/schema');
+      const json_schema: JSONSchema7 = await res.json(); 
+      if (!_.isEqual(schema, json_schema)) {
+        setSchema(json_schema);
+      }
+    };
+
     const kernelSpec = async () => {
       const response = await fetch(url);
       const jsondata = await response.json();
@@ -123,6 +134,7 @@ const KernelManagerComponent = (): JSX.Element => {
       }
     };
 
+    fetchSchema();
     kernelSpec();
 
     if (cardData.length > 0) {
@@ -130,6 +142,7 @@ const KernelManagerComponent = (): JSX.Element => {
     }
 
     const timer = setInterval(() => {
+      fetchSchema();
       kernelSpec();
       if (showFormSelector) {
         renderWidgets();
@@ -157,7 +170,7 @@ const KernelManagerComponent = (): JSX.Element => {
         {alertBox ? <SuccessAlertBox handleClose={handleGoingHome} /> : null}
         {showForm ? (
           <IPyForm
-            schema={iPySchema}
+            schema={schema}
             formData={kernelFormData}
             onSubmit={handleKernelSubmission}
           />

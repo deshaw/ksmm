@@ -2,7 +2,7 @@
 A notebook server extension that expose kernel spec
 """
 
-__version__ = '0.0.1'
+__version__ = '0.0.3'
 
 from notebook.utils import url_path_join
 from notebook.base.handlers import IPythonHandler
@@ -11,23 +11,112 @@ from jupyter_client import KernelManager
 from jupyter_server.base.handlers import APIHandler 
 from jupyter_server.utils import url_path_join
 
-from tornado import web, gen
+
 from http.client import responses
-import tornado
 
 from pathlib import Path
+from types import SimpleNamespace 
 
+import tornado
+import psutil
+import pathlib
 import json
 
+class KSIPyCreateHandler(APIHandler):
+    """
+    Handler for creation of a new IPython Kernel Specification.
+    """
+    def initialize(self, km):
+        self.km = km
 
-# class KSHandler(web.RequestHandler):
+    @tornado.web.authenticated
+    def post(self, name=None):
+        data = tornado.escape.json_decode(self.request.body)
+        source_dir = self.km.find_kernel_specs()[name]
+        self.finish(f"POST {name!r}\n")
+
+class KSDeleteHandler(APIHandler):
+    """
+    KernelSpec DELETE Handler.
+
+    Utilizes POST functionality in order
+    to duplicate an environment.
+    """
+    def initialize(self, km):
+        self.km = km
+   
+    @tornado.web.authenticated
+    def post(self, name=None):
+        data = tornado.escape.json_decode(self.request.body)
+        self.km.remove_kernel_spec(data["name"])
+        self.finish(f"DELETED {name!r}\n")
+
+
+class KSCopyHandler(APIHandler):
+    """
+    KernelSpec Copy Handler.
+
+    Only utilizes POST functionality in order
+    to duplicate an environment.
+    """
+    def initialize(self, km):
+        self.km = km
+   
+    @tornado.web.authenticated
+    def post(self, name=None):
+        data = tornado.escape.json_decode(self.request.body)
+        source_dir = self.km.find_kernel_specs()[data["name"]]
+        new_name = '-'.join([data["name"], "copy"])
+        self.km.install_kernel_spec(source_dir, kernel_name=new_name)
+        self.finish(f"POST {name!r}\n")
+
+
+class KSSchemaHandler(APIHandler):
+    """
+    KernelSpec Schema Handler
+
+    Loads the schema required to render the frontend from the JSON file, calculating any
+    information that is needed dynamically. 
+    """
+    def initialize(self, km):
+        self.km = km
+
+    def get_local_params(self) -> dict:
+        
+        to_str = lambda int_list: [str(item) for item in int_list]
+        params = {
+                'cores': to_str(list(range(1, psutil.cpu_count()+1))),
+                'memory': to_str(list(range(1,int(psutil.virtual_memory().available * (10**-9))+1)))
+                }
+        return params
+
+    def set_parameters(self, schema: dict, params: SimpleNamespace) -> dict:
+        schema['properties']['parameters']['properties']['cores']['enum'] = params.cores
+        schema['properties']['parameters']['properties']['memory']['enum'] = params.memory
+        return schema
+
+    def get_schema(self, path: str) -> str:
+        with open(path, 'r') as f:
+            schema_file = f.read()
+        return json.loads(schema_file)
+
+    @tornado.web.authenticated
+    def get(self, name=None):
+        params = SimpleNamespace(**self.get_local_params())
+        schemafp = pathlib.Path('schema', 'kernelSchema.json')
+        schema = dict(self.get_schema(path=schemafp.__str__()))
+        schema  = self.set_parameters(schema, params)
+        json_schema = json.dumps(schema)
+        self.finish(json_schema)
+
+
+
 class KSHandler(APIHandler):
     """
     KernelSpec Handler to mange kernelspec via a REST API.
 
     currently start with the ks prefix.
 
-    GET ks
     GET ks/  Will get all the kernelspec "kernel.json" data
 
     GET ks/<name>  Will the kernelspec "kernel.json" data for given kernel if exists
@@ -36,9 +125,6 @@ class KSHandler(APIHandler):
 
     LIST /ks
     LIST /ks/ will return {"names": <list of all the know kernel names>}
-
-    COPY /ks/<name> with POST content "{"new_name":<new_name>}" will copy give kernelspec (including logo, kernel.js...)
-    under the new name.
 
     POST: NotImplemented; currently jupyter_client only support installing kernelspec from a folder. Will Fix.
           Suggestion "POST ks/<name> replace the existing kernel.json with the content of the post.
@@ -75,6 +161,10 @@ class KSHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self, name=None):
+        #data = tornado.escape.json_decode(self.request.body)
+        #target = self.km.find_kernel_specs()[data["name"]]
+        #self.km.install_kernel_spec(target, new_name)
+
         data = json.loads(self.request.body.decode('utf-8'))
         kernelPaths = self.km.find_kernel_specs()
         # Write to python object
@@ -84,15 +174,6 @@ class KSHandler(APIHandler):
             pass
         with open(str(Path(path, 'kernel.json')), 'w') as outfile:
             json.dump(json.loads(data['editedKernelPayload']), outfile)
-        self.finish(f"POST {name!r}\n")
-
-    @tornado.web.authenticated
-    def copy(self, name):
-        data = tornado.escape.json_decode(self.request.body)
-        new_name = data["new_name"]
-        target = self.km.find_kernel_specs()[name]
-        self.km.install_kernel_spec(target, new_name)
-
         self.finish(f"POST {name!r}\n")
 
     @tornado.web.authenticated
@@ -140,11 +221,12 @@ class KSHandler(APIHandler):
 
 def setup_handlers(web_app, km, url_path):
     base_url = web_app.settings["base_url"]
-    full_url = url_path_join(base_url,  url_path, "/(\w+)")
-    print(full_url)
     handlers = [
              (url_path_join(base_url, url_path), KSHandler, {'km': km}),
-             (url_path_join(base_url, url_path, "/(\w+)"), KSHandler, {'km': km})
+             (url_path_join(base_url, url_path, "/copy"), KSCopyHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/delete"), KSDeleteHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/schema"), KSSchemaHandler, {"km": km}),
+             (url_path_join(base_url, url_path, "/createipy"), KSIPyCreateHandler, {"km": km}),
                 ]
 
     web_app.add_handlers(".*", handlers)
