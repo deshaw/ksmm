@@ -2,21 +2,17 @@
 A notebook server extension that expose kernel spec
 """
 
-__version__ = '0.0.3'
-
-from notebook.utils import url_path_join
-
-from jupyter_server.base.handlers import APIHandler
-from jupyter_server.utils import url_path_join
-
-
+import json
+import pathlib
 from pathlib import Path
 from types import SimpleNamespace
 
-import tornado
 import psutil
-import pathlib
-import json
+import tornado
+from jupyter_server.base.handlers import APIHandler
+from jupyter_server.utils import url_path_join
+from notebook.utils import url_path_join
+
 
 class KSIPyCreateHandler(APIHandler):
     """
