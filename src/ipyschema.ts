@@ -20,12 +20,12 @@ export const fetchMachineParameters = () => {
 fetchMachineParameters();
 
 /*
- * The following schema complies to iPython Kernel
+ * The following schema complies to IPython Kernel
  * Standards. When making changes, note that the UI
  * is also subject to change based on the types.
  */
-export const iPySchema: JSONSchema7 = {
-  title: "iPyKernel Management Menu",
+export const IPySchema: JSONSchema7 = {
+  title: "IPyKernel Management Menu",
   type: "object",
   properties: {
     argv: { type: "array", items: { type: "string" }, title: "" },
@@ -75,8 +75,8 @@ export const iPySchema: JSONSchema7 = {
  * function. When called on the ipyschema object, the function
  * returns a ipyCardSchema.
  */
-export const iPyCardSchema: JSONSchema7 = {
-  title: "iPyKernel Card",
+export const IPyCardSchema: JSONSchema7 = {
+  title: "IPyKernel Card",
   type: "array",
   items: {
     type: "object",

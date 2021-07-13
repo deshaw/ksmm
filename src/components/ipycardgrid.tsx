@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { FaRegEdit, FaCopy, FaTrash } from "react-icons/fa";
-import { iPyCardSchema } from "../ipyschema";
+import { IPyCardSchema } from "../ipyschema";
 
 const DuplicateAlert = (props: any) => {
   alert(

@@ -6,7 +6,7 @@ import { SuccessAlertBox } from "./components/alerts";
 import * as _ from "lodash";
 import CardGrid from "./components/ipycardgrid";
 import { IPyForm } from "./components/ipyform";
-//import { iPySchema } from "./ipyschema";
+//import { IPySchema } from "./ipyschema";
 import { JSONSchema7 } from "json-schema";
 
 /**
@@ -157,7 +157,7 @@ const KernelManagerComponent = (): JSX.Element => {
   return (
     <div className="full-w-div">
       <Container fluid className="jp-ReactForm">
-        <a onClick={() => handleGoingHome()}> iPyKernel Manager </a>
+        <a onClick={() => handleGoingHome()}> IPyKernel Manager </a>
         {showFormSelector
           ? cardData.map((cardPayload: any, idx) => (
               <CardGrid
@@ -183,7 +183,7 @@ const KernelManagerComponent = (): JSX.Element => {
 /**
  * IPyKernelWidget Main Class
  */
-export class iPyKernelWidget extends ReactWidget {
+export class IPyKernelWidget extends ReactWidget {
   constructor() {
     super();
     this.addClass("jp-ReactWidget");
