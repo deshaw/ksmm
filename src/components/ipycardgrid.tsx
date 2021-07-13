@@ -14,6 +14,7 @@ const DuplicateAlert = (props: any) => {
   );
 };
 
+// TODO: remove and use jupyterlab service URL.
 function getCookie(name: string): string | undefined {
     // From http://www.tornadoweb.org/en/stable/guide/security.html
     const matches = document.cookie.match('\\b' + name + '=([^;]*)\\b');
@@ -25,6 +26,7 @@ const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
 
   const handleCopyClick = (kernel_name: string) => {
+    // TODO: remove and use jupyterlab service URL.
     const url =  document.location.origin+"/ks/copy";
     const xsrfToken = getCookie('_xsrf');
     fetch(url, {
@@ -42,6 +44,7 @@ const CardGrid = (props: any): JSX.Element => {
   };
 
   const handleDeleteClick = (kernel_name: string) => {
+    // TODO: remove and use jupyterlab service URL.
     const url = document.location.origin+"/ks/delete";
     const xsrfToken = getCookie('_xsrf');
     fetch(url, {

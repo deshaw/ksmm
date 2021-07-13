@@ -8,6 +8,7 @@
 import { JSONSchema7 } from "json-schema";
 
 export const fetchMachineParameters = () => {
+  // TODO: remove and use jupyterlab service URL.
   const url =  document.location.origin+"/parameters";
   const machineParameters = async () => {
     const response = await fetch(url);

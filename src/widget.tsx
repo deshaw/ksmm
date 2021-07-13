@@ -34,6 +34,7 @@ const KernelManagerComponent = (): JSX.Element => {
    * Passed as a prop to Form
    */
   const handleKernelSubmission = (e: any) => {
+    // TODO: remove and use jupyterlab service URL.
     const url =  document.location.origin+"/ks";
     console.log("submitted data", JSON.stringify(e.formData));
     fetch(url, {
