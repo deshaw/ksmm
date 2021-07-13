@@ -5,17 +5,13 @@ A notebook server extension that expose kernel spec
 __version__ = '0.0.3'
 
 from notebook.utils import url_path_join
-from notebook.base.handlers import IPythonHandler
 
-from jupyter_client import KernelManager
-from jupyter_server.base.handlers import APIHandler 
+from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
 
-from http.client import responses
-
 from pathlib import Path
-from types import SimpleNamespace 
+from types import SimpleNamespace
 
 import tornado
 import psutil
@@ -31,8 +27,8 @@ class KSIPyCreateHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self, name=None):
-        data = tornado.escape.json_decode(self.request.body)
-        source_dir = self.km.find_kernel_specs()[name]
+        # data = tornado.escape.json_decode(self.request.body)
+        # source_dir = self.km.find_kernel_specs()[name]
         self.finish(f"POST {name!r}\n")
 
 class KSDeleteHandler(APIHandler):
@@ -76,7 +72,7 @@ class KSSchemaHandler(APIHandler):
     KernelSpec Schema Handler
 
     Loads the schema required to render the frontend from the JSON file, calculating any
-    information that is needed dynamically. 
+    information that is needed dynamically.
     """
     def initialize(self, km):
         self.km = km
@@ -85,9 +81,11 @@ class KSSchemaHandler(APIHandler):
         
         to_str = lambda int_list: [str(item) for item in int_list]
         params = {
-                'cores': to_str(list(range(1, psutil.cpu_count()+1))),
-                'memory': to_str(list(range(1,int(psutil.virtual_memory().available * (10**-9))+1)))
-                }
+            "cores": to_str(list(range(1, psutil.cpu_count() + 1))),
+            "memory": to_str(
+                list(range(1, int(psutil.virtual_memory().available * (10 ** -9)) + 1))
+            ),
+        }
         return params
 
     def set_parameters(self, schema: dict, params: SimpleNamespace) -> dict:
@@ -156,7 +154,7 @@ class KSHandler(APIHandler):
 
     @tornado.web.authenticated
     def list(self):
-        l = self.km.find_kernel_specs().keys()
+        # l = self.km.find_kernel_specs().keys()
         self.finish({"names": list(self.km.find_kernel_specs().keys())})
 
     @tornado.web.authenticated
@@ -192,7 +190,7 @@ class KSHandler(APIHandler):
         """render custom error as json"""
         exc_info = kwargs.get("exc_info")
         message = ""
-        status_message = responses.get(status_code, "Unknown HTTP Error")
+        # status_message = responses.get(status_code, "Unknown HTTP Error")
         exception = "(unknown)"
         if exc_info:
             exception = exc_info[1]
@@ -203,17 +201,17 @@ class KSHandler(APIHandler):
                 pass
 
             # construct the custom reason, if defined
-            reason = getattr(exception, "reason", "")
-            if reason:
-                status_message = reason
+        #    reason = getattr(exception, "reason", "")
+        #    if reason:
+        #        status_message = reason
 
         # build template namespace
-        ns = dict(
-            status_code=status_code,
-            status_message=status_message,
-            message=message,
-            exception=exception,
-        )
+        # ns = dict(
+        #     status_code=status_code,
+        #     status_message=status_message,
+        #     message=message,
+        #     exception=exception,
+        # )
 
         self.set_header("Content-Type", "application/json")
 
@@ -230,5 +228,3 @@ def setup_handlers(web_app, km, url_path):
                 ]
 
     web_app.add_handlers(".*", handlers)
-
-
