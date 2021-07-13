@@ -7,7 +7,7 @@ import { MainAreaWidget } from "@jupyterlab/apputils";
 
 import { ILauncher } from "@jupyterlab/launcher";
 
-import { IPy } from "./widget";
+import { IPyKernelWidget } from "./widget";
 /*
  * The command IDs used by the react-widget plugin.
  */

@@ -14,16 +14,32 @@ const DuplicateAlert = (props: any) => {
   );
 };
 
+function getCookie(name: string): string | undefined {
+    // From http://www.tornadoweb.org/en/stable/guide/security.html
+    const matches = document.cookie.match('\\b' + name + '=([^;]*)\\b');
+    return matches?.[1];
+  }
+
+
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
 
+    //const xsrfToken = getCookie('_xsrf');
+      //if (xsrfToken !== undefined) {
+        //authenticated = true;
+        //request.headers.append('X-XSRFToken', xsrfToken);
+      //}
+
+
   const handleCopyClick = (kernel_name: string) => {
     const url = "http://localhost:8888/ks/copy";
+    const xsrfToken = getCookie('_xsrf');
     fetch(url, {
       method: "POST",
       headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": "application/json",
+        "X-XSRFToken": xsrfToken
       },
       body: JSON.stringify({ name: kernel_name }),
     }).then(() => {
@@ -93,7 +109,7 @@ const CardGrid = (props: any): JSX.Element => {
 
   return (
     <div>
-      <Form schema={iPyCardSchema} uiSchema={uiSchema} children={" "} />
+      <Form schema={IPyCardSchema} uiSchema={uiSchema} children={" "} />
     </div>
   );
 };
