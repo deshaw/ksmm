@@ -25,10 +25,12 @@ function getCookie(name: string): string | undefined {
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
 
+  // TODO : make this async ... and
   const handleCopyClick = (kernel_name: string) => {
     // TODO: remove and use jupyterlab service URL.
     const url =  document.location.origin+"/ks/copy";
     const xsrfToken = getCookie('_xsrf');
+    // TODO: and once async, make this await fetch().
     fetch(url, {
       method: "POST",
       headers: {
@@ -84,6 +86,7 @@ const CardGrid = (props: any): JSX.Element => {
                 </a>
                 <a
                   style={{ cursor: "pointer" }}
+                  // TODO: make this async
                   onClick={() => handleCopyClick(ipyinfo.kernel_name)}
                 >
                   <FaCopy />
