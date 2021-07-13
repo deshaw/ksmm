@@ -56,7 +56,6 @@ class KSCopyHandler(APIHandler):
    
     @tornado.web.authenticated
     def post(self):
-        print('copy handler called')
         data = tornado.escape.json_decode(self.request.body)
         source_dir = self.km.find_kernel_specs()[data["name"]]
         new_name = '-'.join([data["name"], "copy"])
