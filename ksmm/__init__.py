@@ -1,13 +1,12 @@
-import pathlib
 import json
-
+import pathlib
 
 from jupyter_server.serverapp import ServerApp
-from jupyter_server.utils import url_path_join as ujoin, url2path
-
+from jupyter_server.utils import url2path
+from jupyter_server.utils import url_path_join as ujoin
 
 from .handlers import setup_handlers
-
+from .version import __version__
 
 HERE = pathlib.Path(__file__).parent.resolve()
 

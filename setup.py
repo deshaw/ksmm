@@ -2,10 +2,18 @@ import pathlib
 import setuptools
 import jupyter_packaging
 
-VERSION = '0.0.2'
+
+globals_ = {}
+
 HERE = pathlib.Path(__file__).parent.resolve()
 # Name of the project
 name = "ksmm"
+
+
+dunder_init = (HERE / name / 'version.py').read_text()
+exec(dunder_init, globals_)
+VERSION = globals_['__version__']
+
 lab_path = HERE / name / "labextension"
 
 jstargets = [str(lab_path / "package.json")]
