@@ -24,13 +24,6 @@ function getCookie(name: string): string | undefined {
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
 
-    //const xsrfToken = getCookie('_xsrf');
-      //if (xsrfToken !== undefined) {
-        //authenticated = true;
-        //request.headers.append('X-XSRFToken', xsrfToken);
-      //}
-
-
   const handleCopyClick = (kernel_name: string) => {
     const url =  document.location.origin+"/ks/copy";
     const xsrfToken = getCookie('_xsrf');
