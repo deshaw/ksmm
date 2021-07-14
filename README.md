@@ -91,6 +91,10 @@ pip install ksmm
 This will install the extension inside the current JupyterLab Environment. This is typically the
 latest release from the main branch. 
 
+When making changes to the extension you will need to issue a `jupyter labextension build`, or, start `jlpm run watch`
+in the root of the repository to rebuild on every changes. You do not need to restart or rebuild JupyterLab for changes
+on the frontend extensions, but do need to restart the server for changes to the Python code.
+
 ### Screenshots
 
 Below are screenshots from the usage of the application.
