@@ -1,5 +1,5 @@
 {
-  "name": "@quansight/jupyterlab-ksmm",
+  "name": "jupyterlab-ksmm",
   "version": "0.1.0",
   "description": "An extension to manage IPython Kernels from Jupyter",
   "keywords": [
@@ -14,7 +14,7 @@
     "url": "https://github.com/Quansight/ksmm/issues"
   },
   "license": "BSD-3-Clause",
-  "author": "Matthias Bussonnier, Anirrudh Krishnan",
+  "author": "Matthias Bussonnier, Anirrudh Krishnan, Eric Charles",
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
@@ -35,7 +35,7 @@
     "build:prod": "jlpm run build:lib && jlpm run build:labextension",
     "clean": "jlpm run clean:lib",
     "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
-    "clean:labextension": "rimraf jlab_ext_example/labextension",
+    "clean:labextension": "rimraf ksmm/labextension",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",

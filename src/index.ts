@@ -19,7 +19,7 @@ namespace CommandIDs {
  * Initialization data for the react-widget extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: "conda-store-widget",
+  id: "jupyterlab-ksmm-extension",
   autoStart: true,
   optional: [ILauncher],
   activate: (app: JupyterFrontEnd, launcher: ILauncher) => {

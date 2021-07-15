@@ -37,13 +37,15 @@ given a kernelspec template like the following.
 
 ```json
 # kernelspec template
-{'cmd':
-    ['slurm', 'run', '--mem={mem}', '--cpu={cpu}','python3.8', '-m', 'ipykernel'],
- 'title': "Python 3.8 {mem}/{cpu}"
- 'params': {
-     "mem":{'100G', '500G', '1T'}
-     "cpu":{min:1, max:300}
-    }
+{
+  "cmd": [
+    "slurm", "run", "--mem={mem}", "--cpu={cpu}", "python3.8", "-m", "ipykernel"
+  ],
+  "title": "Python 3.8 {mem}/{cpu}",
+  "params": {
+    "mem": ["100G", "500G", "1T"],
+    "cpu": { "min": 1, "max": 300}
+  }
 }
 ```
 
@@ -53,16 +55,7 @@ available values, and for example a slider for the CPU.
 This would let non-technical user in for example JupyterHub to quickly modify
 Kernelspecs.
 
-# Installing the Server Extension
-
-```python
-pip install ksmm
-```
-
-This will install the extension inside the current JupyterLab Environment. This is typically the
-latest release from the main branch. 
-
-## Building from Source
+## Running from Source
 
 Use the provided environment.yaml to install the conda environment.
 
@@ -89,9 +82,18 @@ make watch
 make jlab-watch
 ```
 
+# Installing the Server Extension
+
+```bash
+pip install ksmm
+```
+
+This will install the extension inside the current JupyterLab Environment. This is typically the
+latest release from the main branch. 
+
 ### Screenshots
 
-Below are screenshots from the usage of the application
+Below are screenshots from the usage of the application.
 
 ##### Home Screen
 

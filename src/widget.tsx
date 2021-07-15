@@ -116,10 +116,10 @@ const KernelManagerComponent = (): JSX.Element => {
    */
 
   useEffect(() => {
-    const url = "http://localhost:8888/ks";
+    const url = "./ks";
 
     const fetchSchema = async () => {
-      const res = await fetch('http://localhost:8888/ks/schema');
+      const res = await fetch('./ks/schema');
       const json_schema: JSONSchema7 = await res.json(); 
       if (!_.isEqual(schema, json_schema)) {
         setSchema(json_schema);

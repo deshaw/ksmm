@@ -47,7 +47,10 @@ install-dev:
 
 jlab-watch:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		jupyter lab --watch --port 8234)
+		jupyter lab \
+			--watch \
+			--port 8234 \
+			--ServerApp.token=)
 
 watch:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
