@@ -23,11 +23,21 @@ jobs:
           activate-environment: ksmm
           environment-file: environment.yaml
 
-      - shell: bash -l {0}
+      - name:  Python editable install 
+        shell: bash -l {0}
         run: |
           pip install -e .
 
-      - shell: bash -l {0}
+      - name: Flake 8
+        shell: bash -l {0}
         run: |
-          pip install -e .
+          pip install flake8
+          flake8 ksmm
+
+      - name: isort
+        shell: bash -l {0}
+        run: |
+          pip install isort
+          isort -c ksmm
+
 

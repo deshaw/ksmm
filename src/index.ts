@@ -7,7 +7,7 @@ import { MainAreaWidget } from "@jupyterlab/apputils";
 
 import { ILauncher } from "@jupyterlab/launcher";
 
-import { iPyKernelWidget } from "./widget";
+import { IPyKernelWidget } from "./widget";
 /*
  * The command IDs used by the react-widget plugin.
  */
@@ -31,8 +31,8 @@ const extension: JupyterFrontEndPlugin<void> = {
       label: "ksmm",
       icon: (args) => (args["isPalette"] ? null : null),
       execute: () => {
-        const content = new iPyKernelWidget();
-        const widget = new MainAreaWidget<iPyKernelWidget>({ content });
+        const content = new IPyKernelWidget();
+        const widget = new MainAreaWidget<IPyKernelWidget>({ content });
         widget.title.label = "ksmm";
         app.shell.add(widget, "main");
       },

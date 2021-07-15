@@ -4,7 +4,7 @@ import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { FaRegEdit, FaCopy, FaTrash } from "react-icons/fa";
-import { iPyCardSchema } from "../ipyschema";
+import { IPyCardSchema } from "../ipyschema";
 
 const DuplicateAlert = (props: any) => {
   alert(
@@ -14,30 +14,47 @@ const DuplicateAlert = (props: any) => {
   );
 };
 
+// TODO: remove and use jupyterlab service URL.
+function getCookie(name: string): string | undefined {
+    // From http://www.tornadoweb.org/en/stable/guide/security.html
+    const matches = document.cookie.match('\\b' + name + '=([^;]*)\\b');
+    return matches?.[1];
+  }
+
+
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSubmit } = props;
 
+  // TODO : make this async ... and
   const handleCopyClick = (kernel_name: string) => {
-    const url = "http://localhost:8888/ks/copy";
+    // TODO: remove and use jupyterlab service URL.
+    const url =  document.location.origin+"/ks/copy";
+    const xsrfToken = getCookie('_xsrf');
+    // TODO: and once async, make this await fetch().
     fetch(url, {
       method: "POST",
       headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": "application/json",
+        "X-XSRFToken": xsrfToken
       },
       body: JSON.stringify({ name: kernel_name }),
-    }).then(() => {
+    }).then((resp) => {
+      console.log('copy response', resp);
       DuplicateAlert({ original_kernel: kernel_name });
     });
   };
 
   const handleDeleteClick = (kernel_name: string) => {
-    const url = "http://localhost:8888/ks/delete";
+    // TODO: remove and use jupyterlab service URL.
+    const url = document.location.origin+"/ks/delete";
+    const xsrfToken = getCookie('_xsrf');
     fetch(url, {
       method: "POST",
       headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": "application/json",
+        "X-XSRFToken": xsrfToken
       },
       body: JSON.stringify({ name: kernel_name }),
     }).then(() => {
@@ -69,6 +86,7 @@ const CardGrid = (props: any): JSX.Element => {
                 </a>
                 <a
                   style={{ cursor: "pointer" }}
+                  // TODO: make this async
                   onClick={() => handleCopyClick(ipyinfo.kernel_name)}
                 >
                   <FaCopy />
@@ -93,7 +111,7 @@ const CardGrid = (props: any): JSX.Element => {
 
   return (
     <div>
-      <Form schema={iPyCardSchema} uiSchema={uiSchema} children={" "} />
+      <Form schema={IPyCardSchema} uiSchema={uiSchema} children={" "} />
     </div>
   );
 };

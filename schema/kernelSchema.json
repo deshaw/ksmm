@@ -1,5 +1,5 @@
 {
-    "title": "iPyKernel Management Menu",
+    "title": "IPyKernel Management Menu",
     "type": "object",
     "properties": {
       "argv": { "type": "array", "items": { "type": "string" }, "title": "" },
