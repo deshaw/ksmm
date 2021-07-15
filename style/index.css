@@ -1,17 +1,5 @@
-.jp-ReactWidget {
-  color: var(--jp-ui-font-color1);
-  background: var(--jp-layout-color1);
-  font-size: 24px;
-  display: flex;
-  overflow: auto;
-}
-
-.jp-ReactForm {
-}
-
 .full-w-div {
     position: absolute;
     width: 100%;
     left: 0;
 }
-

@@ -29,13 +29,7 @@ def _jupyter_server_extension_points():
     return [{"module": "ksmm"}]
 
 def _load_jupyter_server_extension(server_app):
-
     url_path = "ks"
-
     setup_handlers(server_app.web_app, server_app.kernel_spec_manager_class(), url_path)
-
-    server_app.allow_origin = '*'
-    # server_app.disable_check_xsrf = True
-    server_app.token = ''
     server_app.launch_instance
     
