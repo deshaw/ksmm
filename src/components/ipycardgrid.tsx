@@ -29,14 +29,13 @@ const CardGrid = (props: any): JSX.Element => {
   const handleCopyClick = (kernel_name: string) => {
     // TODO: remove and use jupyterlab service URL.
     const url =  document.location.origin+"/ks/copy";
-    const xsrfToken = getCookie('_xsrf');
     // TODO: and once async, make this await fetch().
     fetch(url, {
       method: "POST",
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
-        "X-XSRFToken": xsrfToken
+        "X-XSRFToken": getCookie('_xsrf')
       },
       body: JSON.stringify({ name: kernel_name }),
     }).then((resp) => {

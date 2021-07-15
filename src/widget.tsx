@@ -110,30 +110,27 @@ const KernelManagerComponent = (): JSX.Element => {
     return multiarr;
   };
 
+  const fetchSchema = async () => {
+    const res = await fetch('/ks/schema');
+    const json_schema: JSONSchema7 = await res.json(); 
+    if (!_.isEqual(schema, json_schema)) {
+      setSchema(json_schema);
+    }
+  };
+  
+  const kernelSpec = async () => {
+    const response = await fetch('/ks');
+    const jsondata = await response.json();
+    if (!_.isEqual(data, jsondata)) {
+      setData(jsondata);
+      setCardData(generateCardData(jsondata));
+    }
+  };
   /*
    * Set the maximum container size such that
    * the width and height are at their maximum.
    */
-
   useEffect(() => {
-    const url = "./ks";
-
-    const fetchSchema = async () => {
-      const res = await fetch('./ks/schema');
-      const json_schema: JSONSchema7 = await res.json(); 
-      if (!_.isEqual(schema, json_schema)) {
-        setSchema(json_schema);
-      }
-    };
-
-    const kernelSpec = async () => {
-      const response = await fetch(url);
-      const jsondata = await response.json();
-      if (!_.isEqual(data, jsondata)) {
-        setData(jsondata);
-        setCardData(generateCardData(jsondata));
-      }
-    };
 
     fetchSchema();
     kernelSpec();
