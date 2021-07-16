@@ -2,11 +2,12 @@ name: ksmm
 channels:
   - conda-forge
 dependencies:
+  - genson
   - jupyterlab
-  - jupyter-packaging
+  - pip
+  - psutil
   - setuptools
   - tornado
-  - genson
   - yarn
-  - psutil
-  - pip
+  - pip:
+    - jupyter_packaging==0.9

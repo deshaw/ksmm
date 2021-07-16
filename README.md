@@ -36,7 +36,6 @@ The current goal would be to provide an editor for kernelspec that would
 given a kernelspec template like the following.
 
 ```json
-# kernelspec template
 {
   "cmd": [
     "slurm", "run", "--mem={mem}", "--cpu={cpu}", "python3.8", "-m", "ipykernel"
@@ -72,14 +71,14 @@ make install-dev
 ```
 
 ```python
-# In terminal 1, start the extension building in watch mode.
-make watch
+# In terminal 1, Start the jupyterlab in watch mode.
+# open http://localhost:8234?token=...
+make jlab-watch
 ```
 
 ```python
-# In terminal 2, Start the jupyterlab in watch mode.
-# open http://localhost:8234?token=...
-make jlab-watch
+# In terminal 2, start the extension building in watch mode.
+make watch
 ```
 
 # Installing the Server Extension

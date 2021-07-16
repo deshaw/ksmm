@@ -5,9 +5,7 @@ import React from "react";
  * does all the work for rendering the different optins in their
  * respective places.
  *
- * props:
- *
- * 	 data -> The data to render - namely, the data as defined in the schema
+ * props: data -> The data to render - namely, the data as defined in the schema
  */
 export const IPythonFormGroup = (props: {
   properties: any;
@@ -25,7 +23,7 @@ export const IPythonFormGroup = (props: {
       ))}
     </div>
   );
-};
+}
 
 /*
  * Grab the location of the element in the array,
@@ -37,6 +35,7 @@ function generateFormGroupMap(dataArr: any) {
   const EnvironmentVariableArray: Array<number> = [];
   const ComputeParametersArray: Array<number> = [];
   const MetadataArray: Array<number> = [];
+
   dataArr.forEach((element: any) => {
     if (
       element.name == "display_name" ||
@@ -56,11 +55,13 @@ function generateFormGroupMap(dataArr: any) {
       console.log("oopsies");
     }
   });
+
   return {
     ["General Settings"]: GeneralSettingsArray,
     ["Launch Arguments"]: LaunchArgumentsArray,
     ["Environment Variables"]: EnvironmentVariableArray,
     ["Compute Parameters"]: ComputeParametersArray,
     ["Metadata"]: MetadataArray,
-  };
+  }
+
 }
