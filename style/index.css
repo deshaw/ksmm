@@ -1,4 +1,9 @@
-.full-w-div {
+.jp-Ksmm {
+    color: var(--jp-ui-font-color1);
+    background: var(--jp-layout-color1);
+    font-size: 24px;
+    display: flex;
+    overflow: auto;
     position: absolute;
     width: 100%;
     left: 0;

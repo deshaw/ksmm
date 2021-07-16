@@ -1,6 +1,6 @@
 {
-  "name": "jupyterlab-ksmm",
-  "version": "0.1.0",
+  "name": "@quansight/jupyterlab-ksmm",
+  "version": "0.0.3",
   "description": "An extension to manage IPython Kernels from Jupyter",
   "keywords": [
     "jupyter",
@@ -14,7 +14,10 @@
     "url": "https://github.com/Quansight/ksmm/issues"
   },
   "license": "BSD-3-Clause",
-  "author": "Matthias Bussonnier, Anirrudh Krishnan, Eric Charles",
+  "author": {
+    "name": "Matthias Bussonnier, Anirrudh Krishnan, Eric Charles",
+    "email": ""
+  },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
@@ -54,7 +57,6 @@
     "@rjsf/core": "^2.4.2",
     "bootstrap": "^4.6.0",
     "framer-motion": "^4.0.3",
-    "lodash": "^4.17.21",
     "react-bootstrap": "2.0.0-beta.2",
     "react-dom": "^17.0.2",
     "react-spinners": "^0.10.6"

@@ -1,10 +1,11 @@
 import React from "react";
 
 /*
- * This function is a field
- * that is rendered for the environment variable.
+ * This function is a field that is rendered 
+ * for the environment variable.
  */
 export const EnvVarForm = (props: any) => {
+
   /*
    * Function to handle a change of key values in a key value store
    */
@@ -20,10 +21,12 @@ export const EnvVarForm = (props: any) => {
   const handleValueChange = (key: string, newvalue: string) => {
     props.formData[key] = newvalue;
     console.log(props.formData);
-  };
+  }
 
   const widget: (props: any) => JSX.Element = props.uiSchema["ui:widget"];
+
   const formData = props.formData;
+
   return (
     <div>
       {props.properties.map((item: any) =>
@@ -46,4 +49,5 @@ export const EnvVarForm = (props: any) => {
       </button>
     </div>
   );
-};
+
+}

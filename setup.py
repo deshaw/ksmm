@@ -1,64 +1,85 @@
-import pathlib
+"""ksmm setup
+"""
+
+import json
+from pathlib import Path
+
 import setuptools
-import jupyter_packaging
 
+HERE = Path(__file__).parent.resolve()
 
-globals_ = {}
-
-HERE = pathlib.Path(__file__).parent.resolve()
-# Name of the project
+# The name of the project
 name = "ksmm"
 
+lab_path = (HERE / name.replace("-", "_") / "labextension")
 
-dunder_init = (HERE / name / 'version.py').read_text()
-exec(dunder_init, globals_)
-VERSION = globals_['__version__']
-
-lab_path = HERE / name / "labextension"
-
-jstargets = [str(lab_path / "package.json")]
-
-package_data_spec = {name: ["*"]}
-
-labext_name = "@jupyterlab-ipython/KernelSpec-Manager"
-
-
-data_files_spec = [
-    ("share/jupyter/labextensions/%s" % labext_name, str(lab_path), "**"),
-    ("share/jupyter/labextensions/%s" % labext_name, str(HERE), "install.json"),
-    ("etc/jupyter/jupyter_notebook_config.d", "jupyter-config/jupyter_notebook_config.d", "enable_notebook.json"),
-    ("etc/jupyter/jupyter_server_config.d", "jupyter-config/jupyter_server_config.d", "enable_server.json"),
+# Representative files that should exist after a successful build
+ensured_targets = [
+    str(lab_path / "package.json"),
+    str(lab_path / "static/style.js")
 ]
 
+labext_name = "@quansight/jupyterlab-ksmm"
 
-cmdclass = jupyter_packaging.create_cmdclass(
-    "jsdeps", package_data_spec=package_data_spec, data_files_spec=data_files_spec
-)
+data_files_spec = [
+    ("share/jupyter/labextensions/%s" % labext_name, str(lab_path.relative_to(HERE)), "**"),
+    ("share/jupyter/labextensions/%s" % labext_name, str('.'), "install.json"),
+    ("etc/jupyter/jupyter_server_config.d",
+     "jupyter-config/server-config", "ksmm.json"),
+    # For backward compatibility with notebook server
+    ("etc/jupyter/jupyter_notebook_config.d",
+     "jupyter-config/nb-config", "ksmm.json"),
+]
 
-js_command = jupyter_packaging.combine_commands(
-    jupyter_packaging.install_npm(HERE, build_cmd="build:prod", npm=["jlpm"]),
-    jupyter_packaging.ensure_targets(jstargets),
-)
+long_description = (HERE / "README.md").read_text()
 
-is_repo = (HERE / ".git").exists()
-if is_repo:
-    cmdclass["jsdeps"] = js_command
-else:
-    cmdclass["jsdeps"] = jupyter_packaging.skip_if_exists(jstargets, js_command)
+# Get the package info from package.json
+pkg_json = json.loads((HERE / "package.json").read_bytes())
 
 setup_args = dict(
-    name='ksmm',
-    version=VERSION,
-    description='Jupyter Server Extension for IPython KernelSpec Manager',
-    cmdclass=cmdclass,
-    python_requires='>=3.7',
+    name=name,
+    version=pkg_json["version"],
+    url=pkg_json["homepage"],
+    author=pkg_json["author"]["name"],
+    author_email=pkg_json["author"]["email"],
+    description=pkg_json["description"],
+    license=pkg_json["license"],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     install_requires=[
-        "jupyterlab~=3.0",
-        "psutil",
+        "jupyter_server>=1.6,<2"
     ],
+    zip_safe=False,
     include_package_data=True,
+    python_requires=">=3.6",
+    platforms="Linux, Mac OS X, Windows",
+    keywords=["Jupyter", "JupyterLab", "JupyterLab3"],
+    classifiers=[
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Framework :: Jupyter",
+    ],
 )
+
+try:
+    from jupyter_packaging import (
+        wrap_installers,
+        npm_builder,
+        get_data_files
+    )
+    post_develop = npm_builder(
+        build_cmd="install:extension", source_dir="src", build_dir=lab_path
+    )
+    setup_args['cmdclass'] = wrap_installers(post_develop=post_develop, ensured_targets=ensured_targets)
+    setup_args['data_files'] = get_data_files(data_files_spec)
+except ImportError as e:
+    pass
 
 if __name__ == "__main__":
     setuptools.setup(**setup_args)

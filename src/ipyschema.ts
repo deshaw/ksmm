@@ -1,3 +1,5 @@
+import { JSONSchema7 } from "json-schema";
+
 /*
  * This file is a special file that houses
  * the schema definitions for this entire application.
@@ -5,20 +7,20 @@
  * rjsf is used effectively throughout the application for many purposes,
  * and then can be edited for form edits.
  */
-import { JSONSchema7 } from "json-schema";
 
-// export const fetchMachineParameters = () => {
-//   // TODO: remove and use jupyterlab service URL.
-//   const url =  document.location.origin+"/parameters";
-//   const machineParameters = async () => {
-//     const response = await fetch(url);
-//     const jsondata = await response.json();
-//     console.log(jsondata);
-//   };
-//   machineParameters();
-// };
-// 
-// fetchMachineParameters();
+/*
+export const fetchMachineParameters = () => {
+  // TODO: remove and use jupyterlab service URL.
+  const url =  document.location.origin+"/parameters";
+  const machineParameters = async () => {
+    const response = await fetch(url);
+    const jsondata = await response.json();
+    console.log(jsondata);
+  };
+  machineParameters();
+};
+fetchMachineParameters();
+*/
 
 /*
  * The following schema complies to IPython Kernel
@@ -68,7 +70,7 @@ export const IPySchema: JSONSchema7 = {
     "language",
     "metadata",
   ],
-};
+}
 
 /*
  * This is the schema for the display cards rendered for
@@ -86,4 +88,4 @@ export const IPyCardSchema: JSONSchema7 = {
       jupyter_name: { type: "string" },
     },
   },
-};
+}

@@ -1,13 +1,12 @@
 CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 CONDA_DEACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda deactivate
 CONDA_REMOVE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda remove -y --all -n
+
 ENV_NAME=ksmm
 
 .PHONY: clean build dist env cp
 
 .EXPORT_ALL_VARIABLES:
-
-VERSION = 0.0.1
 
 default: all ## Default target is all.
 
@@ -21,12 +20,12 @@ build:
 		yarn build )
 
 clean:
-	rm -fr build
-	rm -fr dist
-	rm -fr *.egg-info
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '__pycache__' -exec rm -fr {} +
-	rm jupyterhub.sqlite
+	rm -fr build || true
+	rm -fr dist || true
+	rm -fr *.egg-info || true
+	rm -fr ksmm/labextension || true
+	find . -name '*.egg-info' -exec rm -fr {} + || true
+	find . -name '__pycache__' -exec rm -fr {} + || true
 
 env-rm:
 	-conda remove -y --all -n ${ENV_NAME}
@@ -35,22 +34,29 @@ env:
 	-conda env create -f environment.yaml
 	@echo 
 	@echo --------------------------------
-	@echo ✨  KSMM environment is created.
+	@echo ✨  ${ENV_NAME} environment is created.
 	@echo --------------------------------
 	@echo
 
 install-dev:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		pip install -e . && \
-		jupyter labextension develop --overwrite . && \
-		jlpm build)
+		jlpm && \
+		jlpm build && \
+		jupyter labextension develop --overwrite .)
+
+jlab:
+	($(CONDA_ACTIVATE) ${ENV_NAME}; \
+		jupyter lab \
+			--ServerApp.jpserver_extensions="{'ksmm': True}" \
+			--port 8234)
 
 jlab-watch:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		jupyter lab \
 			--watch \
-			--port 8234 \
-			--ServerApp.token=)
+			--ServerApp.jpserver_extensions="{'ksmm': True}" \
+			--port 8234)
 
 watch:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
