@@ -3,8 +3,6 @@ import Alert from "react-bootstrap/Alert";
 
 export const SuccessAlertBox = (props: any): JSX.Element => {
   return (
-    <Alert variant="success" onClose={() => props.handleClose()} dismissible>
-      <Alert.Heading> The deployment of env_name was success. </Alert.Heading>
-    </Alert>
+    <Alert variant="success">Success <a style={{textDecoration: "underline"}} onClick={() => props.handleClose()}>Close</a></Alert>
   );
 }

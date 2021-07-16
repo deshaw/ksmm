@@ -7,7 +7,7 @@ import React from "react";
  *
  * props: data -> The data to render - namely, the data as defined in the schema
  */
-export const IPythonFormGroup = (props: {
+export const IKsFormGroup = (props: {
   properties: any;
   selecteditem: string;
   mainprops: any;

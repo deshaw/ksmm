@@ -151,18 +151,25 @@ class KSHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self, name=None):
-        # data = tornado.escape.json_decode(self.request.body)
+        data = json.loads(self.request.body.decode('utf-8'))
         # target = self.km.find_kernel_specs()[data["name"]]
         # self.km.install_kernel_spec(target, new_name)
-        data = json.loads(self.request.body.decode('utf-8'))
-        kernelPaths = self.km.find_kernel_specs()
-        # Write to python object
-        path = kernelPaths[str(data['originalKernelName'])]
-        if name is None:
-            pass
-        with open(str(Path(path, 'kernel.json')), 'w') as outfile:
-            json.dump(json.loads(data['editedKernelPayload']), outfile)
-        self.finish(f"POST {name!r}\n")
+        originalKernelName = str(data['originalKernelName'])
+        if originalKernelName is None:
+            self.finish(json.dumps({
+                "success": False,
+                "message": "You must provide a kernelspec name"
+            }))
+        else:
+            kernelPaths = self.km.find_kernel_specs()
+            # Write to python object.
+            path = kernelPaths[originalKernelName]
+            with open(str(Path(path, 'kernel.json')), 'w') as outfile:
+                json.dump(json.loads(data['editedKernelPayload']), outfile)
+            self.finish(json.dumps({
+                "success": True,
+                "kernel_name": originalKernelName
+            }))
 
 
     @tornado.web.authenticated

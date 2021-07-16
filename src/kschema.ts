@@ -78,7 +78,7 @@ export const IPySchema: JSONSchema7 = {
  * function. When called on the ipyschema object, the function
  * returns a ipyCardSchema.
  */
-export const IPyCardSchema: JSONSchema7 = {
+export const KsSchema: JSONSchema7 = {
   title: "IPyKernel Card",
   type: "array",
   items: {

@@ -3,11 +3,15 @@ import { ReactWidget } from "@jupyterlab/apputils";
 import Container from "react-bootstrap/Container";
 // import { JSONSchema7 } from "json-schema";
 import { requestAPI } from "./handler";
-import CardGrid from "./components/ipycardgrid";
+import CardGrid from "./components/kscardgrid";
 import { SuccessAlertBox } from "./components/alerts";
-import { IPyForm } from "./components/ipyform";
+import { IKsForm } from "./components/ksform";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+
+const DuplicateAlert = (props: any) => {
+  alert("A copy of " +props.original_kernel + " has been created.");
+};
 
 /**
  * React component for listing the possible
@@ -25,30 +29,10 @@ const KernelManagerComponent = (): JSX.Element => {
   const [schema, setSchema] = useState({});
 
   /**
-   * Handles a form submission when
-   * kernels are modified in any form.
-   *
-   * Passed as a prop to Form
-   */
-  const handleKernelSubmission = (e: any) => {
-    requestAPI("/", {
-      method: "POST",
-      body: JSON.stringify({
-        editedKernelPayload: JSON.stringify(e.formData),
-        originalKernelName: selectedKernelName,
-      }),
-    }).then((data: any) => {
-      if (data.status == 200) {
-        setAlertBox(true);
-      }
-    });
-  }
-
-  /**
    * Handles the Kernel Selection
    * at the select screen. ,
    */
-  const handleSelectedKernel = (kernelName: string, e: any) => {
+  const handleSelectKernelspec = (kernelName: string, e: any) => {
     const a = JSON.parse(JSON.stringify(data));
     setSelectedKernelName(kernelName);
     setKernelFormData(a[kernelName]);
@@ -59,10 +43,71 @@ const KernelManagerComponent = (): JSX.Element => {
    * Return Home on click.
    * TODO: Add Guards to check if editing.
    */
-  const handleGoingHome = () => {
+  const handleGoHome = () => {
     setShowForm(false);
     setAlertBox(false);
   };
+
+  const fetchSchema = async () => {
+    requestAPI("/schema", {
+      method: "GET",
+    }).then((data: any) => {
+      setSchema(data);
+    });
+  }
+
+  const fetchKernelSpec = async () => {
+    requestAPI("/", {
+      method: "GET",
+    }).then((data: any) => {
+      setData(data);
+      setCardData(generateCardData(data));
+    });
+  }
+
+  const handleCopyKernelspec = (kernel_name: string) => {
+    requestAPI("/copy", {
+      method: "POST",
+      body: JSON.stringify({ name: kernel_name }),
+    }).then((data: any) => {
+      DuplicateAlert({ original_kernel: kernel_name });
+      fetchSchema();
+      fetchKernelSpec();
+    });
+  };
+
+  const handleDeleteKernelspec = (kernel_name: string) => {
+    requestAPI("/delete", {
+      method: "POST",
+      body: JSON.stringify({ name: kernel_name }),
+    }).then((data: any) => {
+      alert("Deleting " + kernel_name);
+      fetchSchema();
+      fetchKernelSpec();
+    });
+  };
+
+  /**
+   * Handles a form submission when
+   * kernels are modified in any form.
+   *
+   * Passed as a prop to Form
+   */
+   const handleKernelspecUpdate = (e: any) => {
+    requestAPI("/", {
+      method: "POST",
+      body: JSON.stringify({
+        editedKernelPayload: JSON.stringify(e.formData),
+        originalKernelName: selectedKernelName,
+      }),
+    }).then((data: any) => {
+      if (data.success) {
+        setAlertBox(true);
+        fetchSchema();
+        fetchKernelSpec();
+      }
+    });
+  }
 
   /**
    * Generate the package of data needed
@@ -86,21 +131,6 @@ const KernelManagerComponent = (): JSX.Element => {
   }
 
   useEffect(() => {
-    const fetchSchema = async () => {
-      requestAPI("/schema", {
-        method: "GET",
-      }).then((data: any) => {
-        setSchema(data);
-      });
-    }
-    const fetchKernelSpec = async () => {
-      requestAPI("/", {
-        method: "GET",
-      }).then((data: any) => {
-        setData(data);
-        setCardData(generateCardData(data));
-      });
-    }
     fetchSchema();
     fetchKernelSpec();
   }, []);
@@ -110,18 +140,21 @@ const KernelManagerComponent = (): JSX.Element => {
       <div>Kernelspec Manager</div>
       {!showForm && cardData.map((cardPayload: any, idx) => (
         <CardGrid
-          handleSubmit={handleSelectedKernel}
+          handleSelectKernelspec={handleSelectKernelspec}
+          handleCopyKernelspec={handleCopyKernelspec}
+          handleDeleteKernelspec={handleDeleteKernelspec}
           cardPayload={cardPayload}
           key={idx}
         />
       ))
       }
-      {alertBox && <SuccessAlertBox handleClose={handleGoingHome} />}
+      {alertBox && <SuccessAlertBox handleClose={handleGoHome} />}
       {showForm && (
-        <IPyForm
+        <IKsForm
           schema={schema}
           formData={kernelFormData}
-          onSubmit={handleKernelSubmission}
+          onSubmit={handleKernelspecUpdate}
+          onCancel={handleGoHome}
         />
       )}
     </Container>

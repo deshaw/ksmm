@@ -71,9 +71,9 @@ make install-dev
 ```
 
 ```python
-# In terminal 1, Start the jupyterlab in watch mode.
+# In terminal 1, Start the jupyterlab.
 # open http://localhost:8234?token=...
-make jlab-watch
+make jlab
 ```
 
 ```python
