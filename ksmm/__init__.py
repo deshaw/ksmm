@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
-from .handlers import setup_handlers
 from ._version import __version__
+from .handlers import setup_handlers
 
 
 HERE = Path(__file__).parent.resolve()
@@ -30,7 +30,7 @@ def _load_jupyter_server_extension(server_app):
     server_app: jupyterlab.labapp.LabApp
         JupyterLab application instance
     """
-    setup_handlers(server_app.web_app, server_app.kernel_spec_manager_class())
+    setup_handlers(server_app.web_app)
     server_app.log.info("Registered KSMM extension at URL path /ksmm")
 
 
