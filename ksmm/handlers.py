@@ -118,7 +118,8 @@ class KSHandler(APIHandler):
     def get(self, name=None):
         if name is None:
             # TODO This is suboptimal but needed as get_all_specs methods does not return and updated view of the specs.
-            kernel_specs = {k: self.kernel_spec_manager.get_kernel_spec(k).to_dict() for k in self.kernel_spec_manager.find_kernel_specs()}
+            kernel_specs = {k: self.kernel_spec_manager.get_kernel_spec(k).to_dict()
+              for k in self.kernel_spec_manager.find_kernel_specs()}
             self.finish(kernel_specs)
         else:
             self.finish(self.kernel_spec_manager.get_kernel_spec(name).to_dict())
