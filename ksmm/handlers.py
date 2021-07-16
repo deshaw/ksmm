@@ -15,14 +15,11 @@ class KSIPyCreateHandler(APIHandler):
     """
     Handler for creation of a new IPython Kernel Specification.
     """
-    def initialize(self, km):
-        self.km = km
-
 
     @tornado.web.authenticated
     def post(self, name=None):
         # data = tornado.escape.json_decode(self.request.body)
-        # source_dir = self.km.find_kernel_specs()[name]
+        # source_dir = self.kernel_spec_manager.find_kernel_specs()[name]
         self.finish(f"POST {name!r}\n")
 
 
@@ -32,15 +29,16 @@ class KSDeleteHandler(APIHandler):
     Utilizes POST functionality in order
     to duplicate an environment.
     """
-    def initialize(self, km):
-        self.km = km
-   
 
     @tornado.web.authenticated
     def post(self, name=None):
         data = tornado.escape.json_decode(self.request.body)
-        self.km.remove_kernel_spec(data["name"])
-        self.finish(f"DELETED {name!r}\n")
+        name = data["name"]
+        self.kernel_spec_manager.remove_kernel_spec(name)
+        self.finish(json.dumps({
+            "success": True,
+            "name": name
+        }))
 
 
 class KSCopyHandler(APIHandler):
@@ -49,17 +47,16 @@ class KSCopyHandler(APIHandler):
     Only utilizes POST functionality in order
     to duplicate an environment.
     """
-    def initialize(self, km):
-        self.km = km
-   
-
     @tornado.web.authenticated
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        source_dir = self.km.find_kernel_specs()[data["name"]]
+        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         new_name = '-'.join([data["name"], "copy"])
-        self.km.install_kernel_spec(source_dir, kernel_name=new_name)
-        self.finish()
+        self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
+        self.finish(json.dumps({
+            "success": True,
+            "new_name": new_name
+        }))
 
 
 class KSSchemaHandler(APIHandler):
@@ -68,12 +65,8 @@ class KSSchemaHandler(APIHandler):
     Loads the schema required to render the frontend from the JSON file, calculating any
     information that is needed dynamically.
     """
-    def initialize(self, km):
-        self.km = km
-
 
     def get_local_params(self) -> dict:
-        
         to_str = lambda int_list: [str(item) for item in int_list]
         params = {
             "cores": to_str(list(range(1, psutil.cpu_count() + 1))),
@@ -120,40 +113,22 @@ class KSHandler(APIHandler):
           Suggestion "POST ks/<name> replace the existing kernel.json with the content of the post.
     PUT: Alternate to copy; put directly a kernelspec. Not implemented for above reason.
     """
-    def initialize(self, km):
-        self.km = km
-        # km.get_all_specs()
-        # km.find_kernel_specs()
-        # km.remove_kernel_spec(name)
-        # km.install_kernel_spec(self, source_dir)  -- wierd as it take a source dir
 
-        
     @tornado.web.authenticated
     def get(self, name=None):
         if name is None:
-            #  TODO: Write filepath to hash
-            self.finish({k: v["spec"] for k, v in self.km.get_all_specs().items()})
+            # TODO This is suboptimal but needed as get_all_specs methods does not return and updated view of the specs.
+            kernel_specs = {k: self.kernel_spec_manager.get_kernel_spec(k).to_dict() for k in self.kernel_spec_manager.find_kernel_specs()}
+            self.finish(kernel_specs)
         else:
-            self.finish(self.km.get_kernel_spec(name).to_dict())
-
-
-    @tornado.web.authenticated
-    def delete(self, name):
-        self.km.remove_kernel_spec(name)
-        self.finish()
-
-
-    @tornado.web.authenticated
-    def list(self):
-        # l = self.km.find_kernel_specs().keys()
-        self.finish({"names": list(self.km.find_kernel_specs().keys())})
+            self.finish(self.kernel_spec_manager.get_kernel_spec(name).to_dict())
 
 
     @tornado.web.authenticated
     def post(self, name=None):
         data = json.loads(self.request.body.decode('utf-8'))
-        # target = self.km.find_kernel_specs()[data["name"]]
-        # self.km.install_kernel_spec(target, new_name)
+        # target = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        # self.kernel_spec_manager.install_kernel_spec(target, new_name)
         originalKernelName = str(data['originalKernelName'])
         if originalKernelName is None:
             self.finish(json.dumps({
@@ -161,7 +136,7 @@ class KSHandler(APIHandler):
                 "message": "You must provide a kernelspec name"
             }))
         else:
-            kernelPaths = self.km.find_kernel_specs()
+            kernelPaths = self.kernel_spec_manager.find_kernel_specs()
             # Write to python object.
             path = kernelPaths[originalKernelName]
             with open(str(Path(path, 'kernel.json')), 'w') as outfile:
@@ -170,11 +145,6 @@ class KSHandler(APIHandler):
                 "success": True,
                 "kernel_name": originalKernelName
             }))
-
-
-    @tornado.web.authenticated
-    def put(self, name=None):
-        raise NotImplementedError
 
 
     def write_error(self, status_code, **kwargs):
@@ -205,14 +175,14 @@ class KSHandler(APIHandler):
         self.write({"status_code": status_code, "message": message})
 
 
-def setup_handlers(web_app, km):
+def setup_handlers(web_app):
     host_pattern = ".*$"
     base_url = web_app.settings["base_url"]
     handlers = [
-        (url_path_join(base_url, "ksmm", "/"), KSHandler, {'km': km}),
-        (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler, {"km": km}),
-        (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler, {"km": km}),
-        (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler, {"km": km}),
-        (url_path_join(base_url, "ksmm", "/createipy"), KSIPyCreateHandler, {"km": km}),
+        (url_path_join(base_url, "ksmm", "/"), KSHandler),
+        (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler),
+        (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler),
+        (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler,),
+        (url_path_join(base_url, "ksmm", "/createipy"), KSIPyCreateHandler),
     ]
     web_app.add_handlers(host_pattern, handlers)

@@ -28,7 +28,7 @@ fetchMachineParameters();
  * is also subject to change based on the types.
  */
 export const IPySchema: JSONSchema7 = {
-  title: "IPyKernel Management Menu",
+  title: "Kernelspec Management Menu",
   type: "object",
   properties: {
     argv: { type: "array", items: { type: "string" }, title: "" },
@@ -79,7 +79,7 @@ export const IPySchema: JSONSchema7 = {
  * returns a ipyCardSchema.
  */
 export const KsSchema: JSONSchema7 = {
-  title: "IPyKernel Card",
+  title: "Kernelspec Card",
   type: "array",
   items: {
     type: "object",
