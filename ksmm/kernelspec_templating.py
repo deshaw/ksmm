@@ -1,0 +1,180 @@
+"""
+Provides templating of the kernelspec, 
+
+That is to say write a kernelspec with placeholder for values, as well as describe
+which values this placeholder can take (using JSON schema  in the future). 
+
+And allow to update the kernelspec by replacing the placeholders by given values. 
+
+Utilities (should) be provided to extract only what are the placeholder and which values they can take, 
+as well as taking an existing kernelspec and modifying those values. 
+"""
+
+from jupyter_client.kernelspec import KernelSpecManager
+
+# km = KernelSpecManager()
+
+
+# Here is an example of a kernelspec with a template present in metadata.
+# this template takes 2 parameters:
+# `cpu` and `mem`,
+# you will also see the `mem_slurm` parameters which depends on the `mem` parameters.
+# While `mem` is used in UI and has human readale values, `mem_slurm` is in Kb.
+# the templates parameters can be present in multiple locations, and parameters with
+# curly brackets that have unknown values are left alone.
+example = """{
+   "argv":[],
+   "display_name":"",
+   "language":"python",
+   "metadata":{
+      "template":{
+         "tpl":{
+            "argv":[
+               "slurm",
+               "run",
+               "--mem={mem_slurm}",
+               "--cpu={cpu}",
+               "python3.8",
+               "-m",
+               "ipyukernel",
+               "-f",
+               "{connection_file}"
+            ],
+            "display_name":"Python 3.8 {mem}/{cpu}"
+         },
+         "parameters":{
+            "cpu":[
+               10,
+               15,
+               20
+            ],
+            "mem":[
+               "100G",
+               "500G",
+               "1T"
+            ]
+         },
+         "mapping":{
+            "mem_slurm":{
+               "mem":{
+                  "100G":"102400",
+                  "500G":"512000",
+                  "1T":"1048576"
+               }
+            }
+         }
+      }
+   }
+}
+"""
+
+import json
+
+spec = json.loads(example)
+# spec = km.get_kernel_spec('test2').to_dict()
+
+
+class Default(dict):
+    """"""
+
+    def __init__(self, mapping, **kwargs):
+        super().__init__(**kwargs)
+        self.mapping = mapping
+
+    def __missing__(self, key):
+        if key in self.mapping:
+            [(target, values)] = self.mapping[key].items()
+            assert target in self, target
+            return values[self[target]]
+        return "{" + key + "}"
+
+
+def recformat(item, mapping, **kwargs):
+    """recursively format string/list.
+
+
+    Format values from **kwargs, if an item is not present in
+    **kwargs lookup in mpaaing. This is because we might want some
+    dependencies, for example, a user might select "100GB" and convert
+    that to Kb, or various values that depends on the software we use.
+
+    Parameters
+    ----------
+
+    item: list | str
+        item to format
+    mapping:
+        lookup for element not in kwargs
+    **kwargs:
+        values to interpolate
+
+    Examples
+    --------
+
+    >>> recformat(['{mem} {cpu} {left_alone}','--mem={mem_slurm}'],
+    ...         {
+    ...             'mem_slurm':{
+    ...                 'mem':{
+    ...                     '1G':'1024kb',
+    ...                     'BIG': '1234567kb'
+    ...                 }
+    ...         }
+    ...     },
+    ...     cpu=1,
+    ...     mem='BIG',
+    ... )
+    ['BIG 1 {left_alone}', '--mem=1234567kb']
+
+    Notice how this left alone curly-bracked where we don't have the values.
+
+    Notes
+    -----
+
+    This is sort of a poor man templating engine, but we can't really use syntax like jinja
+    {cpu|to_kb}, as we are not sure those templates will be used in Python context.
+    And we are also not sure how to ship those function unless they become part of the spec.
+    With this approach kernelspec embed their own things.
+
+    """
+    if isinstance(item, str):
+        return item.format_map(Default(mapping, **kwargs))
+    elif isinstance(item, list):
+        return [recformat(i, mapping, **kwargs) for i in item]
+    else:
+        raise ValueError("item is not a list or a string: {}".format(item))
+
+
+def reformat_tpl(spec, **kwargs):
+    """
+    Given a spec with a template in metadata->template,
+    format it with the give kwargs.
+
+    The template in in metadata template as KernelSpecManager does not load unknow keys.
+
+    The template section is split into 3 sections itself:
+
+    tpl: contain a templated kernelsec mirror with the argv and display_name keys.
+    Thos will be reformatted.
+
+    parameters: contains a list of parameters and their possible values.
+    Note: this should be migrated to useing json schema, right now it just support something
+    like json schema enums.
+
+    mapping: when the same parameters needs to be in several place in different fomat,
+    this provide mappign from enum variants to values to actually place in the formatted spec.
+    This is usefull for example to express Memory in term of 'small', 'medium', 'big', or in term of Gb/Tb
+    And get values in the spec in Mb or Kb.
+
+
+
+    """
+    newspec = {}
+    for k, v in spec.items():
+        if k in ("argv", "display_name"):
+            it = spec["metadata"]["template"]["tpl"][k]
+            newspec[k] = recformat(
+                it, spec["metadata"]["template"]["mapping"], **kwargs
+            )
+        else:
+            newspec[k] = v
+    return newspec
