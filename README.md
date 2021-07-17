@@ -37,10 +37,10 @@ given a kernelspec template like the following.
 
 ```json
 {
-  "cmd": [
+  "argv": [
     "slurm", "run", "--mem={mem}", "--cpu={cpu}", "python3.8", "-m", "ipykernel"
   ],
-  "title": "Python 3.8 {mem}/{cpu}",
+  "display_name": "Python 3.8 {mem}/{cpu}",
   "params": {
     "mem": ["100G", "500G", "1T"],
     "cpu": { "min": 1, "max": 300}
