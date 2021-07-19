@@ -1,8 +1,8 @@
 import React from "react";
 
 /*
- * This is a nested comoponenet in the FieldTemplate, and
- * does all the work for rendering the different optins in their
+ * This is a nested component in the FieldTemplate, and
+ * does all the work for rendering the different options in their
  * respective places.
  *
  * props: data -> The data to render - namely, the data as defined in the schema
@@ -27,7 +27,7 @@ export const IKsFormGroup = (props: {
 
 /*
  * Grab the location of the element in the array,
- * returning a value of the postions in the array.
+ * returning a value of the positions in the array.
  */
 function generateFormGroupMap(dataArr: any) {
   const GeneralSettingsArray: Array<number> = [];
@@ -52,7 +52,7 @@ function generateFormGroupMap(dataArr: any) {
     } else if (element.name == "metadata") {
       MetadataArray.push(dataArr.indexOf(element));
     } else {
-      console.log("oopsies");
+      console.log("Unknown element name", element.name);
     }
   });
 

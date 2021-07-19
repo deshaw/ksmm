@@ -10,7 +10,6 @@ import tornado
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
-
 #class KSIPyCreateHandler(APIHandler):
 #    """
 #    Handler for creation of a new IPython Kernel Specification.
