@@ -10,17 +10,16 @@ import tornado
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
-
-class KSIPyCreateHandler(APIHandler):
-    """
-    Handler for creation of a new IPython Kernel Specification.
-    """
-
-    @tornado.web.authenticated
-    def post(self, name=None):
-        # data = tornado.escape.json_decode(self.request.body)
-        # source_dir = self.kernel_spec_manager.find_kernel_specs()[name]
-        self.finish(f"POST {name!r}\n")
+#class KSIPyCreateHandler(APIHandler):
+#    """
+#    Handler for creation of a new IPython Kernel Specification.
+#    """
+#
+#    @tornado.web.authenticated
+#    def post(self, name=None):
+#        # data = tornado.escape.json_decode(self.request.body)
+#        # source_dir = self.kernel_spec_manager.find_kernel_specs()[name]
+#        self.finish(f"POST {name!r}\n")
 
 
 class KSDeleteHandler(APIHandler):
@@ -184,6 +183,6 @@ def setup_handlers(web_app):
         (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler),
         (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler),
         (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler,),
-        (url_path_join(base_url, "ksmm", "/createipy"), KSIPyCreateHandler),
+        #(url_path_join(base_url, "ksmm", "/createipy"), KSIPyCreateHandler),
     ]
     web_app.add_handlers(host_pattern, handlers)

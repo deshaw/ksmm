@@ -27,50 +27,50 @@ fetchMachineParameters();
  * Standards. When making changes, note that the UI
  * is also subject to change based on the types.
  */
-export const IPySchema: JSONSchema7 = {
-  title: "Kernelspec Management Menu",
-  type: "object",
-  properties: {
-    argv: { type: "array", items: { type: "string" }, title: "" },
-    env: {
-      type: "object",
-      title: "object",
-      properties: {
-        EnvVar: { type: "string" },
-      },
-      additionalProperties: {
-        type: "string",
-      },
-    },
-    display_name: { type: "string", title: "Display Name" },
-    language: { type: "string", title: "Programming Language" },
-    interrupt_mode: {
-      type: "string",
-      title: "Interrupt Mode",
-      enum: ["signal", "message"],
-    },
-    parameters: {
-      type: "object",
-      properties: {
-        cores: { type: "string", enum: ["4", "6", "8"], title: "CPU Cores" },
-        memory: {
-          type: "string",
-          enum: ["8GB", "16GB", "32GB"],
-          title: "Memory",
-        },
-      },
-    },
-    metadata: { type: "object", title: "" },
-  },
-  required: [
-    "argv",
-    "display_name",
-    "env",
-    "interrupt_mode",
-    "language",
-    "metadata",
-  ],
-}
+// export const IPySchema: JSONSchema7 = {
+//   title: "Kernelspec Management Menu",
+//   type: "object",
+//   properties: {
+//     argv: { type: "array", items: { type: "string" }, title: "" },
+//     env: {
+//       type: "object",
+//       title: "object",
+//       properties: {
+//         EnvVar: { type: "string" },
+//       },
+//       additionalProperties: {
+//         type: "string",
+//       },
+//     },
+//     display_name: { type: "string", title: "Display Name" },
+//     language: { type: "string", title: "Programming Language" },
+//     interrupt_mode: {
+//       type: "string",
+//       title: "Interrupt Mode",
+//       enum: ["signal", "message"],
+//     },
+//     parameters: {
+//       type: "object",
+//       properties: {
+//         cores: { type: "string", enum: ["4", "6", "8"], title: "CPU Cores" },
+//         memory: {
+//           type: "string",
+//           enum: ["8GB", "16GB", "32GB"],
+//           title: "Memory",
+//         },
+//       },
+//     },
+//     metadata: { type: "object", title: "" },
+//   },
+//   required: [
+//     "argv",
+//     "display_name",
+//     "env",
+//     "interrupt_mode",
+//     "language",
+//     "metadata",
+//   ],
+// }
 
 /*
  * This is the schema for the display cards rendered for
