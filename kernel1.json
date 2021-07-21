@@ -1,0 +1,54 @@
+{
+  "argv": [
+    "slurm",
+    "run",
+    "--mem=512000",
+    "--cpu=10",
+    "python3.8",
+    "-m",
+    "ipykernel",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "Python 3.8 Medium/10",
+  "language": "python",
+  "metadata": {
+    "template": {
+      "tpl": {
+        "argv": [
+          "slurm",
+          "run",
+          "--mem={mem_slurm}",
+          "--cpu={cpu}",
+          "python3.8",
+          "-m",
+          "ipykernel",
+          "-f",
+          "{connection_file}"
+        ],
+        "display_name": "Python 3.8 {mem}/{cpu}"
+      },
+      "parameters": {
+        "cpu": [
+          "10",
+          "15",
+          "20"
+        ],
+        "mem": [
+          "Small",
+          "Medium",
+          "Big"
+        ]
+      },
+      "mapping": {
+        "mem_slurm": {
+          "mem": {
+            "Small": "102400",
+            "Medium": "512000",
+            "Big": "1048576000"
+          }
+        }
+      }
+    }
+  }
+}

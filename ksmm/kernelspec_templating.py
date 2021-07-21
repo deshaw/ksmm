@@ -178,3 +178,7 @@ def reformat_tpl(spec, **kwargs):
         else:
             newspec[k] = v
     return newspec
+
+
+def extract_parameters(spec):
+    return spec["metadata"]["template"]["parameters"]
