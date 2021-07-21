@@ -31,7 +31,7 @@ params = extract_parameters(spec)
 new_params = {}
 for k, v in params.items():
     result = radiolist_dialog(
-        title=f"{k}",
+        title=spec["display_name"],
         text=f"Select new value for {k}",
         values=[(str(u), str(u)) for u in v],
     ).run()

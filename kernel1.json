@@ -2,15 +2,15 @@
   "argv": [
     "slurm",
     "run",
-    "--mem=512000",
-    "--cpu=10",
+    "--mem=1048576000",
+    "--cpu=20",
     "python3.8",
     "-m",
     "ipykernel",
     "-f",
     "{connection_file}"
   ],
-  "display_name": "Python 3.8 Medium/10",
+  "display_name": "Python 3.8 RAM:Big/ CPU=20 / Without GPU",
   "language": "python",
   "metadata": {
     "template": {
@@ -26,18 +26,28 @@
           "-f",
           "{connection_file}"
         ],
-        "display_name": "Python 3.8 {mem}/{cpu}"
+        "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
       },
       "parameters": {
         "cpu": [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
           "10",
           "15",
-          "20"
+          "20",
+          "48"
         ],
         "mem": [
           "Small",
           "Medium",
           "Big"
+        ],
+        "gpu": [
+          "With GPU",
+          "Without GPU"
         ]
       },
       "mapping": {
