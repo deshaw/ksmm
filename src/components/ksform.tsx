@@ -15,9 +15,9 @@ const TabMenu = (props: any): JSX.Element => {
   var menuHeaders = [
     "General Settings",
     "Launch Arguments",
-    "Environment Variables",
-    "Compute Parameters",
-    "Metadata",
+//    "Environment Variables",
+//    "Compute Parameters",
+//    "Metadata",
   ];
   return (
     <Tabs
