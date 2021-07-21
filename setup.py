@@ -48,7 +48,8 @@ setup_args = dict(
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     install_requires=[
-        "jupyter_server>=1.6,<2"
+        "jupyter_server>=1.6,<2",
+        "psutil",
     ],
     zip_safe=False,
     include_package_data=True,
