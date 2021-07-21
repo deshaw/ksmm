@@ -39,3 +39,9 @@ jobs:
         run: |
           pip install isort
           isort -c ksmm
+
+      - name: build wheel and sdist
+        shell: bash -l {0}
+        run: |
+          jlpm
+          python setup.py bdist_wheel sdist
