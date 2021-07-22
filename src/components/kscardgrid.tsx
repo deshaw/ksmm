@@ -1,57 +1,44 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
 import { FaRegEdit, FaCopy, FaTrash } from "react-icons/fa";
-import Form from "@rjsf/bootstrap-4";
-import { KsSchema } from "../kschema";
 
 const CardGrid = (props: any): JSX.Element => {
   const { cardPayload, handleSelectKernelspec, handleCopyKernelspec, handleDeleteKernelspec } = props;
-  const ksInfo = cardPayload;
-  const cardWidget = (props: any) => {
-    return (
-      <Card
-        style={{
-          width: "18rem",
-          height: "12rem",
-        }}
-      >
-        <Card.Body>
-          <Card.Title>Kernel: {ksInfo.kernel_name}</Card.Title>
-          <Card.Title>{ksInfo.jupyter_name}</Card.Title>
-        </Card.Body>
-        <Card.Footer className="align-left">
-          <a
-            style={{ cursor: "pointer" }}
-            onClick={() => handleSelectKernelspec(ksInfo.kernel_name)}
-          >
-            <FaRegEdit />
-          </a>
-          <a
-            style={{ cursor: "pointer" }}
-            onClick={() => handleCopyKernelspec(ksInfo.kernel_name)}
-          >
-            <FaCopy />
-          </a>
-          <a
-            style={{ cursor: "pointer" }}
-            onClick={() => handleDeleteKernelspec(ksInfo.kernel_name)}
-          >
-            <FaTrash />
-          </a>
-        </Card.Footer>
-      </Card>
-    );
-  };
-
-  const uiSchema = {
-    "ui:ArrayFieldTemplate": cardWidget,
-  };
-
   return (
-    <div>
-      <Form schema={KsSchema} uiSchema={uiSchema} children={" "} />
-    </div>
+    <Card
+      style={{
+        width: "18rem",
+        height: "12rem",
+      }}
+      key={cardPayload.kernel_name}
+    >
+      <Card.Body>
+        <Card.Title>Kernel: {cardPayload.kernel_name}</Card.Title>
+        <Card.Title>{cardPayload.jupyter_name}</Card.Title>
+      </Card.Body>
+      <Card.Footer className="align-left">
+        <a
+          style={{ cursor: "pointer" }}
+          onClick={() => handleSelectKernelspec(cardPayload.kernel_name)}
+        >
+          <FaRegEdit />
+        </a>
+        <a
+          style={{ cursor: "pointer" }}
+          onClick={() => handleCopyKernelspec(cardPayload.kernel_name)}
+        >
+          <FaCopy />
+        </a>
+        <a
+          style={{ cursor: "pointer" }}
+          onClick={() => handleDeleteKernelspec(cardPayload.kernel_name)}
+        >
+          <FaTrash />
+        </a>
+      </Card.Footer>
+    </Card>
   );
+
 };
 
 export default CardGrid;
