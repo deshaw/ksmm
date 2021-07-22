@@ -9,4 +9,4 @@ dependencies:
   - tornado
   - yarn
   - pip:
-    - jupyter_packaging==0.9
+    - jupyter_packaging==0.10.4
