@@ -4,10 +4,10 @@ import json
 import pathlib
 from pathlib import Path
 from types import SimpleNamespace
-import ulid as ulid_gen
 
 import psutil
 import tornado
+import ulid as ulid_gen
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
