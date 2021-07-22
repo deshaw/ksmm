@@ -1,7 +1,7 @@
 {
   "name": "@quansight/jupyterlab-ksmm",
-  "version": "0.0.3",
-  "description": "An extension to manage IPython Kernels from Jupyter",
+  "version": "0.0.8",
+  "description": "An extension to manage Kernelspecs from JupyterLab",
   "keywords": [
     "jupyter",
     "jupyterlab",

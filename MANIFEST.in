@@ -3,7 +3,7 @@ include README.md
 include pyproject.toml
 
 recursive-include jupyter-config *.json
-include schema/kernelSchema.json
+recursive-include schema
 
 include package.json
 include ts*.json
@@ -12,6 +12,7 @@ graft ksmm/labextension
 # Javascript files
 graft src
 graft style
+graft schema
 prune **/node_modules
 prune lib
 

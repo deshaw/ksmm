@@ -26,7 +26,7 @@ data_files_spec = [
     ("share/jupyter/labextensions/%s" % labext_name, str('.'), "install.json"),
     ("etc/jupyter/jupyter_server_config.d",
      "jupyter-config/server-config", "ksmm.json"),
-    # For backward compatibility with notebook server
+    # For backward compatibility with notebook server.
     ("etc/jupyter/jupyter_notebook_config.d",
      "jupyter-config/nb-config", "ksmm.json"),
 ]
@@ -50,6 +50,7 @@ setup_args = dict(
     install_requires=[
         "jupyter_server>=1.6,<2",
         "psutil",
+        "ulid-py",
     ],
     zip_safe=False,
     include_package_data=True,
