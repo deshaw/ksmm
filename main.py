@@ -18,7 +18,7 @@ for name in glob("*.json"):
 
 spec_file = radiolist_dialog(
     title="Choose kernelspec",
-    text="Which breakfast would you like ?",
+    text="Select Kernel to parametrize",
     values=[(x, y) for x, y in mmm.items()],
 ).run()
 
