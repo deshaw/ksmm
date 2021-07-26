@@ -2,15 +2,15 @@
   "argv": [
     "slurm",
     "run",
-    "--mem=1048576000",
-    "--cpu=20",
+    "--mem=512000",
+    "--cpu=12",
     "python3.8",
     "-m",
     "ipykernel",
     "-f",
     "{connection_file}"
   ],
-  "display_name": "Python 3.8 RAM:Big/ CPU=20 / Without GPU",
+  "display_name": "Python 3.8 RAM:Medium/ CPU=12 / False",
   "language": "python",
   "metadata": {
     "template": {
@@ -29,26 +29,28 @@
         "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
       },
       "parameters": {
-        "cpu": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "10",
-          "15",
-          "20",
-          "48"
-        ],
-        "mem": [
-          "Small",
-          "Medium",
-          "Big"
-        ],
-        "gpu": [
-          "With GPU",
-          "Without GPU"
-        ]
+        "cpu": {
+          "type": "integer",
+          "title": "CPU core",
+          "default": 1,
+          "maximum": 48,
+          "multipleOf": 2,
+          "minimum": 1
+        },
+        "mem": {
+          "type": "string",
+          "title": "Memory (GB)",
+          "enum": [
+            "Small",
+            "Medium",
+            "Big"
+          ]
+        },
+        "gpu": {
+          "type": "boolean",
+          "title": "Graphic Processor",
+          "default": true
+        }
       },
       "mapping": {
         "mem_slurm": {

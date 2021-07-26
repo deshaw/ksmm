@@ -84,7 +84,7 @@ class Default(dict):
     def __missing__(self, key):
         if key in self.mapping:
             [(target, values)] = self.mapping[key].items()
-            assert target in self, target
+            assert target in self, (target, self)
             return values[self[target]]
         return "{" + key + "}"
 

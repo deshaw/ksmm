@@ -1,4 +1,4 @@
-from prompt_toolkit.shortcuts import radiolist_dialog
+from prompt_toolkit.shortcuts import radiolist_dialog, input_dialog
 
 from ksmm.kernelspec_templating import reformat_tpl, extract_parameters
 
@@ -28,13 +28,54 @@ spec = json.loads(open(spec_file).read())
 params = extract_parameters(spec)
 
 
+class SchemaForm:
+
+
+    def __init__(self, item,title):
+        self.item = item
+        self.title = title #spec["display_name"]
+
+
+    def render(self):
+
+        type_ = self.item['type']
+
+        return getattr(self, 'render_'+self.item['type'])()
+
+    def render_integer(self):
+        min_ = self.item.get('minimum', 0)
+        max_ = self.item.get('maximum', 10)
+        step_ = self.item.get('multipleOf', 1)
+        res = input_dialog(
+            title=self.title,
+            text=self.item['title'],
+        ).run()
+        return int(res)
+    
+    def render_string(self):
+        return radiolist_dialog(
+            title=self.title, 
+            text=self.item['title'],
+            values=[(str(u), str(u)) for u in self.item['enum']],
+        ).run()
+
+    def render_boolean(self):
+        return radiolist_dialog(
+            title=self.title, 
+            text=self.item['title'],
+            values=[(True, 'Yes'),( False, 'No')],
+        ).run()
+
+
+
+
+
+
+
+
 new_params = {}
 for k, v in params.items():
-    result = radiolist_dialog(
-        title=spec["display_name"],
-        text=f"Select new value for {k}",
-        values=[(str(u), str(u)) for u in v],
-    ).run()
+    result = SchemaForm(v, spec["display_name"]).render() 
     new_params[k] = result
 
 
