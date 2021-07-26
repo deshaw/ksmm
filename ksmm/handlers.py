@@ -57,6 +57,23 @@ class KSCopyHandler(APIHandler):
             "new_name": new_name
         }))
 
+class KSQuickParamHandler(APIHandler):
+    """
+
+    """
+    @tornado.web.authenticated
+    def post(self):
+        data = tornado.escape.json_decode(self.request.body)
+        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
+        quick_form = spec['metadata']['template']['parameters']
+        #self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
+        self.finish(json.dumps({
+            "success": True,
+            "form": quick_form,
+        }))
+
+
 
 class KSSchemaHandler(APIHandler):
     """KernelSpec Schema Handler
@@ -183,6 +200,7 @@ def setup_handlers(web_app):
         (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler),
         (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler),
         (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler,),
+        (url_path_join(base_url, "ksmm", "/quick"), KSQuickParamHandler,),
         #(url_path_join(base_url, "ksmm", "/createipy"), KSIPyCreateHandler),
     ]
     web_app.add_handlers(host_pattern, handlers)

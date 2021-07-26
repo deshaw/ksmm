@@ -30,7 +30,16 @@ const KernelManagerComponent = (): JSX.Element => {
    */
   const handleSelectKernelspec = (kernelName: string) => {
     setSelectedKernelName(kernelName);
-    setKernelFormData((data as any)[kernelName]);
+    let x =  (data as any)[kernelName]
+    //x['quick'] = {}
+    //x['quick']['properties'] = (x.metadata.template||{}).parameters;
+    x['quick'] = {};
+    let schm:any = schema;
+    schm['properties']['quick'] = {'type':'object'};
+    schm['properties']['quick']['properties'] =  (x.metadata.template||{}).parameters;
+    setSchema(schm)
+    setKernelFormData(x);
+    console.info(schm);
     setShowForm(true);
   }
 
@@ -126,7 +135,7 @@ const KernelManagerComponent = (): JSX.Element => {
   }, []);
 
   return (
-    <Container fluid>
+    <Container>
       <div>Kernelspec Manager</div>
       {!showForm && 
         <div style={{

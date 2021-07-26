@@ -11,12 +11,11 @@ const CardGrid = (props: any): JSX.Element => {
     return (
       <Card
         style={{
-          width: "18rem",
+          width: "12rem",
           height: "12rem",
         }}
       >
         <Card.Body>
-          <Card.Title>Kernel: {ksInfo.kernel_name}</Card.Title>
           <Card.Title>{ksInfo.jupyter_name}</Card.Title>
         </Card.Body>
         <Card.Footer className="align-left">

@@ -15,6 +15,7 @@ const TabMenu = (props: any): JSX.Element => {
   var menuHeaders = [
     "General Settings",
     "Launch Arguments",
+    "Quick Params",
 //    "Environment Variables",
 //    "Compute Parameters",
 //    "Metadata",
@@ -50,6 +51,7 @@ export const IKsForm = (props: any): JSX.Element => {
       },
     },
   }
+    console.log('IKSF', props)
   return (
     <>
       <Form
