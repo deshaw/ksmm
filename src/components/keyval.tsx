@@ -4,30 +4,45 @@ import React, { useState } from "react";
  * This function has a callback to mutate the formData to
  * add a new 'string':'string' type to the dictionary.
  * 
- * Renders a widget for a python dict of
+ * Renders a widget for a dict of
  * { 'string':'string', 'string':'string' }
  */
-export const KeyValueWidget = (props: any) => {
-  const [key, setKey] = useState(props.value.name);
-  const [val, setVal] = useState(props.formData[props.value.name]);
+const KeyValueWidget = (props: any) => {
+  const [formKey, setFormKey] = useState(props.formKey);
+  const [formVal, setFormVal] = useState(props.formData[formKey]);
+  /*
+   * Function to handle a change of key values in a key value store
+   */
+  const handleKeyChange = (oldKey: string, newKey: string) => {
+    props.formData[newKey] = props.formData[oldKey];
+    delete props.formData[oldKey];
+    setFormKey(newKey);
+  };
+  /*
+   * Function to handle any changing values
+   */
+  const handleValueChange = (key: string, newValue: string) => {
+    props.formData[key] = newValue;
+    setFormVal(newValue);
+  }
   return (
-    <div>
+    <>
       <input
         type="string"
-        value={key}
+        value={formKey}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          props.handleKey(key, e.target.value);
-          setKey(e.target.value);
+          handleKeyChange(formKey, e.target.value);
         }}
       />
       <input
         type="string"
-        value={val}
+        value={formVal}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-          props.handleVal(key, e.target.value);
-          setVal(e.target.value);
+          handleValueChange(formKey, e.target.value);
         }}
       />
-    </div>
+    </>
   );
 }
+
+export default KeyValueWidget;

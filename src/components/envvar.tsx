@@ -1,53 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
+import KeyValueWidget from "./keyval";
 
-/*
- * This function is a field that is rendered 
- * for the environment variable.
- */
-export const EnvVarForm = (props: any) => {
-
-  /*
-   * Function to handle a change of key values in a key value store
-   */
-  const handleKeyChange = (key: string, newkey: string) => {
-    props.formData[newkey] = props.formData[key];
-    delete props.formData[key];
-    console.log(props.formData);
-  };
-
-  /*
-   * Function to handle any changing values
-   */
-  const handleValueChange = (key: string, newvalue: string) => {
-    props.formData[key] = newvalue;
-    console.log(props.formData);
-  }
-
-  const widget: (props: any) => JSX.Element = props.uiSchema["ui:widget"];
-
+const EnvVarForm = (props: any) => {
+  const [toggle, setToggle] = useState(true);
   const formData = props.formData;
-
+  const keys = Object.keys(formData);
   return (
-    <div>
-      {props.properties.map((item: any) =>
-        widget(
-          (props = {
-            value: item,
-            formData: formData,
-            handleKey: handleKeyChange,
-            handleVal: handleValueChange,
-          })
-        )
-      )}
+    <>
+      {
+      keys.map((key: any) => {
+        return (
+          <div>
+            <KeyValueWidget
+              formKey={key}
+              formData={formData}
+              key={toggle}
+            />
+            <button
+              type="button"
+              onClick={(e: any) => {
+                delete formData[key]
+                setToggle(!toggle);
+              }}
+            >
+              Delete
+            </button>
+          </div>
+         );
+        })
+      }
       <button
         type="button"
-        onClick={(e: any) => {
-          alert(props.onAddClick);
+        onClick={(e: any) => { 
+          formData['NEW_ENV'] = 'new_value';
+          setToggle(!toggle);
         }}
       >
-        Add New
+        Add
       </button>
-    </div>
+    </>
   );
 
 }
+
+export default EnvVarForm;
