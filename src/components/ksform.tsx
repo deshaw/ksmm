@@ -3,21 +3,20 @@ import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import Form from "@rjsf/bootstrap-4";
-import { KeyValueWidget } from "./keyval";
-import { EnvVarForm } from "./envvar";
-import { IKsFormGroup } from "./ksmenu";
+import EnvVarForm from "./envvar";
+import KsFormGroup from "./ksformgroup";
 
 const TabMenu = (props: any): JSX.Element => {
   const [tab, setTab] = useState("General Settings");
   /*
-   * Generate the menu titles for the schema.
+   * Generate the tab titles for the schema.
    */
   var menuHeaders = [
     "General Settings",
     "Launch Arguments",
-//    "Environment Variables",
-//    "Compute Parameters",
-//    "Metadata",
+    "Environment Variables",
+//     "Compute Parameters",
+//     "Metadata",
   ];
   return (
     <Tabs
@@ -26,11 +25,10 @@ const TabMenu = (props: any): JSX.Element => {
     >
       {menuHeaders.map((menuHeader: string) => (
         <Tab eventKey={menuHeader} key={menuHeader} title={menuHeader}>
-          <IKsFormGroup
-            selecteditem={tab}
-            properties={props.properties}
-            handleAdditionalProperties={props.onAddClick}
+          <KsFormGroup
             mainprops={props}
+            selectedTab={tab}
+            properties={props.properties}
           />
         </Tab>
       ))}
@@ -38,11 +36,10 @@ const TabMenu = (props: any): JSX.Element => {
   );
 }
 
-export const IKsForm = (props: any): JSX.Element => {
+export const KsForm = (props: any): JSX.Element => {
   const uiSchema = {
     "ui:ObjectFieldTemplate": TabMenu,
     env: {
-      "ui:widget": KeyValueWidget,
       "ui:autofocus": true,
       "ui:ObjectFieldTemplate": EnvVarForm,
       "ui:options": {
@@ -57,9 +54,9 @@ export const IKsForm = (props: any): JSX.Element => {
         uiSchema={uiSchema}
         formData={props.formData}
         onSubmit={props.onSubmit}
+        formContext={{}}
       />
       <Button variant="secondary" onClick={() => props.onCancel()}>Cancel</Button>
     </>
   );
-
 }
