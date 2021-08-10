@@ -156,13 +156,11 @@ class KSHandler(APIHandler):
             kernelPaths = self.kernel_spec_manager.find_kernel_specs()
             # Write to python object.
             path = kernelPaths[originalKernelName]
-            with open(str(Path(path, 'kernel.json')), 'w') as outfile:
-                json.dump(json.loads(data['editedKernelPayload']), outfile)
-            self.finish(json.dumps({
-                "success": True,
-                "kernel_name": originalKernelName
-            }))
-
+            with open(str(Path(path, "kernel.json")), "w") as outfile:
+                json.dump(json.loads(data["editedKernelPayload"]), outfile, indent=2)
+            self.finish(
+                json.dumps({"success": True, "kernel_name": originalKernelName})
+            )
 
     def write_error(self, status_code, **kwargs):
         """Render custom error as json"""

@@ -5,22 +5,28 @@ from ksmm.kernelspec_templating import reformat_tpl, extract_parameters
 from glob import glob
 import json
 
+import sys
 
-mmm = {}
-for name in glob("*.json"):
-    try:
-        with open(name) as f:
-            dname = json.loads(f.read())["display_name"]
-            mmm[name] = dname
-    except Exception:
-        pass
+print(sys.argv)
+
+if len(sys.argv) < 2:
+    mmm = {}
+    for name in glob("*.json"):
+        try:
+            with open(name) as f:
+                dname = json.loads(f.read())["display_name"]
+                mmm[name] = dname
+        except Exception:
+            pass
 
 
-spec_file = radiolist_dialog(
-    title="Choose kernelspec",
-    text="Select Kernel to parametrize",
-    values=[(x, y) for x, y in mmm.items()],
-).run()
+    spec_file = radiolist_dialog(
+        title="Choose kernelspec",
+        text="Select Kernel to parametrize",
+        values=[(x, y) for x, y in mmm.items()],
+    ).run()
+else:
+    spec_file = sys.argv[1]
 
 
 spec = json.loads(open(spec_file).read())

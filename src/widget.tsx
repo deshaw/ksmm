@@ -35,7 +35,7 @@ const KernelManagerComponent = (): JSX.Element => {
     //x['quick']['properties'] = (x.metadata.template||{}).parameters;
     x['quick'] = {};
     let schm:any = schema;
-    schm['properties']['quick'] = {'type':'object'};
+    schm['properties']['quick'] = {'type':'object','title':'Rapid configuration'};
     schm['properties']['quick']['properties'] =  (x.metadata.template||{}).parameters;
     setSchema(schm)
     setKernelFormData(x);
