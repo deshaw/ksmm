@@ -82,7 +82,7 @@ class KSQuickParamHandler(APIHandler):
         source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
 
-        new_spec = reformat_tpl(spec, data['params')
+        new_spec = reformat_tpl(spec, data["params"])
 
         # todo: proper install.
 
