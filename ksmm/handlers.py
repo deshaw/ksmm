@@ -10,7 +10,9 @@ import tornado
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
-#class KSIPyCreateHandler(APIHandler):
+from ksmm.kernelspec_templating import reformat_tpl, extract_parameters
+
+# class KSIPyCreateHandler(APIHandler):
 #    """
 #    Handler for creation of a new IPython Kernel Specification.
 #    """
@@ -52,27 +54,46 @@ class KSCopyHandler(APIHandler):
         source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         new_name = '-'.join([data["name"], "copy"])
         self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
-        self.finish(json.dumps({
-            "success": True,
-            "new_name": new_name
-        }))
+        self.finish(json.dumps({"success": True, "new_name": new_name}))
+
 
 class KSQuickParamHandler(APIHandler):
-    """
+    """ """
 
-    """
     @tornado.web.authenticated
-    def post(self):
+    def get(self):
         data = tornado.escape.json_decode(self.request.body)
         source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
-        quick_form = spec['metadata']['template']['parameters']
-        #self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
-        self.finish(json.dumps({
-            "success": True,
-            "form": quick_form,
-        }))
+        quick_form = spec["metadata"]["template"]["parameters"]
+        # self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
+        self.finish(
+            json.dumps(
+                {
+                    "success": True,
+                    "form": quick_form,
+                }
+            )
+        )
 
+    @tornado.web.authenticated
+    def get(self):
+        data = tornado.escape.json_decode(self.request.body)
+        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
+
+        new_spec = reformat_tpl(spec, data['params')
+
+        # todo: proper install.
+
+        # self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
+        self.finish(
+            json.dumps(
+                {
+                    "success": True,
+                }
+            )
+        )
 
 
 class KSSchemaHandler(APIHandler):

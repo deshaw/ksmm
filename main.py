@@ -43,7 +43,6 @@ class SchemaForm:
 
 
     def render(self):
-
         type_ = self.item['type']
 
         return getattr(self, 'render_'+self.item['type'])()

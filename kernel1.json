@@ -3,14 +3,14 @@
     "slurm",
     "run",
     "--mem=1048576000",
-    "--cpu=123",
+    "--cpu=14",
     "python3.8",
     "-m",
     "ipykernel",
     "-f",
     "{connection_file}"
   ],
-  "display_name": "Python 3.8 RAM:Big/ CPU=123 / True",
+  "display_name": "Python 3.8 RAM:Big/ CPU=14 / False",
   "language": "python",
   "metadata": {
     "template": {
