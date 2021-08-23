@@ -1,13 +1,13 @@
 """A jupyterlab server extension that expose kernelspecs handling.
 """
-import os
 import json
+import os
 import pathlib
+import string
 from pathlib import Path
 from types import SimpleNamespace
 
 import psutil
-import string
 import tornado
 import ulid as ulid_gen
 from jupyter_server.base.handlers import APIHandler

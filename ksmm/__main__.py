@@ -2,7 +2,6 @@ import json
 
 from ksmm.templating import format_tpl
 
-
 """Here is an example of a kernelspec with a template present in metadata.
 this template takes 2 parameters:
 `cpu` and `mem`,
