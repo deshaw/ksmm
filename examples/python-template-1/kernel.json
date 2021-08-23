@@ -10,7 +10,7 @@
     "-f",
     "{connection_file}"
   ],
-  "display_name": "Python 3.8 RAM:Big/ CPU=14 / False",
+  "display_name": "Python 3.8 Template 1",
   "language": "python",
   "metadata": {
     "template": {

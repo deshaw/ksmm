@@ -1,5 +1,4 @@
-"""
-Provides templating of the kernelspec, 
+"""Provides templating of the kernelspec.
 
 That is to say write a kernelspec with placeholder for values, as well as describe
 which values this placeholder can take (using JSON schema  in the future). 
@@ -10,72 +9,7 @@ Utilities (should) be provided to extract only what are the placeholder and whic
 as well as taking an existing kernelspec and modifying those values. 
 """
 
-from jupyter_client.kernelspec import KernelSpecManager
-
-# km = KernelSpecManager()
-
-
-# Here is an example of a kernelspec with a template present in metadata.
-# this template takes 2 parameters:
-# `cpu` and `mem`,
-# you will also see the `mem_slurm` parameters which depends on the `mem` parameters.
-# While `mem` is used in UI and has human readale values, `mem_slurm` is in Kb.
-# the templates parameters can be present in multiple locations, and parameters with
-# curly brackets that have unknown values are left alone.
-example = """{
-   "argv":[],
-   "display_name":"",
-   "language":"python",
-   "metadata":{
-      "template":{
-         "tpl":{
-            "argv":[
-               "slurm",
-               "run",
-               "--mem={mem_slurm}",
-               "--cpu={cpu}",
-               "python3.8",
-               "-m",
-               "ipyukernel",
-               "-f",
-               "{connection_file}"
-            ],
-            "display_name":"Python 3.8 {mem}/{cpu}"
-         },
-         "parameters":{
-            "cpu":[
-               10,
-               15,
-               20
-            ],
-            "mem":[
-               "100G",
-               "500G",
-               "1T"
-            ]
-         },
-         "mapping":{
-            "mem_slurm":{
-               "mem":{
-                  "100G":"102400",
-                  "500G":"512000",
-                  "1T":"1048576"
-               }
-            }
-         }
-      }
-   }
-}
-"""
-
-import json
-
-spec = json.loads(example)
-# spec = km.get_kernel_spec('test2').to_dict()
-
-
 class Default(dict):
-    """"""
 
     def __init__(self, mapping, **kwargs):
         super().__init__(**kwargs)
@@ -89,9 +23,8 @@ class Default(dict):
         return "{" + key + "}"
 
 
-def recformat(item, mapping, **kwargs):
-    """recursively format string/list.
-
+def recursive_format(item, mapping, **kwargs):
+    """Recursively format string/list.
 
     Format values from **kwargs, if an item is not present in
     **kwargs lookup in mpaaing. This is because we might want some
@@ -111,7 +44,7 @@ def recformat(item, mapping, **kwargs):
     Examples
     --------
 
-    >>> recformat(['{mem} {cpu} {left_alone}','--mem={mem_slurm}'],
+    >>> recursive_format(['{mem} {cpu} {left_alone}','--mem={mem_slurm}'],
     ...         {
     ...             'mem_slurm':{
     ...                 'mem':{
@@ -139,14 +72,13 @@ def recformat(item, mapping, **kwargs):
     if isinstance(item, str):
         return item.format_map(Default(mapping, **kwargs))
     elif isinstance(item, list):
-        return [recformat(i, mapping, **kwargs) for i in item]
+        return [recursive_format(i, mapping, **kwargs) for i in item]
     else:
         raise ValueError("item is not a list or a string: {}".format(item))
 
 
-def reformat_tpl(spec, **kwargs):
-    """
-    Given a spec with a template in metadata->template,
+def format_tpl(spec, **kwargs):
+    """Given a spec with a template in metadata->template,
     format it with the give kwargs.
 
     The template in in metadata template as KernelSpecManager does not load unknow keys.
@@ -161,23 +93,22 @@ def reformat_tpl(spec, **kwargs):
     like json schema enums.
 
     mapping: when the same parameters needs to be in several place in different fomat,
-    this provide mappign from enum variants to values to actually place in the formatted spec.
+    this provide mapping from enum variants to values to actually place in the formatted spec.
     This is usefull for example to express Memory in term of 'small', 'medium', 'big', or in term of Gb/Tb
     And get values in the spec in Mb or Kb.
 
-
-
     """
-    newspec = {}
+    static_spec = {}
     for k, v in spec.items():
         if k in ("argv", "display_name"):
             it = spec["metadata"]["template"]["tpl"][k]
-            newspec[k] = recformat(
+            static_spec[k] = recursive_format(
                 it, spec["metadata"]["template"]["mapping"], **kwargs
             )
         else:
-            newspec[k] = v
-    return newspec
+            static_spec[k] = v
+    del spec["metadata"]["template"]
+    return static_spec
 
 
 def extract_parameters(spec):

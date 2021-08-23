@@ -14,10 +14,10 @@ const TabMenu = (props: any): JSX.Element => {
   var menuHeaders = [
     "General Settings",
     "Launch Arguments",
-    "Quick Params",
     "Environment Variables",
-//     "Compute Parameters",
-//     "Metadata",
+//    "Quick Params",
+//    "Compute Parameters",
+//    "Metadata",
   ];
   return (
     <Tabs
@@ -48,7 +48,6 @@ export const KsForm = (props: any): JSX.Element => {
       },
     },
   }
-    console.log('IKSF', props)
   return (
     <>
       <Form
@@ -58,7 +57,9 @@ export const KsForm = (props: any): JSX.Element => {
         onSubmit={props.onSubmit}
         formContext={{}}
       />
-      <Button variant="secondary" onClick={() => props.onCancel()}>Cancel</Button>
+      <Button variant="secondary" onClick={() => props.onCancel()}>
+        Cancel
+      </Button>
     </>
   );
 }

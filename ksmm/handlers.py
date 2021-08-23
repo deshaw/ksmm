@@ -1,4 +1,4 @@
-"""A jupyterlab server extension that expose kernel spec
+"""A jupyterlab server extension that expose kernelspecs handling.
 """
 import json
 import pathlib
@@ -11,18 +11,7 @@ import ulid as ulid_gen
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
-from ksmm.kernelspec_templating import reformat_tpl, extract_parameters
-
-# class KSIPyCreateHandler(APIHandler):
-#    """
-#    Handler for creation of a new IPython Kernel Specification.
-#    """
-#
-#    @tornado.web.authenticated
-#    def post(self, name=None):
-#        # data = tornado.escape.json_decode(self.request.body)
-#        # source_dir = self.kernel_spec_manager.find_kernel_specs()[name]
-#        self.finish(f"POST {name!r}\n")
+from ksmm.templating import format_tpl
 
 
 class KSDeleteHandler(APIHandler):
@@ -61,13 +50,12 @@ class KSCopyHandler(APIHandler):
         }))
 
 
-class KSQuickParamHandler(APIHandler):
-    """ """
+class KSParams1Handler(APIHandler):
 
     @tornado.web.authenticated
-    def get(self):
+    def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        name = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
         quick_form = spec["metadata"]["template"]["parameters"]
         # self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
@@ -80,16 +68,17 @@ class KSQuickParamHandler(APIHandler):
             )
         )
 
+
+class KSParams2Handler(APIHandler):
+
     @tornado.web.authenticated
-    def get(self):
+    def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        name = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
-
-        new_spec = reformat_tpl(spec, data["params"])
-
-        # todo: proper install.
-
+        new_spec = format_tpl(spec)
+        print(new_spec)
+        # TODO proper install.
         # self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
         self.finish(
             json.dumps(
@@ -223,7 +212,7 @@ def setup_handlers(web_app):
         (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler),
         (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler),
         (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler,),
-        (url_path_join(base_url, "ksmm", "/quick"), KSQuickParamHandler,),
-        #(url_path_join(base_url, "ksmm", "/createipy"), KSIPyCreateHandler),
+        (url_path_join(base_url, "ksmm", "/params1"), KSParams1Handler,),
+        (url_path_join(base_url, "ksmm", "/params2"), KSParams2Handler,),
     ]
     web_app.add_handlers(host_pattern, handlers)

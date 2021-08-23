@@ -2,15 +2,15 @@
   "argv": [
     "slurm",
     "run",
-    "--mem=1048576000",
-    "--cpu=5",
+    "--mem={mem}",
+    "--cpu={cpu}",
     "python3.8",
     "-m",
     "ipykernel",
     "-f",
     "{connection_file}"
   ],
-  "display_name": "Python 3.8 RAM:Big/ CPU=5 / With GPU",
+  "display_name": "Python 3.8 Template 2",
   "language": "python",
   "metadata": {
     "template": {

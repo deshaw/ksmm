@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ReactWidget } from "@jupyterlab/apputils";
 import Container from "react-bootstrap/Container";
 import { requestAPI } from "./handler";
-import CardGrid from "./components/kscardgrid";
+import KsCard from "./components/kscard";
 import { SuccessAlertBox } from "./components/alerts";
 import { KsForm } from "./components/ksform";
 
@@ -10,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 /**
  * React component for listing the possible
- * ipykernel options.
+ * kernelspecs.
  *
  * @returns The React component.
  */
@@ -38,7 +38,6 @@ const KernelManagerComponent = (): JSX.Element => {
     schm['properties']['quick']['properties'] =  (x.metadata.template||{}).parameters;
     setSchema(schm)
     setKernelFormData(x);
-    console.info(schm);
     setShowForm(true);
   }
 
@@ -116,15 +115,16 @@ const KernelManagerComponent = (): JSX.Element => {
    * This method is called on when then data is generated to
    * send into the method generating the card data.
    */
-  const createCardData = (ks: [any]) => {
-    var arr = new Array();
-    for (const property in ks) {
-      arr.push({
-        kernel_name: `${property}`,
-        jupyter_name: `${ks[property].display_name}`,
+  const createCardData = (kss: [any]) => {
+    var card = new Array();
+    for (const ks in kss) {
+      card.push({
+        kernel_name: ks,
+        jupyter_name: kss[ks].display_name,
+        template: kss[ks].metadata.template,
       });
     }
-    return arr;
+    return card;
   }
 
   useEffect(() => {
@@ -134,24 +134,45 @@ const KernelManagerComponent = (): JSX.Element => {
 
   return (
     <Container>
-      <div>Kernelspec Manager</div>
+      <br/>
+      <h3>Kernelspecs</h3>
       {!showForm && 
-        <div style={{
-          display: "flex",
-          flexWrap: "wrap"
-        }}>
-          {
-          cardData.map((cardPayload: any, idx) => (
-            <CardGrid
-              handleSelectKernelspec={handleSelectKernelspec.bind(this)}
-              handleCopyKernelspec={handleCopyKernelspec.bind(this)}
-              handleDeleteKernelspec={handleDeleteKernelspec.bind(this)}
-              cardPayload={cardPayload}
-              key={idx}
-            />
-            ))
-          }
-        </div>
+        <>
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap"
+          }}>
+            {
+              cardData.map((cardPayload: any, id) => (
+                !cardPayload.template && <KsCard
+                  handleSelectKernelspec={handleSelectKernelspec.bind(this)}
+                  handleCopyKernelspec={handleCopyKernelspec.bind(this)}
+                  handleDeleteKernelspec={handleDeleteKernelspec.bind(this)}
+                  cardPayload={cardPayload}
+                  key={id}
+                />
+              ))
+            }
+          </div>
+          <hr/>
+          <h4>Templates</h4>
+          <div style={{
+            display: "flex",
+            flexWrap: "wrap"
+          }}>
+            {
+              cardData.map((cardPayload: any, id) => (
+                cardPayload.template && <KsCard
+                  handleSelectKernelspec={handleSelectKernelspec.bind(this)}
+                  handleCopyKernelspec={handleCopyKernelspec.bind(this)}
+                  handleDeleteKernelspec={handleDeleteKernelspec.bind(this)}
+                  cardPayload={cardPayload}
+                  key={id}
+                />
+              ))
+            }
+          </div>
+        </>
       }
       {alertBox && 
         <SuccessAlertBox handleClose={handleGoHome} />

@@ -59,11 +59,11 @@ function generateFormGroupMap(dataArr: any) {
   });
 
   return {
-    ["Quick Params"]: QuickSettings,
     ["General Settings"]: GeneralSettingsArray,
     ["Launch Arguments"]: LaunchArgumentsArray,
     ["Environment Variables"]: EnvironmentVariableArray,
     ["Compute Parameters"]: ComputeParametersArray,
+    ["Quick Params"]: QuickSettings,
     ["Metadata"]: MetadataArray,
   }
 

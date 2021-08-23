@@ -2,7 +2,7 @@ import React from "react";
 import Card from "react-bootstrap/Card";
 import { FaRegEdit, FaCopy, FaTrash } from "react-icons/fa";
 
-const CardGrid = (props: any): JSX.Element => {
+const KsCard = (props: any): JSX.Element => {
   const { cardPayload, handleSelectKernelspec, handleCopyKernelspec, handleDeleteKernelspec } = props;
   return (
     <Card
@@ -13,8 +13,8 @@ const CardGrid = (props: any): JSX.Element => {
       key={cardPayload.kernel_name}
     >
       <Card.Body>
-        <Card.Title>Kernel: {cardPayload.kernel_name}</Card.Title>
-        <Card.Title>{cardPayload.jupyter_name}</Card.Title>
+        <Card.Title>{cardPayload.kernel_name}</Card.Title>
+        <Card.Subtitle>{cardPayload.jupyter_name}</Card.Subtitle>
       </Card.Body>
       <Card.Footer className="align-left">
         <a
@@ -40,4 +40,4 @@ const CardGrid = (props: any): JSX.Element => {
   );
 }
 
-export default CardGrid;
+export default KsCard;
