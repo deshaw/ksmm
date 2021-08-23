@@ -1,9 +1,15 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import { FaRegEdit, FaCopy, FaTrash } from "react-icons/fa";
+import { FaRegEdit, FaCopy, FaTrash, FaEyeDropper } from "react-icons/fa";
 
 const KsCard = (props: any): JSX.Element => {
-  const { cardPayload, handleSelectKernelspec, handleCopyKernelspec, handleDeleteKernelspec } = props;
+  const { 
+    cardPayload, 
+    handleSelectKernelspec, 
+    handleCopyKernelspec, 
+    handleDeleteKernelspec,
+    handleTemplateKernelspec
+  } = props;
   return (
     <Card
       style={{
@@ -17,24 +23,34 @@ const KsCard = (props: any): JSX.Element => {
         <Card.Subtitle>{cardPayload.jupyter_name}</Card.Subtitle>
       </Card.Body>
       <Card.Footer className="align-left">
-        <a
+        { handleSelectKernelspec && <a
           style={{ cursor: "pointer" }}
           onClick={() => handleSelectKernelspec(cardPayload.kernel_name)}
-        >
-          <FaRegEdit />
-        </a>
-        <a
+          >
+            <FaRegEdit />
+          </a>
+        }
+        { handleCopyKernelspec && <a
           style={{ cursor: "pointer" }}
           onClick={() => handleCopyKernelspec(cardPayload.kernel_name)}
-        >
-          <FaCopy />
-        </a>
-        <a
+          >
+            <FaCopy />
+          </a>
+        }
+        { handleDeleteKernelspec && <a
           style={{ cursor: "pointer" }}
           onClick={() => handleDeleteKernelspec(cardPayload.kernel_name)}
-        >
-          <FaTrash />
-        </a>
+          >
+            <FaTrash />
+          </a>
+        }
+        { handleTemplateKernelspec && <a
+          style={{ cursor: "pointer" }}
+          onClick={() => handleTemplateKernelspec(cardPayload)}
+          >
+            <FaEyeDropper />
+          </a>
+        }
       </Card.Footer>
     </Card>
   );

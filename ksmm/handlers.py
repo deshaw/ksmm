@@ -1,11 +1,13 @@
 """A jupyterlab server extension that expose kernelspecs handling.
 """
+import os
 import json
 import pathlib
 from pathlib import Path
 from types import SimpleNamespace
 
 import psutil
+import string
 import tornado
 import ulid as ulid_gen
 from jupyter_server.base.handlers import APIHandler
@@ -38,6 +40,7 @@ class KSCopyHandler(APIHandler):
     Only utilizes POST functionality in order
     to duplicate an environment.
     """
+
     @tornado.web.authenticated
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
@@ -50,36 +53,30 @@ class KSCopyHandler(APIHandler):
         }))
 
 
-class KSParams1Handler(APIHandler):
+class KSParamsHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        name = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
-        spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
-        quick_form = spec["metadata"]["template"]["parameters"]
-        # self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
-        self.finish(
-            json.dumps(
-                {
-                    "success": True,
-                    "form": quick_form,
-                }
-            )
-        )
-
-
-class KSParams2Handler(APIHandler):
-
-    @tornado.web.authenticated
-    def post(self):
-        data = tornado.escape.json_decode(self.request.body)
-        name = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
-        spec = self.kernel_spec_manager.get_kernel_spec(name).to_dict()
-        new_spec = format_tpl(spec)
-        print(new_spec)
-        # TODO proper install.
-        # self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
+        template_name = data["name"]
+        template_spec = self.kernel_spec_manager.get_kernel_spec(template_name).to_dict()
+        params = data["params"]
+#        for item in params.items():
+#            params[item[0]] = str(item[1])
+#        params = json.dumps(params)
+#        params = json.loads(params)
+        spec = format_tpl(template_spec, **params)
+        printable = set(string.printable)
+        kernel_name = ''.join(filter(lambda x: x in printable, spec['display_name']))
+        kernel_name = str(kernel_name).lower().replace('/', '_').replace('=', '').replace(':', '').replace(' ', '-')
+        print(kernel_name)
+        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=kernel_name, user=True)
+        dir = self.kernel_spec_manager.find_kernel_specs()[kernel_name]
+        print(dir)
+        f = open(dir + os.path.sep + 'kernel.json', 'w')
+        f.write(json.dumps(spec))
+        f.close()
         self.finish(
             json.dumps(
                 {
@@ -176,30 +173,29 @@ class KSHandler(APIHandler):
                 json.dumps({"success": True, "kernel_name": originalKernelName})
             )
 
+
     def write_error(self, status_code, **kwargs):
         """Render custom error as json"""
         exc_info = kwargs.get("exc_info")
         message = ""
-        # status_message = responses.get(status_code, "Unknown HTTP Error")
         exception = "(unknown)"
         if exc_info:
             exception = exc_info[1]
-            # get the custom message, if defined
             try:
                 message = exception.log_message % exception.args
             except Exception:
+                # construct the custom reason, if defined
+                #    reason = getattr(exception, "reason", "")
+                #    if reason:
+                #        status_message = reason
+                # build template namespace
+                # ns = dict(
+                #     status_code=status_code,
+                #     status_message=status_message,
+                #     message=message,
+                #     exception=exception,
+                # )
                 pass
-        # construct the custom reason, if defined
-        #    reason = getattr(exception, "reason", "")
-        #    if reason:
-        #        status_message = reason
-        # build template namespace
-        # ns = dict(
-        #     status_code=status_code,
-        #     status_message=status_message,
-        #     message=message,
-        #     exception=exception,
-        # )
         self.set_header("Content-Type", "application/json")
         self.write({"status_code": status_code, "message": message})
 
@@ -212,7 +208,6 @@ def setup_handlers(web_app):
         (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler),
         (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler),
         (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler,),
-        (url_path_join(base_url, "ksmm", "/params1"), KSParams1Handler,),
-        (url_path_join(base_url, "ksmm", "/params2"), KSParams2Handler,),
+        (url_path_join(base_url, "ksmm", "/params"), KSParamsHandler,),
     ]
     web_app.add_handlers(host_pattern, handlers)

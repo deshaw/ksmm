@@ -34,7 +34,6 @@
           "title": "CPU core",
           "default": 1,
           "maximum": 48,
-          "multipleOf": 2,
           "minimum": 1
         },
         "mem": {

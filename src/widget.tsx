@@ -5,6 +5,8 @@ import { requestAPI } from "./handler";
 import KsCard from "./components/kscard";
 import { SuccessAlertBox } from "./components/alerts";
 import { KsForm } from "./components/ksform";
+import { Dialog } from '@jupyterlab/apputils';
+import Form, { IChangeEvent } from "react-jsonschema-form";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -29,15 +31,7 @@ const KernelManagerComponent = (): JSX.Element => {
    */
   const handleSelectKernelspec = (kernelName: string) => {
     setSelectedKernelName(kernelName);
-    let x =  (data as any)[kernelName]
-    //x['quick'] = {}
-    //x['quick']['properties'] = (x.metadata.template||{}).parameters;
-    x['quick'] = {};
-    let schm:any = schema;
-    schm['properties']['quick'] = {'type':'object','title':'Rapid configuration'};
-    schm['properties']['quick']['properties'] =  (x.metadata.template||{}).parameters;
-    setSchema(schm)
-    setKernelFormData(x);
+    setKernelFormData((data as any)[kernelName]);
     setShowForm(true);
   }
 
@@ -83,6 +77,49 @@ const KernelManagerComponent = (): JSX.Element => {
     }).then((data: any) => {
       alert(kernel_name + " has been deleted.");
       refreshKernelspecs();
+    });
+  };
+
+  const handleTemplateKernelspec = (cardPayload: any) => {
+    const buttons = [
+      Dialog.cancelButton({ label: 'Cancel'}),
+      Dialog.okButton({ label: 'Launch' })
+    ];
+    var params = {};
+    const onChange = (e: IChangeEvent) => {
+      params = e.formData
+    }
+    const dialog = new Dialog({
+      title: 'Kernel Parameters',
+      body: ReactWidget.create(
+        <>
+          <Form
+            schema={{
+              "title": "",
+              "description": "",
+              "type": "object",
+              "properties": cardPayload.template.parameters
+            }}
+            onChange={onChange}
+          >
+            <div></div>
+          </Form>
+        </>
+      ),
+      buttons
+    });  
+    void dialog.launch().then(result => {
+      if (result.button.accept) {
+        requestAPI("/params", {
+          method: "POST",
+          body: JSON.stringify({ 
+            name: cardPayload.kernel_name,
+            params: params
+          }),
+        }).then((data: any) => {
+          refreshKernelspecs();
+        });    
+      }
     });
   };
 
@@ -163,10 +200,8 @@ const KernelManagerComponent = (): JSX.Element => {
             {
               cardData.map((cardPayload: any, id) => (
                 cardPayload.template && <KsCard
-                  handleSelectKernelspec={handleSelectKernelspec.bind(this)}
-                  handleCopyKernelspec={handleCopyKernelspec.bind(this)}
-                  handleDeleteKernelspec={handleDeleteKernelspec.bind(this)}
-                  cardPayload={cardPayload}
+                handleTemplateKernelspec={handleTemplateKernelspec.bind(this)}
+                cardPayload={cardPayload}
                   key={id}
                 />
               ))
