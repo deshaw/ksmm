@@ -69,11 +69,9 @@ class KSParamsHandler(APIHandler):
         printable = set(string.printable)
         kernel_name = ''.join(filter(lambda x: x in printable, spec['display_name']))
         kernel_name = str(kernel_name).lower().replace('/', '_').replace('=', '').replace(':', '').replace(' ', '-')
-        print(kernel_name)
         source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=kernel_name, user=True)
         dir = self.kernel_spec_manager.find_kernel_specs()[kernel_name]
-        print(dir)
         f = open(dir + os.path.sep + 'kernel.json', 'w')
         f.write(json.dumps(spec))
         f.close()
