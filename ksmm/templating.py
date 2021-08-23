@@ -1,12 +1,12 @@
 """Provides templating of the kernelspec.
 
 That is to say write a kernelspec with placeholder for values, as well as describe
-which values this placeholder can take (using JSON schema  in the future). 
+which values this placeholder can take (using JSON schema  in the future).
 
-And allow to update the kernelspec by replacing the placeholders by given values. 
+And allow to update the kernelspec by replacing the placeholders by given values.
 
 Utilities (should) be provided to extract only what are the placeholder and which values they can take, 
-as well as taking an existing kernelspec and modifying those values. 
+as well as taking an existing kernelspec and modifying those values.
 """
 
 class Default(dict):
