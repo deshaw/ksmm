@@ -7,6 +7,7 @@ from types import SimpleNamespace
 
 import psutil
 import tornado
+import ulid as ulid_gen
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
@@ -52,9 +53,12 @@ class KSCopyHandler(APIHandler):
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
         source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
-        new_name = '-'.join([data["name"], "copy"])
-        self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name)
-        self.finish(json.dumps({"success": True, "new_name": new_name}))
+        new_name = '-'.join([data["name"], str(ulid_gen.new())])
+        self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name, user=True)
+        self.finish(json.dumps({
+            "success": True,
+            "new_name": new_name
+        }))
 
 
 class KSQuickParamHandler(APIHandler):

@@ -65,5 +65,7 @@ watch:
 publish:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		rm -fr dist/* && \
+		yarn clean && \
+		yarn build && \
 		python setup.py sdist bdist_wheel && \
 		twine upload dist/* )

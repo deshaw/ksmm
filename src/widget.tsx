@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { ReactWidget } from "@jupyterlab/apputils";
 import Container from "react-bootstrap/Container";
-// import { JSONSchema7 } from "json-schema";
 import { requestAPI } from "./handler";
 import CardGrid from "./components/kscardgrid";
 import { SuccessAlertBox } from "./components/alerts";
-import { IKsForm } from "./components/ksform";
+import { KsForm } from "./components/ksform";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -19,14 +18,14 @@ const KernelManagerComponent = (): JSX.Element => {
   const [data, setData] = useState({});
   const [showForm, setShowForm] = useState(false);
   const [kernelFormData, setKernelFormData] = useState({});
-  const [selectedKernelName, setSelectedKernelName] = useState("");
+  const [selectedKernelName, setSelectedKernelName] = useState('');
   const [cardData, setCardData] = useState([]);
-  const [alertBox, setAlertBox] = useState(false);
   const [schema, setSchema] = useState({});
+  const [alertBox, setAlertBox] = useState(false);
 
   /**
    * Handles the Kernel Selection
-   * at the select screen. ,
+   * at the select screen.
    */
   const handleSelectKernelspec = (kernelName: string) => {
     setSelectedKernelName(kernelName);
@@ -45,7 +44,6 @@ const KernelManagerComponent = (): JSX.Element => {
 
   /**
    * Return Home on click.
-   * TODO: Add Guards to check if editing.
    */
   const handleGoHome = () => {
     setShowForm(false);
@@ -93,7 +91,7 @@ const KernelManagerComponent = (): JSX.Element => {
    * Handles a form submission when
    * kernels are modified in any form.
    *
-   * Passed as a prop to Form
+   * Passed as a prop to Form.
    */
    const handleSubmitKernelspec = (e: any) => {
     requestAPI("/", {
@@ -155,9 +153,11 @@ const KernelManagerComponent = (): JSX.Element => {
           }
         </div>
       }
-      {alertBox && <SuccessAlertBox handleClose={handleGoHome} />}
+      {alertBox && 
+        <SuccessAlertBox handleClose={handleGoHome} />
+      }
       {showForm && (
-        <IKsForm
+        <KsForm
           schema={schema}
           formData={kernelFormData}
           onSubmit={handleSubmitKernelspec.bind(this)}

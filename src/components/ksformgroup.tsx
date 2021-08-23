@@ -5,23 +5,22 @@ import React from "react";
  * does all the work for rendering the different options in their
  * respective places.
  *
- * props: data -> The data to render - namely, the data as defined in the schema
+ * props: data -> The data to render - namely, the data as defined in the schema.
  */
-export const IKsFormGroup = (props: {
+const KsFormGroup = (props: {
   properties: any;
-  selecteditem: string;
+  selectedTab: string;
   mainprops: any;
-  handleAdditionalProperties: any;
 }) => {
-  const fg: any = generateFormGroupMap(props.properties);
+  const formGroupMap: any = generateFormGroupMap(props.properties);
   return (
-    <div>
-      {fg[props.selecteditem].map((index: number) => (
+    <>
+      {formGroupMap[props.selectedTab].map((index: number) => (
         <div className="property-wrapper" key={index}>
           {props.properties[index].content}
         </div>
       ))}
-    </div>
+    </>
   );
 }
 
@@ -69,3 +68,5 @@ function generateFormGroupMap(dataArr: any) {
   }
 
 }
+
+export default KsFormGroup;
