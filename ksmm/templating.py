@@ -5,7 +5,7 @@ which values this placeholder can take (using JSON schema  in the future).
 
 And allow to update the kernelspec by replacing the placeholders by given values.
 
-Utilities (should) be provided to extract only what are the placeholder and which values they can take, 
+Utilities (should) be provided to extract only what are the placeholder and which values they can take,
 as well as taking an existing kernelspec and modifying those values.
 """
 
