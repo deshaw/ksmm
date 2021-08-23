@@ -29,6 +29,7 @@ const KsFormGroup = (props: {
  * returning a value of the positions in the array.
  */
 function generateFormGroupMap(dataArr: any) {
+  const QuickSettings: Array<number> = [];
   const GeneralSettingsArray: Array<number> = [];
   const LaunchArgumentsArray: Array<number> = [];
   const EnvironmentVariableArray: Array<number> = [];
@@ -50,6 +51,8 @@ function generateFormGroupMap(dataArr: any) {
       ComputeParametersArray.push(dataArr.indexOf(element));
     } else if (element.name == "metadata") {
       MetadataArray.push(dataArr.indexOf(element));
+    } else if (element.name == "quick") {
+      QuickSettings.push(dataArr.indexOf(element));
     } else {
       console.log("Unknown element name", element.name);
     }
@@ -60,6 +63,7 @@ function generateFormGroupMap(dataArr: any) {
     ["Launch Arguments"]: LaunchArgumentsArray,
     ["Environment Variables"]: EnvironmentVariableArray,
     ["Compute Parameters"]: ComputeParametersArray,
+    ["Quick Params"]: QuickSettings,
     ["Metadata"]: MetadataArray,
   }
 

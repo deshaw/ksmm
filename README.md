@@ -109,4 +109,3 @@ Below are screenshots from the usage of the application.
 ##### Launch Arguments
 
 ![](screenshots/launch_args_ss.png)
-

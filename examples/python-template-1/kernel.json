@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "slurm",
+    "run",
+    "--mem=1048576000",
+    "--cpu=14",
+    "python3.8",
+    "-m",
+    "ipykernel",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "Python 3.8 Template 1",
+  "language": "python",
+  "metadata": {
+    "template": {
+      "tpl": {
+        "argv": [
+          "slurm",
+          "run",
+          "--mem={mem_slurm}",
+          "--cpu={cpu}",
+          "python3.8",
+          "-m",
+          "ipykernel",
+          "-f",
+          "{connection_file}"
+        ],
+        "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
+      },
+      "parameters": {
+        "cpu": {
+          "type": "integer",
+          "title": "CPU core",
+          "default": 1,
+          "maximum": 48,
+          "minimum": 1
+        },
+        "mem": {
+          "type": "string",
+          "title": "Memory (GB)",
+          "enum": [
+            "Small",
+            "Medium",
+            "Big"
+          ]
+        },
+        "gpu": {
+          "type": "boolean",
+          "title": "Graphic Processor",
+          "default": true
+        }
+      },
+      "mapping": {
+        "mem_slurm": {
+          "mem": {
+            "Small": "102400",
+            "Medium": "512000",
+            "Big": "1048576000"
+          }
+        }
+      }
+    }
+  }
+}

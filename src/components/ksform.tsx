@@ -15,8 +15,9 @@ const TabMenu = (props: any): JSX.Element => {
     "General Settings",
     "Launch Arguments",
     "Environment Variables",
-//     "Compute Parameters",
-//     "Metadata",
+//    "Quick Params",
+//    "Compute Parameters",
+//    "Metadata",
   ];
   return (
     <Tabs
@@ -56,7 +57,9 @@ export const KsForm = (props: any): JSX.Element => {
         onSubmit={props.onSubmit}
         formContext={{}}
       />
-      <Button variant="secondary" onClick={() => props.onCancel()}>Cancel</Button>
+      <Button variant="secondary" onClick={() => props.onCancel()}>
+        Cancel
+      </Button>
     </>
   );
 }

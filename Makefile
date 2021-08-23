@@ -45,10 +45,16 @@ install-dev:
 		jlpm build && \
 		jupyter labextension develop --overwrite .)
 
+install-kernelspecs:
+	($(CONDA_ACTIVATE) ${ENV_NAME}; \
+		jupyter kernelspec install ./examples/python-template-1 && \
+		jupyter kernelspec list .)
+
 jlab:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		jupyter lab \
 			--ServerApp.jpserver_extensions="{'ksmm': True}" \
+			--no-browser \
 			--port 8234)
 
 jlab-watch:
@@ -61,6 +67,10 @@ jlab-watch:
 watch:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		yarn watch )
+
+main:
+	($(CONDA_ACTIVATE) ${ENV_NAME}; \
+		python -m ksmm )
 
 publish:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \

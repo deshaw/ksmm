@@ -23,12 +23,12 @@ const ksmmExtension: JupyterFrontEndPlugin<void> = {
     const command = CommandIDs.create;
     commands.addCommand(command, {
       caption: "A way to manage Kernelspecs",
-      label: "Kernelspec Management",
+      label: "Kernelspec Manager",
       icon: (args) => (args['isPalette'] ? null : extensionIcon),
       execute: () => {
         const content = new KernelspecManagerWidget();
         const widget = new MainAreaWidget<KernelspecManagerWidget>({ content });
-        widget.title.label = "Kernelspec Management";
+        widget.title.label = "Kernelspec Manager";
         app.shell.add(widget, "main");
       }
     });
