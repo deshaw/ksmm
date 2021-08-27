@@ -33,12 +33,11 @@ This will install the `python-template-1` Kernelspec example located in the exam
 
 ## Install from a Release
 
+Ensure you have JupyterLab 3.1+, and then run this command the ksmm extension inside your current JupyterLab environment.
+
 ```bash
 pip install --upgrade ksmm
 ```
-
-This will install the extension inside the current JupyterLab Environment.
-
 ## Develop
 
 Use the provided `environment.yaml` to install the conda environment.
