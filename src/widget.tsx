@@ -83,7 +83,7 @@ const KernelManagerComponent = (): JSX.Element => {
   const handleTemplateKernelspec = (cardPayload: any) => {
     const buttons = [
       Dialog.cancelButton({ label: 'Cancel'}),
-      Dialog.okButton({ label: 'Launch' })
+      Dialog.okButton({ label: 'Create Kernelspec' })
     ];
     var params = {};
     const onChange = (e: IChangeEvent) => {
