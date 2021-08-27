@@ -1,62 +1,47 @@
 # Kernel Specification Manager JupyterLab Extension
 
-# Name
+> This JupyterLab Extension allows users to manage Kernelspecs from within JupyterLab.
 
-`ksmm` is a temporary name, originally standing for `Kernel Spec Manager Manger`
+![](screenshots/home_screen_ss.png)
 
-This Jupyter Extension allows users to edit specific components of their IPython Kernels from within Jupyter.
+`ksmm` is a temporary name, originally standing for `Kernelspec Manager Manger` and currently ships:
 
-Current Features:
-
-- Kernel Editing: name, attributes.
+- Kernelspec creation based on parametrized templates.
+- Kernelspec Editing: name, attributes.
 - Kernel Duplication. 
 - Kernel Deletion.
 
-Not implemented yet:
+## Context
 
-- "New" Kernel Additions.
+On large distributed systems, it is common to wish to parametrize kernels and choose parameters for a remote environment, like number of CPU, Memory limit, presence of GPU. Or even set other parameters in environment variables.
 
-# Goal
+This currently requires to create a new Kernelspec for jupyter using the command line which can be a tedious and complicated task.
 
-On large distributed systems, it is common to wish to parametrize kernels and
-chose parameters for a remote environment, like number of CPU, Memory limit,
-presence of GPU. Or even set other parameters in environment variables.
+Modifying existing Kernelspec also does not always works as they are cached on a per notebook.
 
-This currently requires to create a new kernelspec for jupyter using the command
-line which can be a tedious and complicated task.
+This is an attempt to provide a UI based on json-schema and templates, for end users to easily create, duplicate and modify kernelspec, without being exposed to _too much_ of the internal details.
 
-Modifying existing kernelspec also does not always works as they are cached on a
-per notebook.
+## Install Kernelspecs Templates
 
-This is an attempt to provide a UI based on json-schema and templates, for end
-users to easily create, duplicate and modify kernelspec, without being exposed
-to _too much_ of the internal details.
+You will need [Kernelspec templates](#about-kernelspec-templates).
 
-The current goal would be to provide an editor for kernelspec that would
-given a kernelspec template like the following.
-
-```json
-{
-  "argv": [
-    "slurm", "run", "--mem={mem}", "--cpu={cpu}", "python3.8", "-m", "ipykernel"
-  ],
-  "display_name": "Python 3.8 {mem}/{cpu}",
-  "params": {
-    "mem": ["100G", "500G", "1T"],
-    "cpu": { "min": 1, "max": 300}
-  }
-}
+```bash
+make install-kernelspecs
 ```
 
-Generate a kernelspec modification UI with a Dropdown for the memory with
-available values, and for example a slider for the CPU.
+This will install the `python-template-1` Kernelspec example located in the examples folder.
 
-This would let non-technical user in for example JupyterHub to quickly modify
-Kernelspecs.
+## Install from a Release
 
-## Running from Source
+```bash
+pip install --upgrade ksmm
+```
 
-Use the provided environment.yaml to install the conda environment.
+This will install the extension inside the current JupyterLab Environment.
+
+## Develop
+
+Use the provided `environment.yaml` to install the conda environment.
 
 ```base
 conda deactivate && \
@@ -81,31 +66,92 @@ make jlab
 make watch
 ```
 
-# Installing the Server Extension
+When making changes to the extension you will need to issue a `jupyter labextension build`, or, start `jlpm run watch` in the root of the repository to rebuild on every changes. You do not need to restart or rebuild JupyterLab for changes on the frontend extensions, but do need to restart the server for changes to the Python code.
 
-```bash
-pip install ksmm
+## About Kernelspec Templates
+
+You system adminstrator can create Kernelspect templates for you. As a user, if you click on the picker icon of a template card, you will be prompted for the Kernelspec parameters.
+
+<img src="screenshots/parameters_ss.png" width="200" />
+
+When you will click on the `Create Kernelspec` button, a new Kernespec will be created.
+
+This is an example of such a Kernelspec template. The `metadata/template/tpl` stanza should contain a [Json Schema](https://json-schema.org) compliant structure. You can browser the [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form) for examples.
+
+You can use the `metadata/template/mapping` stanza to create visual mappings (e.g. `Small` will be mapped to `102400`).
+
+```json
+{
+  "argv": [
+    "slurm",
+    "run",
+    "--mem=1048576000",
+    "--cpu=14",
+    "python3.8",
+    "-m",
+    "ipykernel",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "Python 3.8 Template 1",
+  "language": "python",
+  "metadata": {
+    "template": {
+      "tpl": {
+        "argv": [
+          "slurm",
+          "run",
+          "--mem={mem_slurm}",
+          "--cpu={cpu}",
+          "python3.8",
+          "-m",
+          "ipykernel",
+          "-f",
+          "{connection_file}"
+        ],
+        "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
+      },
+      "parameters": {
+        "cpu": {
+          "type": "integer",
+          "title": "CPU core",
+          "default": 1,
+          "maximum": 48,
+          "minimum": 1
+        },
+        "mem": {
+          "type": "string",
+          "title": "Memory (GB)",
+          "enum": [
+            "Small",
+            "Medium",
+            "Big"
+          ]
+        },
+        "gpu": {
+          "type": "boolean",
+          "title": "Graphic Processor",
+          "default": true
+        }
+      },
+      "mapping": {
+        "mem_slurm": {
+          "mem": {
+            "Small": "102400",
+            "Medium": "512000",
+            "Big": "1048576000"
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
-This will install the extension inside the current JupyterLab Environment. This is typically the
-latest release from the main branch. 
-
-When making changes to the extension you will need to issue a `jupyter labextension build`, or, start `jlpm run watch`
-in the root of the repository to rebuild on every changes. You do not need to restart or rebuild JupyterLab for changes
-on the frontend extensions, but do need to restart the server for changes to the Python code.
-
-### Screenshots
-
-Below are screenshots from the usage of the application.
-
-##### Home Screen
-
-![](screenshots/home_screen_ss.png)
-
-##### General Settings
+## General Settings
 
 ![](screenshots/general_settings_ss.png)
 
-##### Launch Arguments
+## Launch Arguments
 
 ![](screenshots/launch_args_ss.png)
