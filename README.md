@@ -38,6 +38,7 @@ Ensure you have JupyterLab 3.1+, and then run this command the ksmm extension in
 ```bash
 pip install --upgrade ksmm
 ```
+
 ## Develop
 
 Use the provided `environment.yaml` to install the conda environment.
