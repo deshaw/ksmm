@@ -90,7 +90,7 @@ const KernelManagerComponent = (): JSX.Element => {
       params = e.formData
     }
     const dialog = new Dialog({
-      title: 'Kernel Parameters',
+      title: 'Kernelspec Parameters',
       body: ReactWidget.create(
         <>
           <Form
@@ -193,6 +193,8 @@ const KernelManagerComponent = (): JSX.Element => {
           </div>
           <hr/>
           <h4>Templates</h4>
+          <div><a href="https://github.com/quansight/ksmm/#about-kernelspec-templates" target="blank">More information</a> about the templates.</div>
+          <div><b><a href="https://github.com/quansight/ksmm/issues/61" target="blank">We are not validating the form for now</a> - Please ensure you are correctly filling all the fields.</b></div>
           <div style={{
             display: "flex",
             flexWrap: "wrap"
