@@ -4,7 +4,7 @@
 
 ![](screenshots/home_screen_ss.png)
 
-`ksmm` is a temporary name, originally standing for `Kernelspec Manager Manger` and currently ships:
+`ksmm` is a temporary name, originally standing for `Kernelspec Manager` and currently ships:
 
 - Kernelspec creation based on parametrized templates.
 - Kernelspec Editing: name, attributes.
