@@ -1,4 +1,4 @@
-{
+kernel_schema = '''{
   "title": "Kernelspec Management Menu",
   "type": "object",
   "properties": {
@@ -41,4 +41,4 @@
     "language",
     "metadata"
   ]
-}
+}'''

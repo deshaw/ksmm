@@ -76,9 +76,7 @@ You system adminstrator can create Kernelspect templates for you. As a user, if 
 
 When you will click on the `Create Kernelspec` button, a new Kernespec will be created.
 
-This is an example of such a Kernelspec template. The `metadata/template/tpl` stanza should contain a [Json Schema](https://json-schema.org) compliant structure. You can browser the [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form) for examples.
-
-You can use the `metadata/template/mapping` stanza to create visual mappings (e.g. `Small` will be mapped to `102400`).
+This is an example of such a Kernelspec template. The `metadata/template/tpl` stanza should contain a [Json Schema](https://json-schema.org) compliant structure. You can browser the [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form) for examples. You can use the `metadata/template/mapping` stanza to create visual mappings (e.g. `Small` will be mapped to `102400`). The `example/python-template-1` contains an example. To install that example template in your environment, you need to run `jupyter kernelspec install ./examples/python-template-1` (add `--user` to install in your user space).
 
 ```json
 {
