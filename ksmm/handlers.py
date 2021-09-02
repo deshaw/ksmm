@@ -7,6 +7,8 @@ import string
 from pathlib import Path
 from types import SimpleNamespace
 
+from .kernel_schema import kernel_schema
+
 import psutil
 import tornado
 import ulid as ulid_gen
@@ -117,9 +119,10 @@ class KSSchemaHandler(APIHandler):
     @tornado.web.authenticated
     def get(self, name=None):
         params = SimpleNamespace(**self.get_local_params())
-        schemafp = pathlib.Path('schema', 'kernelSchema.json')
-        schema = dict(self.get_schema(path=schemafp.__str__()))
-        schema  = self.set_parameters(schema, params)
+#        schemafp = pathlib.Path('schema', 'kernelSchema.json')
+#        schema = dict(self.get_schema(path=schemafp.__str__()))
+        schema = json.loads(kernel_schema)
+        schema = self.set_parameters(schema, params)
         json_schema = json.dumps(schema)
         self.finish(json_schema)
 
