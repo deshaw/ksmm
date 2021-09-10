@@ -31,8 +31,8 @@ const EnvVarForm = (props: any) => {
       }
       <button
         type="button"
-        onClick={(e: any) => { 
-          formData['NEW_ENV'] = 'new_value';
+        onClick={(e: any) => {
+          formData[''] = '';
           setToggle(!toggle);
         }}
       >

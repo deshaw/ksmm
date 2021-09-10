@@ -5,11 +5,25 @@ import { requestAPI } from "./handler";
 import KsCard from "./components/kscard";
 import { SuccessAlertBox } from "./components/alerts";
 import { KsForm } from "./components/ksform";
-import { Dialog } from '@jupyterlab/apputils';
+import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
+import {KernelSpec} from '@jupyterlab/services';
 import Form, { IChangeEvent } from "react-jsonschema-form";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
+interface KSMMAdditonalFields {
+    name: string,
+    deletable: boolean,
+    writeable: boolean,
+    fs_path: string,
+    is_user: boolean
+}
+
+type EnhancedKernelSpec = KernelSpec.ISpecModel & {
+    _ksmm: KSMMAdditonalFields
+}
+
+type EnhancedKernelMap = {[key: string]: EnhancedKernelSpec};
 /**
  * React component for listing the possible
  * kernelspecs.
@@ -17,11 +31,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
  * @returns The React component.
  */
 const KernelManagerComponent = (): JSX.Element => {
-  const [data, setData] = useState({});
+  const [data, setData] = useState<EnhancedKernelMap |undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
-  const [kernelFormData, setKernelFormData] = useState({});
+  const [kernelFormData, setKernelFormData] = useState<EnhancedKernelSpec | undefined>(undefined);
   const [selectedKernelName, setSelectedKernelName] = useState('');
-  const [cardData, setCardData] = useState([]);
   const [schema, setSchema] = useState({});
   const [alertBox, setAlertBox] = useState(false);
 
@@ -29,9 +42,9 @@ const KernelManagerComponent = (): JSX.Element => {
    * Handles the Kernel Selection
    * at the select screen.
    */
-  const handleSelectKernelspec = (kernelName: string) => {
-    setSelectedKernelName(kernelName);
-    setKernelFormData((data as any)[kernelName]);
+  const handleSelectKernelspec = (kernelSpec: EnhancedKernelSpec) => {
+    setSelectedKernelName(kernelSpec._ksmm.name);
+    setKernelFormData(kernelSpec);
     setShowForm(true);
   }
 
@@ -48,6 +61,8 @@ const KernelManagerComponent = (): JSX.Element => {
       method: "GET",
     }).then((s: any) => {
       setSchema(s);
+    }).catch((err) => {
+        return showErrorMessage('Could not refresh schemas', err);
     });
   }
 
@@ -56,31 +71,42 @@ const KernelManagerComponent = (): JSX.Element => {
       method: "GET",
     }).then((res: any) => {
       setData(res);
-      setCardData(createCardData(res));
+    }).catch((err) => {
+        return showErrorMessage('Could not refresh kernel specs', err);
     });
   }
 
-  const handleCopyKernelspec = (kernel_name: string) => {
+  const handleCopyKernelspec = (kernelSpec: EnhancedKernelSpec) => {
     requestAPI("/copy", {
       method: "POST",
-      body: JSON.stringify({ name: kernel_name }),
+      body: JSON.stringify({ name: kernelSpec._ksmm.name }),
+    }).catch((err) => {
+        return showErrorMessage('Could not copy kernel spec', err);
     }).then((data: any) => {
-      alert("A copy of " + kernel_name + " has been created.");
       refreshKernelspecs();
     });
   };
 
-  const handleDeleteKernelspec = (kernel_name: string) => {
+  const handleDeleteKernelspec = async (kernelSpec: EnhancedKernelSpec) => {
+    const action = await showDialog(
+        {
+            title: `Are you sure you want to delete ${kernelSpec.display_name} (${kernelSpec._ksmm.name})?`,
+        }
+    )
+    if(!action.button.accept) {
+        return;
+    }
     requestAPI("/delete", {
       method: "POST",
-      body: JSON.stringify({ name: kernel_name }),
+      body: JSON.stringify({ name: kernelSpec._ksmm.name }),
+    }).catch((err) => {
+        return showErrorMessage('Could not delete kernel spec', err);
     }).then((data: any) => {
-      alert(kernel_name + " has been deleted.");
       refreshKernelspecs();
     });
   };
 
-  const handleTemplateKernelspec = (cardPayload: any) => {
+  const handleTemplateKernelspec = (kernelSpec: EnhancedKernelSpec) => {
     const buttons = [
       Dialog.cancelButton({ label: 'Cancel'}),
       Dialog.okButton({ label: 'Create Kernelspec' })
@@ -90,7 +116,7 @@ const KernelManagerComponent = (): JSX.Element => {
       params = e.formData
     }
     const dialog = new Dialog({
-      title: 'Kernelspec Parameters',
+      title: 'Kernelspec from Template',
       body: ReactWidget.create(
         <>
           <Form
@@ -98,27 +124,31 @@ const KernelManagerComponent = (): JSX.Element => {
               "title": "",
               "description": "",
               "type": "object",
-              "properties": cardPayload.template.parameters
+              // @ts-ignore
+              "properties": kernelSpec.metadata?.template?.parameters
             }}
             onChange={onChange}
           >
-            <div></div>
+            <i>*We are not validating the form yet, please ensure you enter valid data (<a href="https://github.com/quansight/ksmm/issues/61" target="blank">issue</a>)</i>
           </Form>
         </>
       ),
       buttons
-    });  
+    });
     void dialog.launch().then(result => {
       if (result.button.accept) {
         requestAPI("/params", {
           method: "POST",
-          body: JSON.stringify({ 
-            name: cardPayload.kernel_name,
+          body: JSON.stringify({
+            name: kernelSpec._ksmm.name,
             params: params
           }),
-        }).then((data: any) => {
+        }).catch((err) => {
+            return showErrorMessage('Could not generate kernel from template', err);
+        })
+        .then((data: any) => {
           refreshKernelspecs();
-        });    
+        });
       }
     });
   };
@@ -130,10 +160,12 @@ const KernelManagerComponent = (): JSX.Element => {
    * Passed as a prop to Form.
    */
    const handleSubmitKernelspec = (e: any) => {
+    // Drop _ksmm before submitting
+    const {_ksmm, ...editedKernelPayload } = e.formData;
     requestAPI("/", {
       method: "POST",
       body: JSON.stringify({
-        editedKernelPayload: JSON.stringify(e.formData),
+        editedKernelPayload: JSON.stringify(editedKernelPayload),
         originalKernelName: selectedKernelName,
       }),
     }).then((data: any) => {
@@ -141,9 +173,18 @@ const KernelManagerComponent = (): JSX.Element => {
         setAlertBox(true);
         refreshKernelspecs();
         setKernelFormData(e.formData);
+      } else {
+          throw data;
       }
-    });
+    }).catch((err) => {
+        return showErrorMessage('Could not update kernel spec', err);
+    })
   }
+
+  useEffect(() => {
+    refreshSchemas();
+    refreshKernelspecs();
+  }, []);
 
   /**
    * Generate the package of data needed
@@ -152,66 +193,75 @@ const KernelManagerComponent = (): JSX.Element => {
    * This method is called on when then data is generated to
    * send into the method generating the card data.
    */
-  const createCardData = (kss: [any]) => {
-    var card = new Array();
-    for (const ks in kss) {
-      card.push({
-        kernel_name: ks,
-        jupyter_name: kss[ks].display_name,
-        template: kss[ks].metadata.template,
-      });
+   const userKernels: EnhancedKernelMap = {};
+   const systemKernels: EnhancedKernelMap = {};
+   Object.entries(data || {}).forEach(entry => {
+    const [name, kernelSpec]  = entry;
+    if(kernelSpec?._ksmm.is_user) {
+        userKernels[name] = kernelSpec;
+    } else {
+        systemKernels[name] = kernelSpec;
     }
-    return card;
-  }
+   });
 
-  useEffect(() => {
-    refreshSchemas();
-    refreshKernelspecs();
-  }, []);
 
+
+  const KernelSpecCard = ({kernelSpec}: {kernelSpec: EnhancedKernelSpec}) => <KsCard
+        handleSelectKernelspec={handleSelectKernelspec}
+        handleCopyKernelspec={handleCopyKernelspec}
+        handleDeleteKernelspec={handleDeleteKernelspec}
+        handleTemplateKernelspec={handleTemplateKernelspec}
+        kernelSpec={kernelSpec}
+        key={kernelSpec._ksmm.fs_path}
+    />;
+    const sortByDisplayName = (k1: EnhancedKernelSpec, k2: EnhancedKernelSpec) => {
+        if(k1.display_name < k2.display_name) {
+            return -1;
+        }
+        if(k1.display_name > k2.display_name) {
+            return 1;
+        }
+        return 0;
+    }
+    const userKernelCards = Object.values(userKernels).sort(sortByDisplayName).map(
+        (kernelSpec) => <KernelSpecCard kernelSpec={kernelSpec}/>
+    );
+    const systemKernelCards = Object.values(systemKernels).sort(sortByDisplayName).map(
+        (kernelSpec) => <KernelSpecCard kernelSpec={kernelSpec}/>
+    );
   return (
     <Container>
       <br/>
-      <h3>Kernelspecs</h3>
-      {!showForm && 
+      {!showForm &&
         <>
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap"
-          }}>
-            {
-              cardData.map((cardPayload: any, id) => (
-                !cardPayload.template && <KsCard
-                  handleSelectKernelspec={handleSelectKernelspec.bind(this)}
-                  handleCopyKernelspec={handleCopyKernelspec.bind(this)}
-                  handleDeleteKernelspec={handleDeleteKernelspec.bind(this)}
-                  cardPayload={cardPayload}
-                  key={id}
-                />
-              ))
-            }
-          </div>
-          <hr/>
-          <h4>Templates</h4>
-          <div><a href="https://github.com/quansight/ksmm/#about-kernelspec-templates" target="blank">More information</a> about the templates.</div>
-          <div><b><a href="https://github.com/quansight/ksmm/issues/61" target="blank">We are not validating the form for now</a> - Please ensure you are correctly filling all the fields.</b></div>
-          <div style={{
-            display: "flex",
-            flexWrap: "wrap"
-          }}>
-            {
-              cardData.map((cardPayload: any, id) => (
-                cardPayload.template && <KsCard
-                handleTemplateKernelspec={handleTemplateKernelspec.bind(this)}
-                cardPayload={cardPayload}
-                  key={id}
-                />
-              ))
-            }
-          </div>
+        {systemKernelCards.length > 0 ?
+            <>
+            <h3>System Kernel Specs</h3>
+                <div style={{
+                display: "flex",
+                flexWrap: "wrap"
+            }}>
+                {systemKernelCards}
+            </div>
+            </>
+            : null
+        }
+        <hr/>
+        {userKernelCards.length > 0 ?
+            <>
+            <h3>User Kernel Specs</h3>
+                <div style={{
+                display: "flex",
+                flexWrap: "wrap"
+            }}>
+                {userKernelCards}
+            </div>
+            </>
+            : null
+        }
         </>
       }
-      {alertBox && 
+      {alertBox &&
         <SuccessAlertBox handleClose={handleGoHome} />
       }
       {showForm && (

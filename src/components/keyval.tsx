@@ -29,6 +29,7 @@ const KeyValueWidget = (props: any) => {
     <>
       <input
         type="string"
+        placeholder="ENV_VAR"
         value={formKey}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handleKeyChange(formKey, e.target.value);
@@ -36,7 +37,9 @@ const KeyValueWidget = (props: any) => {
       />
       <input
         type="string"
+        placeholder="MY VALUE"
         value={formVal}
+        size={75}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handleValueChange(formKey, e.target.value);
         }}

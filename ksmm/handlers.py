@@ -2,10 +2,10 @@
 """
 import json
 import os
-import pathlib
 import string
 from pathlib import Path
 from types import SimpleNamespace
+import stat
 
 from .kernel_schema import kernel_schema
 
@@ -17,6 +17,16 @@ from jupyter_server.utils import url_path_join
 
 from ksmm.templating import format_tpl
 
+def kernel_path(dir):
+    return os.path.join(dir, 'kernel.json')
+
+def find_next_name(specs, name):
+        i = 0
+        new_name = name
+        while new_name in specs:
+            i += 1
+            new_name = f'{name}-{i}'
+        return new_name, i
 
 class KSDeleteHandler(APIHandler):
     """KernelSpec DELETE Handler.
@@ -46,9 +56,21 @@ class KSCopyHandler(APIHandler):
     @tornado.web.authenticated
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
-        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
-        new_name = '-'.join([data["name"], str(ulid_gen.new())])
-        self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name, user=True)
+        specs = self.kernel_spec_manager.find_kernel_specs()
+        source_dir = specs[data["name"]]
+        new_name, i = find_next_name(specs, data["name"])
+        dest = self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name, user=True)
+        # Make everything writeable by the user. This mirrors installing a kernel
+        for file_or_dir in os.listdir(dest):
+            f = os.path.join(dest, file_or_dir)
+            st = os.stat(f)
+            os.chmod(f, st.st_mode | stat.S_IWRITE)
+        # Now update the name in the kernel
+        spec = self.kernel_spec_manager.get_kernel_spec(new_name).to_dict()
+        if i > 0:
+            spec['display_name'] = f'{spec["display_name"]} ({i})'
+        with open(kernel_path(dest), 'w') as f:
+            f.write(json.dumps(spec, indent=3))
         self.finish(json.dumps({
             "success": True,
             "new_name": new_name
@@ -61,22 +83,23 @@ class KSParamsHandler(APIHandler):
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
         template_name = data["name"]
-        template_spec = self.kernel_spec_manager.get_kernel_spec(template_name).to_dict()
         params = data["params"]
-#        for item in params.items():
-#            params[item[0]] = str(item[1])
-#        params = json.dumps(params)
-#        params = json.loads(params)
+
+        specs = self.kernel_spec_manager.find_kernel_specs()
+        template_spec = self.kernel_spec_manager.get_kernel_spec(template_name).to_dict()
         spec = format_tpl(template_spec, **params)
+
         printable = set(string.printable)
         kernel_name = ''.join(filter(lambda x: x in printable, spec['display_name']))
-        kernel_name = str(kernel_name).lower().replace('/', '_').replace('=', '').replace(':', '').replace(' ', '-')
-        source_dir = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
+        kernel_name = str(kernel_name).lower().replace('/', '_').replace('=', '').replace(':', '').replace(' ', '-').replace('(', '_').replace(')', '_').replace(',', '')
+        kernel_name, i = find_next_name(specs, kernel_name)
+        if i > 0:
+            spec['display_name'] = f'{spec["display_name"]} ({i})'
+        source_dir = specs[template_name]
         self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=kernel_name, user=True)
         dir = self.kernel_spec_manager.find_kernel_specs()[kernel_name]
-        f = open(dir + os.path.sep + 'kernel.json', 'w')
-        f.write(json.dumps(spec))
-        f.close()
+        with open(kernel_path(dir), 'w') as f:
+            f.write(json.dumps(spec, indent=3))
         self.finish(
             json.dumps(
                 {
@@ -146,8 +169,29 @@ class KSHandler(APIHandler):
     def get(self, name=None):
         if name is None:
             # TODO This is suboptimal but needed as get_all_specs methods does not return and updated view of the specs.
-            kernel_specs = {k: self.kernel_spec_manager.get_kernel_spec(k).to_dict()
-              for k in self.kernel_spec_manager.find_kernel_specs()}
+            kernel_specs = {}
+            user_kernel_dir = Path(self.kernel_spec_manager.user_kernel_dir)
+            for k in self.kernel_spec_manager.find_kernel_specs():
+                spec = self.kernel_spec_manager.get_kernel_spec(k)
+                # Can we write to kernel.json?
+                try:
+                    writeable = os.access(kernel_path(spec.resource_dir), os.W_OK)
+                except:
+                    writeable = False
+                # Can we delete (this means read + write to parent dir)
+                try:
+                    deletable = os.access(spec.resource_dir, os.W_OK | os.X_OK)
+                except:
+                    deletable = False
+                is_user = user_kernel_dir in Path(spec.resource_dir).parents
+                kernel_specs[k] = spec.to_dict()
+                kernel_specs[k]["_ksmm"] = {
+                    "name": k,
+                    "writeable": writeable,
+                    "deletable": deletable,
+                    "fs_path": spec.resource_dir,
+                    "is_user": is_user
+                }
             self.finish(kernel_specs)
         else:
             self.finish(self.kernel_spec_manager.get_kernel_spec(name).to_dict())
@@ -168,7 +212,7 @@ class KSHandler(APIHandler):
             kernelPaths = self.kernel_spec_manager.find_kernel_specs()
             # Write to python object.
             path = kernelPaths[originalKernelName]
-            with open(str(Path(path, "kernel.json")), "w") as outfile:
+            with open(kernel_path(path), "w") as outfile:
                 json.dump(json.loads(data["editedKernelPayload"]), outfile, indent=2)
             self.finish(
                 json.dumps({"success": True, "kernel_name": originalKernelName})
