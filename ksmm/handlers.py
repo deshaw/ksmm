@@ -4,14 +4,11 @@ import json
 import os
 import string
 from pathlib import Path
-from types import SimpleNamespace
 import stat
 
 from .kernel_schema import kernel_schema
 
-import psutil
 import tornado
-import ulid as ulid_gen
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
@@ -112,42 +109,12 @@ class KSParamsHandler(APIHandler):
 class KSSchemaHandler(APIHandler):
     """KernelSpec Schema Handler
 
-    Loads the schema required to render the frontend from the JSON file, calculating any
-    information that is needed dynamically.
+    Loads the schema required to render the frontend from the JSON file
     """
 
-    def get_local_params(self) -> dict:
-        to_str = lambda int_list: [str(item) for item in int_list]
-        params = {
-            "cores": to_str(list(range(1, psutil.cpu_count() + 1))),
-            "memory": to_str(
-                list(range(1, int(psutil.virtual_memory().available * (10 ** -9)) + 1))
-            ),
-        }
-        return params
-
-
-    def set_parameters(self, schema: dict, params: SimpleNamespace) -> dict:
-        schema['properties']['parameters']['properties']['cores']['enum'] = params.cores
-        schema['properties']['parameters']['properties']['memory']['enum'] = params.memory
-        return schema
-
-
-    def get_schema(self, path: str) -> str:
-        with open(path, 'r') as f:
-            schema_file = f.read()
-        return json.loads(schema_file)
-
-
     @tornado.web.authenticated
-    def get(self, name=None):
-        params = SimpleNamespace(**self.get_local_params())
-#        schemafp = pathlib.Path('schema', 'kernelSchema.json')
-#        schema = dict(self.get_schema(path=schemafp.__str__()))
-        schema = json.loads(kernel_schema)
-        schema = self.set_parameters(schema, params)
-        json_schema = json.dumps(schema)
-        self.finish(json_schema)
+    def get(self):
+        self.finish(kernel_schema)
 
 
 class KSHandler(APIHandler):
@@ -156,45 +123,36 @@ class KSHandler(APIHandler):
     currently start with the ks prefix.
 
     GET ks/  Will get all the kernelspec "kernel.json" data
-    GET ks/<name>  Will the kernelspec "kernel.json" data for given kernel if exists
-    DELETE ks/<name> Will delete the given kernelspec if exists
-    LIST /ks
-    LIST /ks/ will return {"names": <list of all the know kernel names>}
-    POST: NotImplemented; currently jupyter_client only support installing kernelspec from a folder. Will Fix.
-          Suggestion "POST ks/<name> replace the existing kernel.json with the content of the post.
-    PUT: Alternate to copy; put directly a kernelspec. Not implemented for above reason.
+    POST: Update a kernelspec in place
     """
 
     @tornado.web.authenticated
-    def get(self, name=None):
-        if name is None:
-            # TODO This is suboptimal but needed as get_all_specs methods does not return and updated view of the specs.
-            kernel_specs = {}
-            user_kernel_dir = Path(self.kernel_spec_manager.user_kernel_dir)
-            for k in self.kernel_spec_manager.find_kernel_specs():
-                spec = self.kernel_spec_manager.get_kernel_spec(k)
-                # Can we write to kernel.json?
-                try:
-                    writeable = os.access(kernel_path(spec.resource_dir), os.W_OK)
-                except:
-                    writeable = False
-                # Can we delete (this means read + write to parent dir)
-                try:
-                    deletable = os.access(spec.resource_dir, os.W_OK | os.X_OK)
-                except:
-                    deletable = False
-                is_user = user_kernel_dir in Path(spec.resource_dir).parents
-                kernel_specs[k] = spec.to_dict()
-                kernel_specs[k]["_ksmm"] = {
-                    "name": k,
-                    "writeable": writeable,
-                    "deletable": deletable,
-                    "fs_path": spec.resource_dir,
-                    "is_user": is_user
-                }
-            self.finish(kernel_specs)
-        else:
-            self.finish(self.kernel_spec_manager.get_kernel_spec(name).to_dict())
+    def get(self):
+        # TODO This is suboptimal but needed as get_all_specs methods does not return and updated view of the specs.
+        kernel_specs = {}
+        user_kernel_dir = Path(self.kernel_spec_manager.user_kernel_dir)
+        for k in self.kernel_spec_manager.find_kernel_specs():
+            spec = self.kernel_spec_manager.get_kernel_spec(k)
+            # Can we write to kernel.json?
+            try:
+                writeable = os.access(kernel_path(spec.resource_dir), os.W_OK)
+            except:
+                writeable = False
+            # Can we delete (this means read + write to parent dir)
+            try:
+                deletable = os.access(spec.resource_dir, os.W_OK | os.X_OK)
+            except:
+                deletable = False
+            is_user = user_kernel_dir in Path(spec.resource_dir).parents
+            kernel_specs[k] = spec.to_dict()
+            kernel_specs[k]["_ksmm"] = {
+                "name": k,
+                "writeable": writeable,
+                "deletable": deletable,
+                "fs_path": spec.resource_dir,
+                "is_user": is_user
+            }
+        self.finish(kernel_specs)
 
 
     @tornado.web.authenticated
