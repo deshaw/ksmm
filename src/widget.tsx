@@ -6,7 +6,7 @@ import KsCard from "./components/kscard";
 import { SuccessAlertBox } from "./components/alerts";
 import { KsForm } from "./components/ksform";
 import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
-import {KernelSpec} from '@jupyterlab/services';
+import { KernelSpec, ServiceManager } from '@jupyterlab/services';
 import Form, { IChangeEvent } from "react-jsonschema-form";
 
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -30,7 +30,8 @@ type EnhancedKernelMap = {[key: string]: EnhancedKernelSpec};
  *
  * @returns The React component.
  */
-const KernelManagerComponent = (): JSX.Element => {
+const KernelManagerComponent = (props: { serviceManager: ServiceManager }): JSX.Element => {
+  const { serviceManager } = props;
   const [data, setData] = useState<EnhancedKernelMap |undefined>(undefined);
   const [showForm, setShowForm] = useState(false);
   const [kernelFormData, setKernelFormData] = useState<EnhancedKernelSpec | undefined>(undefined);
@@ -71,6 +72,7 @@ const KernelManagerComponent = (): JSX.Element => {
       method: "GET",
     }).then((res: any) => {
       setData(res);
+      void serviceManager.kernelspecs.refreshSpecs();
     }).catch((err) => {
         return showErrorMessage('Could not refresh kernel specs', err);
     });
@@ -89,9 +91,9 @@ const KernelManagerComponent = (): JSX.Element => {
 
   const handleDeleteKernelspec = async (kernelSpec: EnhancedKernelSpec) => {
     const action = await showDialog(
-        {
-            title: `Are you sure you want to delete ${kernelSpec.display_name} (${kernelSpec._ksmm.name})?`,
-        }
+      {
+          title: `Are you sure you want to delete ${kernelSpec.display_name} (${kernelSpec._ksmm.name})?`,
+      }
     )
     if(!action.button.accept) {
         return;
@@ -204,8 +206,6 @@ const KernelManagerComponent = (): JSX.Element => {
     }
    });
 
-
-
   const KernelSpecCard = ({kernelSpec}: {kernelSpec: EnhancedKernelSpec}) => <KsCard
         handleSelectKernelspec={handleSelectKernelspec}
         handleCopyKernelspec={handleCopyKernelspec}
@@ -280,11 +280,13 @@ const KernelManagerComponent = (): JSX.Element => {
  * KernelspecManagerWidget main class.
  */
 export class KernelspecManagerWidget extends ReactWidget {
-  constructor() {
+  private _serviceManager: ServiceManager;
+  constructor(serviceManager: ServiceManager) {
     super();
+    this._serviceManager = serviceManager;
     this.addClass("jp-Ksmm");
   }
   render(): JSX.Element {
-    return <KernelManagerComponent />
+    return <KernelManagerComponent serviceManager={this._serviceManager} />
   }
 }
