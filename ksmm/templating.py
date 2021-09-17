@@ -103,7 +103,7 @@ def format_tpl(spec, **kwargs):
         if k in ("argv", "display_name"):
             it = spec["metadata"]["template"]["tpl"][k]
             static_spec[k] = recursive_format(
-                it, spec["metadata"]["template"]["mapping"], **kwargs
+                it, spec["metadata"]["template"].get("mapping", {}), **kwargs
             )
         else:
             static_spec[k] = v

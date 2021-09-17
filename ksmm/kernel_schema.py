@@ -23,12 +23,6 @@ kernel_schema = '''{
     "parameters": {
       "type": "object",
       "properties": {
-        "cores": { "type": "string", "enum": [], "title": "CPU Cores" },
-        "memory": {
-          "type": "string",
-          "enum": [],
-          "title": "Memory"
-        }
       }
     },
     "metadata": { "type": "object", "title": "" }

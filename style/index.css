@@ -8,6 +8,15 @@
     left: 0;
 }
 
+.ksmm-button-disabled {
+    color: var(--jp-brand-color1);
+    opacity: 0.3;
+}
+
+.ksmm-button-enabled {
+    color: var(--jp-brand-color1);;
+}
+
 div.card{
     margin: 12px;
 
