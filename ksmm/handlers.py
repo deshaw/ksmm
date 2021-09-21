@@ -2,11 +2,9 @@
 """
 import json
 import os
+import stat
 import string
 from pathlib import Path
-import stat
-
-from .kernel_schema import kernel_schema
 
 import tornado
 from jupyter_server.base.handlers import APIHandler
@@ -14,16 +12,21 @@ from jupyter_server.utils import url_path_join
 
 from ksmm.templating import format_tpl
 
+from .kernel_schema import kernel_schema
+
+
 def kernel_path(dir):
-    return os.path.join(dir, 'kernel.json')
+    return os.path.join(dir, "kernel.json")
+
 
 def find_next_name(specs, name):
-        i = 0
-        new_name = name
-        while new_name in specs:
-            i += 1
-            new_name = f'{name}-{i}'
-        return new_name, i
+    i = 0
+    new_name = name
+    while new_name in specs:
+        i += 1
+        new_name = f"{name}-{i}"
+    return new_name, i
+
 
 class KSDeleteHandler(APIHandler):
     """KernelSpec DELETE Handler.
@@ -37,10 +40,7 @@ class KSDeleteHandler(APIHandler):
         data = tornado.escape.json_decode(self.request.body)
         name = data["name"]
         self.kernel_spec_manager.remove_kernel_spec(name)
-        self.finish(json.dumps({
-            "success": True,
-            "name": name
-        }))
+        self.finish(json.dumps({"success": True, "name": name}))
 
 
 class KSCopyHandler(APIHandler):
@@ -56,7 +56,9 @@ class KSCopyHandler(APIHandler):
         specs = self.kernel_spec_manager.find_kernel_specs()
         source_dir = specs[data["name"]]
         new_name, i = find_next_name(specs, data["name"])
-        dest = self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=new_name, user=True)
+        dest = self.kernel_spec_manager.install_kernel_spec(
+            source_dir, kernel_name=new_name, user=True
+        )
         # Make everything writeable by the user. This mirrors installing a kernel
         for file_or_dir in os.listdir(dest):
             f = os.path.join(dest, file_or_dir)
@@ -65,17 +67,13 @@ class KSCopyHandler(APIHandler):
         # Now update the name in the kernel
         spec = self.kernel_spec_manager.get_kernel_spec(new_name).to_dict()
         if i > 0:
-            spec['display_name'] = f'{spec["display_name"]} ({i})'
-        with open(kernel_path(dest), 'w') as f:
+            spec["display_name"] = f'{spec["display_name"]} ({i})'
+        with open(kernel_path(dest), "w") as f:
             f.write(json.dumps(spec, indent=3))
-        self.finish(json.dumps({
-            "success": True,
-            "new_name": new_name
-        }))
+        self.finish(json.dumps({"success": True, "new_name": new_name}))
 
 
 class KSParamsHandler(APIHandler):
-
     @tornado.web.authenticated
     def post(self):
         data = tornado.escape.json_decode(self.request.body)
@@ -83,19 +81,33 @@ class KSParamsHandler(APIHandler):
         params = data["params"]
 
         specs = self.kernel_spec_manager.find_kernel_specs()
-        template_spec = self.kernel_spec_manager.get_kernel_spec(template_name).to_dict()
+        template_spec = self.kernel_spec_manager.get_kernel_spec(
+            template_name
+        ).to_dict()
         spec = format_tpl(template_spec, **params)
 
         printable = set(string.printable)
-        kernel_name = ''.join(filter(lambda x: x in printable, spec['display_name']))
-        kernel_name = str(kernel_name).lower().replace('/', '_').replace('=', '').replace(':', '').replace(' ', '-').replace('(', '_').replace(')', '_').replace(',', '')
+        kernel_name = "".join(filter(lambda x: x in printable, spec["display_name"]))
+        kernel_name = (
+            str(kernel_name)
+            .lower()
+            .replace("/", "_")
+            .replace("=", "")
+            .replace(":", "")
+            .replace(" ", "-")
+            .replace("(", "_")
+            .replace(")", "_")
+            .replace(",", "")
+        )
         kernel_name, i = find_next_name(specs, kernel_name)
         if i > 0:
-            spec['display_name'] = f'{spec["display_name"]} ({i})'
+            spec["display_name"] = f'{spec["display_name"]} ({i})'
         source_dir = specs[template_name]
-        self.kernel_spec_manager.install_kernel_spec(source_dir, kernel_name=kernel_name, user=True)
+        self.kernel_spec_manager.install_kernel_spec(
+            source_dir, kernel_name=kernel_name, user=True
+        )
         dir = self.kernel_spec_manager.find_kernel_specs()[kernel_name]
-        with open(kernel_path(dir), 'w') as f:
+        with open(kernel_path(dir), "w") as f:
             f.write(json.dumps(spec, indent=3))
         self.finish(
             json.dumps(
@@ -136,12 +148,12 @@ class KSHandler(APIHandler):
             # Can we write to kernel.json?
             try:
                 writeable = os.access(kernel_path(spec.resource_dir), os.W_OK)
-            except:
+            except Exception:
                 writeable = False
             # Can we delete (this means read + write to parent dir)
             try:
                 deletable = os.access(spec.resource_dir, os.W_OK | os.X_OK)
-            except:
+            except Exception:
                 deletable = False
             is_user = user_kernel_dir in Path(spec.resource_dir).parents
             kernel_specs[k] = spec.to_dict()
@@ -150,22 +162,22 @@ class KSHandler(APIHandler):
                 "writeable": writeable,
                 "deletable": deletable,
                 "fs_path": spec.resource_dir,
-                "is_user": is_user
+                "is_user": is_user,
             }
         self.finish(kernel_specs)
 
-
     @tornado.web.authenticated
     def post(self, name=None):
-        data = json.loads(self.request.body.decode('utf-8'))
+        data = json.loads(self.request.body.decode("utf-8"))
         # target = self.kernel_spec_manager.find_kernel_specs()[data["name"]]
         # self.kernel_spec_manager.install_kernel_spec(target, new_name)
-        originalKernelName = str(data['originalKernelName'])
+        originalKernelName = str(data["originalKernelName"])
         if originalKernelName is None:
-            self.finish(json.dumps({
-                "success": False,
-                "message": "You must provide a kernelspec name"
-            }))
+            self.finish(
+                json.dumps(
+                    {"success": False, "message": "You must provide a kernelspec name"}
+                )
+            )
         else:
             kernelPaths = self.kernel_spec_manager.find_kernel_specs()
             # Write to python object.
@@ -175,7 +187,6 @@ class KSHandler(APIHandler):
             self.finish(
                 json.dumps({"success": True, "kernel_name": originalKernelName})
             )
-
 
     def write_error(self, status_code, **kwargs):
         """Render custom error as json"""
@@ -210,7 +221,13 @@ def setup_handlers(web_app):
         (url_path_join(base_url, "ksmm", "/"), KSHandler),
         (url_path_join(base_url, "ksmm", "/copy"), KSCopyHandler),
         (url_path_join(base_url, "ksmm", "/delete"), KSDeleteHandler),
-        (url_path_join(base_url, "ksmm", "/schema"), KSSchemaHandler,),
-        (url_path_join(base_url, "ksmm", "/params"), KSParamsHandler,),
+        (
+            url_path_join(base_url, "ksmm", "/schema"),
+            KSSchemaHandler,
+        ),
+        (
+            url_path_join(base_url, "ksmm", "/params"),
+            KSParamsHandler,
+        ),
     ]
     web_app.add_handlers(host_pattern, handlers)

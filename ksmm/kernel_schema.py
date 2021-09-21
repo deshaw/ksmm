@@ -1,4 +1,4 @@
-kernel_schema = '''{
+kernel_schema = """{
   "title": "Kernelspec Management Menu",
   "type": "object",
   "properties": {
@@ -35,4 +35,4 @@ kernel_schema = '''{
     "language",
     "metadata"
   ]
-}'''
+}"""

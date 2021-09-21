@@ -9,8 +9,8 @@ Utilities (should) be provided to extract only what are the placeholder and whic
 as well as taking an existing kernelspec and modifying those values.
 """
 
-class Default(dict):
 
+class Default(dict):
     def __init__(self, mapping, **kwargs):
         super().__init__(**kwargs)
         self.mapping = mapping

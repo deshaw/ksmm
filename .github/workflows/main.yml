@@ -40,6 +40,13 @@ jobs:
           pip install isort
           isort -c ksmm
 
+      - name: black formatting
+        shell: bash -l {0}
+        run: |
+          pip install black
+          black --check ksmm
+
+
       - name: build wheel and sdist
         shell: bash -l {0}
         run: |

@@ -19,7 +19,6 @@ if len(sys.argv) < 2:
         except Exception:
             pass
 
-
     spec_file = radiolist_dialog(
         title="Choose kernelspec",
         text="Select Kernel to parametrize",
@@ -35,52 +34,39 @@ params = extract_parameters(spec)
 
 
 class SchemaForm:
-
-
-    def __init__(self, item,title):
+    def __init__(self, item, title):
         self.item = item
-        self.title = title #spec["display_name"]
-
+        self.title = title  # spec["display_name"]
 
     def render(self):
-        type_ = self.item['type']
 
-        return getattr(self, 'render_'+self.item['type'])()
+        return getattr(self, "render_" + self.item["type"])()
 
     def render_integer(self):
-        min_ = self.item.get('minimum', 0)
-        max_ = self.item.get('maximum', 10)
-        step_ = self.item.get('multipleOf', 1)
         res = input_dialog(
             title=self.title,
-            text=self.item['title'],
+            text=self.item["title"],
         ).run()
         return int(res)
-    
+
     def render_string(self):
         return radiolist_dialog(
-            title=self.title, 
-            text=self.item['title'],
-            values=[(str(u), str(u)) for u in self.item['enum']],
+            title=self.title,
+            text=self.item["title"],
+            values=[(str(u), str(u)) for u in self.item["enum"]],
         ).run()
 
     def render_boolean(self):
         return radiolist_dialog(
-            title=self.title, 
-            text=self.item['title'],
-            values=[(True, 'Yes'),( False, 'No')],
+            title=self.title,
+            text=self.item["title"],
+            values=[(True, "Yes"), (False, "No")],
         ).run()
-
-
-
-
-
-
 
 
 new_params = {}
 for k, v in params.items():
-    result = SchemaForm(v, spec["display_name"]).render() 
+    result = SchemaForm(v, spec["display_name"]).render()
     new_params[k] = result
 
 
