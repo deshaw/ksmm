@@ -39,14 +39,10 @@ class SchemaForm:
         self.title = title  # spec["display_name"]
 
     def render(self):
-        type_ = self.item["type"]
 
         return getattr(self, "render_" + self.item["type"])()
 
     def render_integer(self):
-        min_ = self.item.get("minimum", 0)
-        max_ = self.item.get("maximum", 10)
-        step_ = self.item.get("multipleOf", 1)
         res = input_dialog(
             title=self.title,
             text=self.item["title"],

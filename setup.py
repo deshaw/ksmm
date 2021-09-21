@@ -82,7 +82,7 @@ try:
         post_develop=post_develop, ensured_targets=ensured_targets
     )
     setup_args["data_files"] = get_data_files(data_files_spec)
-except ImportError as e:
+except ImportError:
     pass
 
 if __name__ == "__main__":
