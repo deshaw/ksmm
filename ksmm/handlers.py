@@ -2,17 +2,17 @@
 """
 import json
 import os
+import stat
 import string
 from pathlib import Path
-import stat
-
-from .kernel_schema import kernel_schema
 
 import tornado
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 
 from ksmm.templating import format_tpl
+
+from .kernel_schema import kernel_schema
 
 
 def kernel_path(dir):
