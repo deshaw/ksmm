@@ -148,12 +148,12 @@ class KSHandler(APIHandler):
             # Can we write to kernel.json?
             try:
                 writeable = os.access(kernel_path(spec.resource_dir), os.W_OK)
-            except:
+            except Exception:
                 writeable = False
             # Can we delete (this means read + write to parent dir)
             try:
                 deletable = os.access(spec.resource_dir, os.W_OK | os.X_OK)
-            except:
+            except Exception:
                 deletable = False
             is_user = user_kernel_dir in Path(spec.resource_dir).parents
             kernel_specs[k] = spec.to_dict()
