@@ -18,19 +18,11 @@ const KsCard = (props: any): JSX.Element => {
     <Card
       style={{
         width: "12rem",
-        height: "12rem",
+        minHeight: "12rem",
       }}
       key={kernelSpec._ksmm.fs_path}
     >
-      <Card.Body>
-        <OverlayTrigger
-            placement="bottom"
-            overlay={renderToolTip}
-        >
-            <Card.Title>{kernelSpec.display_name}</Card.Title>
-        </OverlayTrigger>
-      </Card.Body>
-      <Card.Footer className="align-left">
+      <Card.Header className="align-left">
         { kernelSpec._ksmm?.writeable ? <a
           style={{ cursor: "pointer" }}
           onClick={() => handleSelectKernelspec(kernelSpec)}
@@ -60,7 +52,15 @@ const KsCard = (props: any): JSX.Element => {
             <FaWpforms className='ksmm-button-enabled' title='Generate with Template' />
           </a>
         }
-      </Card.Footer>
+      </Card.Header>
+      <Card.Body>
+        <OverlayTrigger
+            placement="bottom"
+            overlay={renderToolTip}
+        >
+            <Card.Title>{kernelSpec.display_name}</Card.Title>
+        </OverlayTrigger>
+      </Card.Body>
     </Card>
   );
 }
