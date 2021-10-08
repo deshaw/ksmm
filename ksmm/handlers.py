@@ -28,6 +28,17 @@ def find_next_name(specs, name):
     return new_name, i
 
 
+def make_user_writable(dir):
+    """
+    Make everything in dir writeable by the user
+    This mirrors installing a kernel (since you may have copied one that is read only)
+    """
+    for file_or_dir in os.listdir(dir):
+        f = os.path.join(dir, file_or_dir)
+        st = os.stat(f)
+        os.chmod(f, st.st_mode | stat.S_IWRITE)
+
+
 class KSDeleteHandler(APIHandler):
     """KernelSpec DELETE Handler.
 
@@ -59,11 +70,8 @@ class KSCopyHandler(APIHandler):
         dest = self.kernel_spec_manager.install_kernel_spec(
             source_dir, kernel_name=new_name, user=True
         )
-        # Make everything writeable by the user. This mirrors installing a kernel
-        for file_or_dir in os.listdir(dest):
-            f = os.path.join(dest, file_or_dir)
-            st = os.stat(f)
-            os.chmod(f, st.st_mode | stat.S_IWRITE)
+        make_user_writable(dest)
+
         # Now update the name in the kernel
         spec = self.kernel_spec_manager.get_kernel_spec(new_name).to_dict()
         if i > 0:
@@ -107,6 +115,7 @@ class KSParamsHandler(APIHandler):
             source_dir, kernel_name=kernel_name, user=True
         )
         dir = self.kernel_spec_manager.find_kernel_specs()[kernel_name]
+        make_user_writable(dir)
         with open(kernel_path(dir), "w") as f:
             f.write(json.dumps(spec, indent=3))
         self.finish(
