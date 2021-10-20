@@ -16,15 +16,12 @@ const KsCard = (props: any): JSX.Element => {
 
   return (
     <Card
-      style={{
-        width: "12rem",
-        minHeight: "12rem",
-      }}
+      className='ksmm-kernel-cards'
       key={kernelSpec._ksmm.fs_path}
     >
       <Card.Header className="align-left">
         { kernelSpec._ksmm?.writeable ? <a
-          style={{ cursor: "pointer" }}
+          className='ksmm-pointer'
           onClick={() => handleSelectKernelspec(kernelSpec)}
           >
             <FaRegEdit className='ksmm-button-enabled' title='Edit' />
@@ -32,13 +29,13 @@ const KsCard = (props: any): JSX.Element => {
           : <FaRegEdit className='ksmm-button-disabled'/>
         }
         <a
-          style={{ cursor: "pointer" }}
+          className='ksmm-pointer'
           onClick={() => handleCopyKernelspec(kernelSpec)}
           >
             <FaCopy className='ksmm-button-enabled' title='Copy' />
         </a>
         { kernelSpec._ksmm?.deletable ? <a
-          style={{ cursor: "pointer" }}
+          className='ksmm-pointer'
           onClick={() => handleDeleteKernelspec(kernelSpec)}
           >
             <FaTrash className='ksmm-button-enabled' title='Delete' />
@@ -46,7 +43,7 @@ const KsCard = (props: any): JSX.Element => {
           : <FaTrash className='ksmm-button-disabled' />
         }
         { kernelSpec.metadata?.template && <a
-          style={{ cursor: "pointer", float: 'right' }}
+          className='ksmm-pointer fr'
           onClick={() => handleTemplateKernelspec(kernelSpec)}
           >
             <FaWpforms className='ksmm-button-enabled' title='Generate with Template' />

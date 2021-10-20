@@ -25,7 +25,7 @@ const TabMenu = (props: any): JSX.Element => {
       onSelect={(k: string) => setTab(k)}
     >
       {menuHeaders.map((menuHeader: string) => (
-        <Tab eventKey={menuHeader} key={menuHeader} title={menuHeader}>
+        <Tab eventKey={menuHeader} key={menuHeader} title={menuHeader} tabClassName="ksmm-tab-button">
           <KsFormGroup
             mainprops={props}
             selectedTab={tab}
@@ -45,6 +45,7 @@ export const KsForm = (props: any): JSX.Element => {
       "ui:ObjectFieldTemplate": EnvVarForm,
       "ui:options": {
         expandable: true,
+        inline: true
       },
     },
   }
@@ -56,10 +57,16 @@ export const KsForm = (props: any): JSX.Element => {
         formData={props.formData}
         onSubmit={props.onSubmit}
         formContext={{}}
-      />
-      <Button variant="secondary" onClick={() => props.onCancel()}>
-        Cancel
-      </Button>
+      >
+        <div className='ksmm-button-container'>
+          <Button type="submit" variant="primary" style={{marginRight: '5px'}}>
+            Submit
+          </Button>
+          <Button variant="secondary" onClick={() => props.onCancel()}>
+            Cancel
+          </Button>
+        </div>
+      </Form>
     </>
   );
 }

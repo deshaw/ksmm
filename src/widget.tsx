@@ -9,7 +9,7 @@ import { Dialog, showDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { KernelSpec, ServiceManager } from '@jupyterlab/services';
 import Form, { IChangeEvent } from "react-jsonschema-form";
 
-import "bootstrap/dist/css/bootstrap.min.css";
+import '../style/extracted_bootstrap_styles.css'
 
 interface KSMMAdditonalFields {
     name: string,
@@ -236,24 +236,23 @@ const KernelManagerComponent = (props: { serviceManager: ServiceManager }): JSX.
         <>
         {systemKernelCards.length > 0 ?
             <>
-            <h3>System Kernel Specs</h3>
-                <div style={{
-                display: "flex",
-                flexWrap: "wrap"
-            }}>
+              <h3 className='h3'>
+                System Kernel Specs
+              </h3>
+              <div className='ksmm-card-container'>
                 {systemKernelCards}
-            </div>
+              </div>
             </>
             : null
         }
-        <hr/>
+
+        <hr className='ksmm-kernel-separator'/>
         {userKernelCards.length > 0 ?
             <>
-            <h3>User Kernel Specs</h3>
-                <div style={{
-                display: "flex",
-                flexWrap: "wrap"
-            }}>
+              <h3 className='h3'>
+                User Kernel Specs
+              </h3>
+              <div className='ksmm-card-container'>
                 {userKernelCards}
             </div>
             </>
