@@ -153,3 +153,12 @@ This is an example of such a Kernelspec template. The `metadata/template/tpl` st
 ## Launch Arguments
 
 ![](screenshots/launch_args_ss.png)
+
+## History
+This was created by the [D. E. Shaw group](https://www.deshaw.com/) in conjunction with [Quansight](https://www.quansight.com/).
+
+<p align="center">
+    <a href="https://www.deshaw.com">
+       <img src="https://www.deshaw.com/assets/logos/blue_logo_417x125.png" alt="D. E. Shaw Logo" height="75" >
+    </a>
+</p>
