@@ -1,14 +1,12 @@
 {
   "argv": [
-    "slurm",
-    "run",
-    "--mem=1048576000",
-    "--cpu=14",
-    "python3.8",
+    "python",
     "-m",
-    "ipykernel",
+    "ipykernel_launcher",
     "-f",
-    "{connection_file}"
+    "{connection_file}",
+    "--cache-size={cache_size}",
+    "--matplotlib={matplotlib}"
   ],
   "display_name": "Python 3.8 Template 1",
   "language": "python",
@@ -16,44 +14,55 @@
     "template": {
       "tpl": {
         "argv": [
-          "slurm",
-          "run",
-          "--mem={mem_slurm}",
-          "--cpu={cpu}",
-          "python3.8",
+          "python",
           "-m",
-          "ipykernel",
+          "ipykernel_launcher",
           "-f",
-          "{connection_file}"
+          "{connection_file}",
+          "--cache-size={cache_size_map}",
+          "--matplotlib={matplotlib}",
+          "--logfile={logfile}",
+          "--Kernel._poll_interval={poll_interval}"
         ],
-        "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
+        "display_name": "Python cache_size {cache_size_map} matplotlib {matplotlib}"
       },
       "parameters": {
-        "cpu": {
-          "type": "integer",
-          "title": "CPU core",
-          "default": 1,
-          "maximum": 48,
-          "minimum": 1
+        "poll_interval": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1,
+          "multipleOf": 0.01,
+          "title": "Kernel pool interval in seconds",
+          "default": 0.01
         },
-        "mem": {
-          "type": "string",
-          "title": "Memory (GB)",
+        "cache_size": {
+          "type": "integer",
+          "title": "Set the size of the cache",
+          "default": "Medium",
           "enum": [
             "Small",
             "Medium",
             "Big"
           ]
         },
-        "gpu": {
-          "type": "boolean",
-          "title": "Graphic Processor",
-          "default": true
+        "matplotlib": {
+          "type": "string",
+          "title": "Configure matplotlib for interactive use with the default matplotlib backend",
+          "default": "widget",
+          "enum": [
+            "auto", "agg", "gtk", "gtk3", "inline", "ipympl", "nbagg", "notebook", 
+            "osx", "pdf", "ps", "qt", "qt4", "qt5", "svg", "tk", "widget", "wx"
+          ]
+        },
+        "logfile": {
+          "type": "string",
+          "title": "Set the path for the logfile",
+          "default": "/tmp/kernel.out"
         }
       },
       "mapping": {
-        "mem_slurm": {
-          "mem": {
+        "cache_size_map": {
+          "cache_size": {
             "Small": "102400",
             "Medium": "512000",
             "Big": "1048576000"
