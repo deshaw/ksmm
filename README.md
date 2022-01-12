@@ -23,13 +23,13 @@ This is an attempt to provide a UI based on json-schema and templates, for end u
 
 ## Install Kernelspecs Templates
 
-You will need [Kernelspec templates](#about-kernelspec-templates).
+You will need to install some [Kernelspec templates](#about-kernelspec-templates).
 
 ```bash
 make install-kernelspecs
 ```
 
-This will install the `python-template-1` Kernelspec example located in the examples folder.
+This will install the `python-template-1` Kernelspec example located in the examples folder into your system environment.
 
 ## Install from a Release
 
@@ -72,24 +72,27 @@ When making changes to the extension you will need to issue a `jupyter labextens
 
 You system adminstrator can create Kernelspect templates for you. As a user, if you click on the picker icon of a template card, you will be prompted for the Kernelspec parameters.
 
-<img src="screenshots/parameters_ss.png" width="200" />
+<img src="screenshots/parameters_ss.png" width="400" />
 
 When you will click on the `Create Kernelspec` button, a new Kernespec will be created.
 
-This is an example of such a Kernelspec template. The `metadata/template/tpl` stanza should contain a [Json Schema](https://json-schema.org) compliant structure. You can browser the [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form) for examples. You can use the `metadata/template/mapping` stanza to create visual mappings (e.g. `Small` will be mapped to `102400`). The `example/python-template-1` contains an example. To install that example template in your environment, you need to run `jupyter kernelspec install ./examples/python-template-1` (add `--user` to install in your user space).
+This is an example of such a Kernelspec template. The `metadata/template/tpl` stanza should contain a [Json Schema](https://json-schema.org) compliant structure. You can browser the [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form) for examples.
+
+You can use the `metadata/template/mapping` stanza to create visual mappings (e.g. `Small` will be mapped to `102400`). The `example/python-template-1` contains an example. To install that example template in your environment, you need to run `jupyter kernelspec install ./examples/python-template-1` (add `--user` to install in your user space).
+
+<details>
+  <summary>Click to view the kernelspec example.</summary>
 
 ```json
 {
   "argv": [
-    "slurm",
-    "run",
-    "--mem=1048576000",
-    "--cpu=14",
-    "python3.8",
+    "python",
     "-m",
-    "ipykernel",
+    "ipykernel_launcher",
     "-f",
-    "{connection_file}"
+    "{connection_file}",
+    "--cache-size={cache_size}",
+    "--matplotlib={matplotlib}"
   ],
   "display_name": "Python 3.8 Template 1",
   "language": "python",
@@ -97,44 +100,55 @@ This is an example of such a Kernelspec template. The `metadata/template/tpl` st
     "template": {
       "tpl": {
         "argv": [
-          "slurm",
-          "run",
-          "--mem={mem_slurm}",
-          "--cpu={cpu}",
-          "python3.8",
+          "python",
           "-m",
-          "ipykernel",
+          "ipykernel_launcher",
           "-f",
-          "{connection_file}"
+          "{connection_file}",
+          "--cache-size={cache_size_map}",
+          "--matplotlib={matplotlib}",
+          "--logfile={logfile}",
+          "--Kernel._poll_interval={poll_interval}"
         ],
-        "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
+        "display_name": "Python cache_size {cache_size_map} matplotlib {matplotlib}"
       },
       "parameters": {
-        "cpu": {
-          "type": "integer",
-          "title": "CPU core",
-          "default": 1,
-          "maximum": 48,
-          "minimum": 1
+        "poll_interval": {
+          "type": "number",
+          "minimum": 0.01,
+          "maximum": 1,
+          "multipleOf": 0.01,
+          "title": "Kernel pool interval in seconds",
+          "default": 0.01
         },
-        "mem": {
-          "type": "string",
-          "title": "Memory (GB)",
+        "cache_size": {
+          "type": "integer",
+          "title": "Set the size of the cache",
+          "default": "Medium",
           "enum": [
             "Small",
             "Medium",
             "Big"
           ]
         },
-        "gpu": {
-          "type": "boolean",
-          "title": "Graphic Processor",
-          "default": true
+        "matplotlib": {
+          "type": "string",
+          "title": "Configure matplotlib for interactive use with the default matplotlib backend",
+          "default": "widget",
+          "enum": [
+            "auto", "agg", "gtk", "gtk3", "inline", "ipympl", "nbagg", "notebook", 
+            "osx", "pdf", "ps", "qt", "qt4", "qt5", "svg", "tk", "widget", "wx"
+          ]
+        },
+        "logfile": {
+          "type": "string",
+          "title": "Set the path for the logfile",
+          "default": "/tmp/kernel.out"
         }
       },
       "mapping": {
-        "mem_slurm": {
-          "mem": {
+        "cache_size_map": {
+          "cache_size": {
             "Small": "102400",
             "Medium": "512000",
             "Big": "1048576000"
@@ -145,6 +159,8 @@ This is an example of such a Kernelspec template. The `metadata/template/tpl` st
   }
 }
 ```
+
+</details>
 
 ## General Settings
 
