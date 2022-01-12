@@ -9,15 +9,11 @@
     "ipython",
     "kernel"
   ],
-  "homepage": "https://github.com/Quansight/ksmm",
+  "homepage": "https://github.com/deshaw/ksmm",
   "bugs": {
-    "url": "https://github.com/Quansight/ksmm/issues"
+    "url": "https://github.com/deshaw/ksmm/issues"
   },
   "license": "BSD-3-Clause",
-  "author": {
-    "name": "Matthias Bussonnier, Anirrudh Krishnan, Eric Charles",
-    "email": ""
-  },
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
