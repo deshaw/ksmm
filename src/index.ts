@@ -3,6 +3,7 @@ import { MainAreaWidget } from "@jupyterlab/apputils";
 import { ILauncher } from "@jupyterlab/launcher";
 import { extensionIcon } from "@jupyterlab/ui-components/lib/icon/iconimports";
 import { KernelspecManagerWidget } from "./widget";
+import 'core-js';
 
 /*
  * The command IDs used by the to create a kernelspec.
