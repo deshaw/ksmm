@@ -131,7 +131,7 @@ const KernelManagerComponent = (props: { serviceManager: ServiceManager }): JSX.
             }}
             onChange={onChange}
           >
-            <i>*We are not validating the form yet, please ensure you enter valid data (<a href="https://github.com/quansight/ksmm/issues/61" target="blank">issue</a>)</i>
+            <i>*We are not validating the form yet, please ensure you enter valid data (<a href="https://github.com/deshaw/ksmm/issues/61" target="blank">issue</a>)</i>
           </Form>
         </>
       ),
