@@ -170,6 +170,30 @@ You can use the `metadata/template/mapping` stanza to create visual mappings (e.
 
 ![](screenshots/launch_args_ss.png)
 
+## Release
+
+To publish a release, you need to manually bump the version number of the [package.json](https://github.com/deshaw/ksmm/blob/main/package.json) file, this this diff for example.
+
+```diff
+ {
+   "name": "@deshaw/jupyterlab-ksmm",
+-  "version": "0.1.4",
++  "version": "0.1.5",
+   "description": "An extension to manage Kernelspecs from JupyterLab",
+   "keywords": [
+     "jupyter",
+```
+
+Pleas follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) rules when bumping the version number.
+
+Commmit and push your changes, then run the following comamand which clean, build and push the needed artifact into the [PyPi Ksmm project](https://pypi.org/project/ksmm) (ensure you have been given the needed authorization for that).
+
+```bash
+make publish
+```
+
+At some point, it would be interesting to use the [https://github.com/jupyter-server/jupyter_releaser](juypyter-releaser) tool (tracked in [#81](https://github.com/deshaw/ksmm/issues/81)).
+
 ## History
 This was created by the [D. E. Shaw group](https://www.deshaw.com/) in conjunction with [Quansight](https://www.quansight.com/).
 
