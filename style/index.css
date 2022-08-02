@@ -14,7 +14,7 @@
 }
 
 .ksmm-button-enabled {
-    color: var(--jp-brand-color1);;
+    color: var(--jp-brand-color1);
 }
 
 div.card{
@@ -38,17 +38,19 @@ div.card{
     margin-top: 1rem;
     margin-bottom: 1rem;
     border: 0;
-    border-top: 1px solid rgba(0,0,0,.1);
+    border-top: 1px solid var(--jp-layout-color3);
 }
 
 .ksmm-kernel-cards {
     width: 12rem;
     min-height: 12rem;
     background: var(--jp-layout-color1);
+    border: 1px solid var(--jp-layout-color3);
 }
 
 .ksmm-kernel-cards .card-header {
     background: var(--jp-layout-color2);
+    border-bottom: 1px solid var(--jp-layout-color3);
 }
 
 .ksmm-pointer {
