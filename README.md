@@ -202,3 +202,7 @@ This was created by the [D. E. Shaw group](https://www.deshaw.com/) in conjuncti
        <img src="https://www.deshaw.com/assets/logos/blue_logo_417x125.png" alt="D. E. Shaw Logo" height="75" >
     </a>
 </p>
+
+
+We love contributions! Before you can contribute, please sign and submit this [Contributor License Agreement (CLA)](https://www.deshaw.com/oss/cla).
+This CLA is in place to protect all users of this project.
