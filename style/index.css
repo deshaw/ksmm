@@ -44,8 +44,8 @@ div.card{
 .ksmm-kernel-cards {
     width: 12rem;
     min-height: 12rem;
-    background: var(--jp-layout-color1);
-    border: 1px solid var(--jp-layout-color3);
+    background: var(--jp-layout-color1) !important;
+    border: 1px solid var(--jp-layout-color3) !important;
 }
 
 .ksmm-kernel-cards .card-header {

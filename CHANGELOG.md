@@ -1,3 +1,9 @@
+## [0.1.6](https://github.com/deshaw/ksmm/compare/v0.1.5...v0.1.6) (2022-08-10)
+
+### Fixed
+
+- Kernel card colors in dark theme
+
 ## [0.1.5](https://github.com/deshaw/ksmm/compare/v0.1.4...v0.1.5) (2022-03-17)
 
 ### Fixed
