@@ -1,4 +1,4 @@
-## [0.1.6](https://github.com/deshaw/ksmm/compare/v0.1.5...v0.1.6) (2022-08-10)
+## [0.1.6](https://github.com/deshaw/ksmm/compare/v0.1.5...v0.1.6) (2022-08-16)
 
 ### Fixed
 
