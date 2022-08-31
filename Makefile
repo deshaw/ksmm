@@ -72,10 +72,15 @@ main:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		python -m ksmm )
 
-publish:
+build_release:
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		rm -fr dist/* && \
+		jlpm &&\
 		yarn clean && \
-		yarn build:prod && \
+		jlpm build:prod && \
 		python setup.py sdist bdist_wheel && \
+		ls -lh  dist/)
+
+publish: build_release
+	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		twine upload dist/* )

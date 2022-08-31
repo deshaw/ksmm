@@ -52,3 +52,4 @@ jobs:
         run: |
           jlpm
           python setup.py bdist_wheel sdist
+          python tools/verify_wheel.py

@@ -5,7 +5,7 @@ dependencies:
   - jupyterlab
   - pip
   - psutil
-  - setuptools
+  - setuptools<61
   - tornado
   - twine
   - yarn

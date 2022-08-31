@@ -2,6 +2,7 @@
 """
 
 import json
+import sys
 from pathlib import Path
 
 import setuptools
@@ -70,7 +71,13 @@ setup_args = dict(
     ],
 )
 
-try:
+editable_install = ('egg_info' in sys.argv) or ('dist_info' in sys.argv) or ('editable_wheel' in sys.argv)
+
+if editable_install:
+    print("It looks like you are doing an editable install. We won't try to build the js.")
+    print("If you are building a sdist or wheel, those may be corrupted.")
+else:
+
     from jupyter_packaging import wrap_installers, npm_builder, get_data_files
 
     post_develop = npm_builder(
@@ -80,8 +87,6 @@ try:
         post_develop=post_develop, ensured_targets=ensured_targets
     )
     setup_args["data_files"] = get_data_files(data_files_spec)
-except ImportError:
-    pass
 
 if __name__ == "__main__":
     setuptools.setup(**setup_args)
