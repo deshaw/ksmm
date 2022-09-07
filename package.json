@@ -1,6 +1,6 @@
 {
   "name": "@deshaw/jupyterlab-ksmm",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "An extension to manage Kernelspecs from JupyterLab",
   "keywords": [
     "jupyter",
