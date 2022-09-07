@@ -186,7 +186,13 @@ To publish a release, you need to manually bump the version number of the [packa
 
 Pleas follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) rules when bumping the version number.
 
-Commmit and push your changes, then run the following comamand which clean, build and push the needed artifact into the [PyPi Ksmm project](https://pypi.org/project/ksmm) (ensure you have been given the needed authorization for that).
+Commit and push your changes, then run the following command which clean, build and push the needed artifact into the [PyPi Ksmm project](https://pypi.org/project/ksmm) (ensure you have been given the needed authorization for that).
+```
+make build_release
+twine upload dist/*
+```
+
+Or simply
 
 ```bash
 make publish

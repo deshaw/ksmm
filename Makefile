@@ -79,8 +79,10 @@ build_release:
 		yarn clean && \
 		jlpm build:prod && \
 		python setup.py sdist bdist_wheel && \
+		python tools/verify_wheel.py && \
 		ls -lh  dist/)
 
 publish: build_release
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
+		python tools/verify_wheel.py && \
 		twine upload dist/* )
