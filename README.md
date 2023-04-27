@@ -8,7 +8,7 @@
 
 - Kernelspec creation based on parametrized templates.
 - Kernelspec Editing: name, attributes.
-- Kernel Duplication. 
+- Kernel Duplication.
 - Kernel Deletion.
 
 ## Context
@@ -21,56 +21,65 @@ Modifying existing Kernelspec also does not always works as they are cached on a
 
 This is an attempt to provide a UI based on json-schema and templates, for end users to easily create, duplicate and modify kernelspec, without being exposed to _too much_ of the internal details.
 
-## Install Kernelspecs Templates
+## Requirements
 
-You will need to install some [Kernelspec templates](#about-kernelspec-templates).
+- Jupyterlab >= 4.0
 
-```bash
-make install-kernelspecs
-```
-
-This will install the `python-template-1` Kernelspec example located in the examples folder into your system environment.
-
-## Install from a Release
-
-Ensure you have JupyterLab 3.1+, and then run this command the ksmm extension inside your current JupyterLab environment.
+## Install
 
 ```bash
-pip install --upgrade ksmm
+pip install ksmm
 ```
 
-## Develop
+Next, you will need to install some [Kernelspec templates](#about-kernelspec-templates). As an example, start by adding the `python-template-1` kernelspec:
 
-Use the provided `environment.yaml` to install the conda environment.
-
-```base
-conda deactivate && \
-  make env-rm && \
-  make env
-conda activate ksmm
+```bash
+jupyter kernelspec install ./examples/python-template-1/
 ```
 
-```python
-# Install the server and frontend in dev mode.
-make install-dev
+To list existing kernelspecs, run `jupyter kernelspec list .`
+
+## Contributing
+
+### Development install
+
+Note: You will need NodeJS to build the extension package.
+
+The `jlpm` command is JupyterLab's pinned version of
+[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
+`yarn` or `npm` in lieu of `jlpm` below.
+
+```bash
+# Clone the repo to your local environment
+# Change directory to the jupyterlab_pyflyby directory
+# Install package in development mode
+pip install -e .
+# Link your development version of the extension with JupyterLab
+jupyter-labextension develop . --overwrite
+# Rebuild extension Typescript source after making changes
+jlpm run build
 ```
 
-```python
-# In terminal 1, Start the jupyterlab.
-# open http://localhost:8234?token=...
-make jlab
+You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
+
+```bash
+# Watch the source directory in one terminal, automatically rebuilding when needed
+jlpm run watch
+# Run JupyterLab in another terminal
+jupyter lab
 ```
 
-```python
-# In terminal 2, start the extension building in watch mode.
-make watch
-```
+With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
 
-When making changes to the extension you will need to issue a `jupyter labextension build`, or, start `jlpm run watch` in the root of the repository to rebuild on every changes. You do not need to restart or rebuild JupyterLab for changes on the frontend extensions, but do need to restart the server for changes to the Python code.
+By default, the `jlpm run build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
+
+```bash
+jupyter lab build --minimize=False
+```
 
 ## About Kernelspec Templates
 
-You system adminstrator can create Kernelspect templates for you. As a user, if you click on the picker icon of a template card, you will be prompted for the Kernelspec parameters.
+You system adminstrator can create Kernelspec templates for you. As a user, if you click on the picker icon of a template card, you will be prompted for the Kernelspec parameters.
 
 <img src="screenshots/parameters_ss.png" width="400" />
 
@@ -125,19 +134,31 @@ You can use the `metadata/template/mapping` stanza to create visual mappings (e.
           "type": "integer",
           "title": "Set the size of the cache",
           "default": "Medium",
-          "enum": [
-            "Small",
-            "Medium",
-            "Big"
-          ]
+          "enum": ["Small", "Medium", "Big"]
         },
         "matplotlib": {
           "type": "string",
           "title": "Configure matplotlib for interactive use with the default matplotlib backend",
           "default": "widget",
           "enum": [
-            "auto", "agg", "gtk", "gtk3", "inline", "ipympl", "nbagg", "notebook", 
-            "osx", "pdf", "ps", "qt", "qt4", "qt5", "svg", "tk", "widget", "wx"
+            "auto",
+            "agg",
+            "gtk",
+            "gtk3",
+            "inline",
+            "ipympl",
+            "nbagg",
+            "notebook",
+            "osx",
+            "pdf",
+            "ps",
+            "qt",
+            "qt4",
+            "qt5",
+            "svg",
+            "tk",
+            "widget",
+            "wx"
           ]
         },
         "logfile": {
@@ -172,7 +193,7 @@ You can use the `metadata/template/mapping` stanza to create visual mappings (e.
 
 ## Release
 
-To publish a release, you need to manually bump the version number of the [package.json](https://github.com/deshaw/ksmm/blob/main/package.json) file, this this diff for example.
+To publish a release, you need to manually bump the version number of the [package.json](https://github.com/deshaw/ksmm/blob/main/package.json) file, see this diff for example.
 
 ```diff
  {
@@ -186,15 +207,8 @@ To publish a release, you need to manually bump the version number of the [packa
 
 Pleas follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) rules when bumping the version number.
 
-Commmit and push your changes, then run the following comamand which clean, build and push the needed artifact into the [PyPi Ksmm project](https://pypi.org/project/ksmm) (ensure you have been given the needed authorization for that).
-
-```bash
-make publish
-```
-
-At some point, it would be interesting to use the [https://github.com/jupyter-server/jupyter_releaser](juypyter-releaser) tool (tracked in [#81](https://github.com/deshaw/ksmm/issues/81)).
-
 ## History
+
 This was created by the [D. E. Shaw group](https://www.deshaw.com/) in conjunction with [Quansight](https://www.quansight.com/).
 
 <p align="center">
@@ -202,7 +216,6 @@ This was created by the [D. E. Shaw group](https://www.deshaw.com/) in conjuncti
        <img src="https://www.deshaw.com/assets/logos/blue_logo_417x125.png" alt="D. E. Shaw Logo" height="75" >
     </a>
 </p>
-
 
 We love contributions! Before you can contribute, please sign and submit this [Contributor License Agreement (CLA)](https://www.deshaw.com/oss/cla).
 This CLA is in place to protect all users of this project.

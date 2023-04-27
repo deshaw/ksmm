@@ -29,26 +29,9 @@
         "display_name": "Python 3.8 RAM:{mem}/ CPU={cpu} / {gpu}"
       },
       "parameters": {
-        "cpu": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "10",
-          "15",
-          "20",
-          "48"
-        ],
-        "mem": [
-          "Small",
-          "Medium",
-          "Big"
-        ],
-        "gpu": [
-          "With GPU",
-          "Without GPU"
-        ]
+        "cpu": ["1", "2", "3", "4", "5", "10", "15", "20", "48"],
+        "mem": ["Small", "Medium", "Big"],
+        "gpu": ["With GPU", "Without GPU"]
       },
       "mapping": {
         "mem_slurm": {
