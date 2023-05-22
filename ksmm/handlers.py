@@ -1,19 +1,16 @@
-"""A jupyterlab server extension that expose kernelspecs handling.
-"""
+"""A jupyterlab server extension that expose kernelspecs handling."""
 import json
 import os
 import stat
 import string
 from pathlib import Path
 
-import tornado
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
+import tornado
 
-from ksmm.templating import format_tpl
-
+from .templating import format_tpl
 from .kernel_schema import kernel_schema
-
 
 def kernel_path(dir):
     return os.path.join(dir, "kernel.json")
@@ -149,7 +146,8 @@ class KSHandler(APIHandler):
 
     @tornado.web.authenticated
     def get(self):
-        # TODO This is suboptimal but needed as get_all_specs methods does not return and updated view of the specs.
+        # TODO This is suboptimal but needed as get_all_specs methods does not return
+        # and updated view of the specs.
         kernel_specs = {}
         user_kernel_dir = Path(self.kernel_spec_manager.user_kernel_dir)
         for k in self.kernel_spec_manager.find_kernel_specs():
@@ -207,17 +205,6 @@ class KSHandler(APIHandler):
             try:
                 message = exception.log_message % exception.args
             except Exception:
-                # construct the custom reason, if defined
-                #    reason = getattr(exception, "reason", "")
-                #    if reason:
-                #        status_message = reason
-                # build template namespace
-                # ns = dict(
-                #     status_code=status_code,
-                #     status_message=status_message,
-                #     message=message,
-                #     exception=exception,
-                # )
                 pass
         self.set_header("Content-Type", "application/json")
         self.write({"status_code": status_code, "message": message})

@@ -39,19 +39,31 @@
           "type": "integer",
           "title": "Set the size of the cache",
           "default": "Medium",
-          "enum": [
-            "Small",
-            "Medium",
-            "Big"
-          ]
+          "enum": ["Small", "Medium", "Big"]
         },
         "matplotlib": {
           "type": "string",
           "title": "Configure matplotlib for interactive use with the default matplotlib backend",
           "default": "widget",
           "enum": [
-            "auto", "agg", "gtk", "gtk3", "inline", "ipympl", "nbagg", "notebook", 
-            "osx", "pdf", "ps", "qt", "qt4", "qt5", "svg", "tk", "widget", "wx"
+            "auto",
+            "agg",
+            "gtk",
+            "gtk3",
+            "inline",
+            "ipympl",
+            "nbagg",
+            "notebook",
+            "osx",
+            "pdf",
+            "ps",
+            "qt",
+            "qt4",
+            "qt5",
+            "svg",
+            "tk",
+            "widget",
+            "wx"
           ]
         },
         "logfile": {

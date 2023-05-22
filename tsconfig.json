@@ -16,9 +16,9 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
-    "strictNullChecks": false,
-    "target": "es2017",
+    "strictNullChecks": true,
+    "target": "ES2018",
     "types": []
   },
-  "include": ["src/*", "src/components/*", "src/components/widgets/*", "src/components/fields/*"]
+  "include": ["src/**/*"]
 }

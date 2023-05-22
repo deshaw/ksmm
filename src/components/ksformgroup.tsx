@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 /*
  * This is a nested component in the FieldTemplate, and
@@ -7,22 +7,26 @@ import React from "react";
  *
  * props: data -> The data to render - namely, the data as defined in the schema.
  */
-const KsFormGroup = (props: {
+const KsFormGroup = ({
+  properties,
+  selectedTab,
+  mainprops,
+}: {
   properties: any;
   selectedTab: string;
   mainprops: any;
 }) => {
-  const formGroupMap: any = generateFormGroupMap(props.properties);
+  const formGroupMap: any = generateFormGroupMap(properties);
   return (
     <>
-      {formGroupMap[props.selectedTab].map((index: number) => (
+      {formGroupMap[selectedTab].map((index: number) => (
         <div className="property-wrapper" key={index}>
-          {props.properties[index].content}
+          {properties[index].content}
         </div>
       ))}
     </>
   );
-}
+};
 
 /*
  * Grab the location of the element in the array,
@@ -38,35 +42,34 @@ function generateFormGroupMap(dataArr: any) {
 
   dataArr.forEach((element: any) => {
     if (
-      element.name == "display_name" ||
-      element.name == "interrupt_mode" ||
-      element.name == "language"
+      element.name === 'display_name' ||
+      element.name === 'interrupt_mode' ||
+      element.name === 'language'
     ) {
       GeneralSettingsArray.push(dataArr.indexOf(element));
-    } else if (element.name == "argv") {
+    } else if (element.name === 'argv') {
       LaunchArgumentsArray.push(dataArr.indexOf(element));
-    } else if (element.name == "env") {
+    } else if (element.name === 'env') {
       EnvironmentVariableArray.push(dataArr.indexOf(element));
-    } else if (element.name == "parameters") {
+    } else if (element.name === 'parameters') {
       ComputeParametersArray.push(dataArr.indexOf(element));
-    } else if (element.name == "metadata") {
+    } else if (element.name === 'metadata') {
       MetadataArray.push(dataArr.indexOf(element));
-    } else if (element.name == "quick") {
+    } else if (element.name === 'quick') {
       QuickSettings.push(dataArr.indexOf(element));
     } else {
-      console.log("Unknown element name", element.name);
+      console.log('Unknown element name', element.name);
     }
   });
 
   return {
-    ["General Settings"]: GeneralSettingsArray,
-    ["Launch Arguments"]: LaunchArgumentsArray,
-    ["Environment Variables"]: EnvironmentVariableArray,
-    ["Compute Parameters"]: ComputeParametersArray,
-    ["Quick Params"]: QuickSettings,
-    ["Metadata"]: MetadataArray,
-  }
-
+    ['General Settings']: GeneralSettingsArray,
+    ['Launch Arguments']: LaunchArgumentsArray,
+    ['Environment Variables']: EnvironmentVariableArray,
+    ['Compute Parameters']: ComputeParametersArray,
+    ['Quick Params']: QuickSettings,
+    ['Metadata']: MetadataArray,
+  };
 }
 
 export default KsFormGroup;

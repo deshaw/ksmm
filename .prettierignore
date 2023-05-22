@@ -1,9 +1,6 @@
 node_modules
-__pycache__
-*.egg-info
-lib
-labextension
-tsconfig.tsbuildinfo
-yarn.lock
-*.py
-
+**/node_modules
+**/lib
+**/package.json
+!/package.json
+ksmm
