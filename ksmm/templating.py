@@ -24,7 +24,7 @@ class Default(dict):
 
 
 def recursive_format(item, mapping, **kwargs):
-    """Recursively format string/list.
+    """Recursively format string/list/dict.
 
     Format values from **kwargs, if an item is not present in
     **kwargs lookup in mpaaing. This is because we might want some
@@ -73,6 +73,8 @@ def recursive_format(item, mapping, **kwargs):
         return item.format_map(Default(mapping, **kwargs))
     elif isinstance(item, list):
         return [recursive_format(i, mapping, **kwargs) for i in item]
+    elif isinstance(item, dict):
+        return {k:recursive_format(v, mapping, **kwargs) for k,v in item.items()}
     else:
         raise ValueError("item is not a list or a string: {}".format(item))
 
@@ -100,7 +102,7 @@ def format_tpl(spec, **kwargs):
     """
     static_spec = {}
     for k, v in spec.items():
-        if k in ("argv", "display_name"):
+        if k in ("argv", "display_name", "metadata"):
             it = spec["metadata"]["template"]["tpl"][k]
             static_spec[k] = recursive_format(
                 it, spec["metadata"]["template"].get("mapping", {}), **kwargs
